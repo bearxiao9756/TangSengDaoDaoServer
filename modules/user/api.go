@@ -167,15 +167,16 @@ func (u *User) Route(r *wkhttp.WKHttp) {
 	v := r.Group("/v1")
 	{
 
-		v.POST("/user/register", u.register)                 //用户注册
+		v.POST("/user/register", u.register)                 // 用户注册
 		v.POST("/user/login", u.login)                       // 用户登录
+		v.POST("/user/guestLogin", u.guestLogin)             // 游客登录
 		v.POST("/user/usernamelogin", u.usernameLogin)       // 用户名登录
 		v.POST("/user/usernameregister", u.usernameRegister) // 用户名注册
 
 		v.POST("/user/pwdforget_web3", u.resetPwdWithWeb3PublicKey) // 通过web3公钥重置密码
 		v.GET("/user/web3verifytext", u.getVerifyText)              // 获取验证字符串
 		v.POST("/user/web3verifysign", u.web3verifySignature)       // 验证签名
-		//v.POST("user/wxlogin", u.wxLogin)
+		v.POST("user/wxlogin", u.wxLogin)
 		v.POST("/user/sms/forgetpwd", u.getForgetPwdSMS) //获取忘记密码验证码
 		v.POST("/user/pwdforget", u.pwdforget)           //重置登录密码
 		v.GET("/user/search", u.search)                  // 搜索用户
@@ -944,6 +945,74 @@ func (u *User) wxLogin(c *wkhttp.Context) {
 			}
 		}
 		u.createUser(loginSpanCtx, model, c, nil)
+	}
+}
+func (u *User) guestLogin(c *wkhttp.Context) {
+	type guestLoginReq struct {
+		Channel string     `json:"channel"` // 标识用户来自哪个直连链接 (超A链)
+		Flag    int        `json:"flag"`
+		Device  *deviceReq `json:"device"`
+	}
+	var req guestLoginReq
+	if err := c.BindJSON(&req); err != nil {
+		c.ResponseError(errors.New("请求数据格式有误！"))
+		return
+	}
+	if req.Channel == "" {
+		c.ResponseError(errors.New("渠道信息不能为空"))
+		return
+	}
+	// 2. 身份生成和查询
+	// *** 关键步骤：生成唯一的访客ID (UID) 和临时密码 ***
+	// 注意：这里的 UID 应该具备会话持久化能力（例如从 Cookie 中读取，如果未找到则生成）
+
+	// 假设您在请求上下文或通过其他方法获取/生成了访客的唯一ID
+	// 简化处理：如果没有持久化 ID，则直接生成一个新的 UID
+	// 在实际生产环境中，这需要结合前端Cookie/Session来做持久化判断。
+	tempUID := util.GenerUUID() // <--- 【重点】实现这个方法来生成或获取访客 UID
+
+	// 3. 检查用户是否存在（使用访客ID作为唯一标识）
+	loginSpan := u.ctx.Tracer().StartSpan("guest_login", opentracing.ChildOf(c.GetSpanContext()))
+	loginSpanCtx := u.ctx.Tracer().ContextWithSpan(context.Background(), loginSpan)
+	defer loginSpan.Finish()
+
+	// 假设 u.db 有一个通过 UID 查询用户的方法
+	userInfo, err := u.db.QueryByUID(tempUID)
+	if err != nil {
+		u.Error("通过访客UID查询用户错误", zap.Error(err))
+		c.ResponseError(errors.New("查询访客信息错误"))
+		return
+	}
+	if userInfo != nil && userInfo.IsDestroy != 1 {
+		// 4. 如果访客存在，直接执行登录并返回
+		u.execLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c)
+	} else {
+		// 5. 如果访客不存在，则创建新的访客账号 (无需密码)
+		// 自动生成用户名（供客服查看）
+		guestNickname := fmt.Sprintf("访客-%s", tempUID[:6])
+		var model = &createUserModel{
+			UID:       tempUID,
+			Zone:      "",
+			Phone:     "",
+			Password:  "", // 无需密码
+			Name:      guestNickname,
+			WXOpenid:  req.Channel,
+			WXUnionid: req.Device.DeviceID,
+			Flag:      req.Flag,
+			Device:    req.Device,
+		}
+
+		// 6. 避免下载头像（访客通常不需要头像）
+		// u.fileService.DownloadImage(...) 部分可以直接省略或用默认头像
+
+		// 7. 创建用户并执行登录
+		// u.createUser 函数需要支持创建无密码的访客类型
+		_, err := u.gusetcreateUser(loginSpanCtx, model, c, nil)
+		if err != nil {
+			c.Response(err)
+		} else {
+			u.execLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c)
+		}
 	}
 }
 
@@ -2495,7 +2564,6 @@ func allowUpdateUserField(field string) bool {
 	}
 	return false
 }
-
 func (u *User) createUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite) {
 	tx, err := u.db.session.Begin()
 	if err != nil {
@@ -2526,6 +2594,37 @@ func (u *User) createUser(registerSpanCtx context.Context, createUser *createUse
 		return
 	}
 	c.Response(resp)
+}
+func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite) (*loginUserDetailResp, error) {
+	tx, err := u.db.session.Begin()
+	if err != nil {
+		u.Error("创建数据库事物失败", zap.Error(err))
+		c.ResponseError(errors.New("创建数据库事物失败"))
+		return
+	}
+	defer func() {
+		if err := recover(); err != nil {
+			tx.Rollback()
+			panic(err)
+		}
+	}()
+	publicIP := util.GetClientPublicIP(c.Request)
+	resp, err := u.createUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, func() error {
+		err := tx.Commit()
+		if err != nil {
+			tx.Rollback()
+			u.Error("数据库事物提交失败", zap.Error(err))
+			// c.ResponseError(errors.New("数据库事物提交失败"))
+			return errors.New("数据库事物提交失败")
+		}
+		return nil
+	})
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	// c.Response(resp)
+	return resp, err
 }
 
 func (u *User) createUserTx(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, commitCallback func() error, invite *model.Invite, tx *dbr.Tx) {
