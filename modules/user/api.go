@@ -1014,11 +1014,10 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			Device:    req.Device,
 		}
 
-		u.Info("游客用户 不存在", zap.String("游客信息构建-Name", userInfo.Name))
-		u.Info("游客用户 不存在", zap.String("游客信息构建-ShortNo", userInfo.ShortNo))
-		u.Info("游客用户 不存在", zap.String("游客信息构建-Role", userInfo.Role))
-		u.Info("游客用户 不存在", zap.String("游客信息构建-WXOpenid", userInfo.WXOpenid))
-		u.Info("游客用户 不存在", zap.String("游客信息构建-WXUnionid", userInfo.WXUnionid))
+		u.Info("游客用户 不存在", zap.String("游客信息构建-Name", model.Name))
+		u.Info("游客用户 不存在", zap.String("游客信息构建-UID", model.UID))
+		u.Info("游客用户 不存在", zap.String("游客信息构建-WXOpenid", model.WXOpenid))
+		u.Info("游客用户 不存在", zap.String("游客信息构建-WXUnionid", model.WXUnionid))
 		// 6. 避免下载头像（访客通常不需要头像）
 		// u.fileService.DownloadImage(...) 部分可以直接省略或用默认头像
 		// 7. 创建用户并执行登录
