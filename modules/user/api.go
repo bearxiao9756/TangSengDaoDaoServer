@@ -2600,7 +2600,7 @@ func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *crea
 	if err != nil {
 		u.Error("创建数据库事物失败", zap.Error(err))
 		c.ResponseError(errors.New("创建数据库事物失败"))
-		return
+		return nil, errors.New("创建数据库事物失败")
 	}
 	defer func() {
 		if err := recover(); err != nil {
