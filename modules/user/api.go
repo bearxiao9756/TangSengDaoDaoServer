@@ -1027,8 +1027,8 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
 			c.Response(err)
 		} else {
-			u.Info("游客用户 注册成功", zap.String("错误信息", err.Error()))
 			userInfo, err := u.db.QueryByUID(tempUID)
+			u.Info("游客用户 注册成功", zap.String("注册成功", userInfo.Name))
 			if err != nil {
 				c.Response(err)
 			}
