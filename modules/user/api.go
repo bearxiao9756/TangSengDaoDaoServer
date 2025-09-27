@@ -957,6 +957,9 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	if err := c.BindJSON(&req); err != nil {
 		c.ResponseError(errors.New("请求数据格式有误！"))
 		return
+	} else {
+		u.Info("游客信息解析成功-渠道码", zap.String("渠道", req.Channel))
+		u.Info("游客信息解析成功-设备ID", zap.String("设备", req.Device.DeviceID))
 	}
 	if req.Channel == "" {
 		c.ResponseError(errors.New("渠道信息不能为空"))
@@ -971,9 +974,12 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	// 在实际生产环境中，这需要结合前端Cookie/Session来做持久化判断。
 	tempUID := util.GenerUUID() // <--- 【重点】实现这个方法来生成或获取访客 UID
 
+	u.Info("游客用户ID生成-tempID", zap.String("用户ID", tempUID))
 	// 3. 检查用户是否存在（使用访客ID作为唯一标识）
 	loginSpan := u.ctx.Tracer().StartSpan("guest_login", opentracing.ChildOf(c.GetSpanContext()))
 	loginSpanCtx := u.ctx.Tracer().ContextWithSpan(context.Background(), loginSpan)
+	u.Info("游客用户不知道1-loginSpan", zap.String("loginSpan", tempUID))
+	u.Info("游客用户不知道2-loginSpanCtx", zap.String("loginSpanCtx", tempUID))
 	defer loginSpan.Finish()
 
 	// 假设 u.db 有一个通过 UID 查询用户的方法
@@ -983,7 +989,13 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		c.ResponseError(errors.New("查询访客信息错误"))
 		return
 	}
+
 	if userInfo != nil && userInfo.IsDestroy != 1 {
+		u.Info("游客用户 存在", zap.String("游客信息-Name", userInfo.Name))
+		u.Info("游客用户 存在", zap.String("游客信息-ShortNo", userInfo.ShortNo))
+		u.Info("游客用户 存在", zap.String("游客信息-Role", userInfo.Role))
+		u.Info("游客用户 存在", zap.String("游客信息-WXOpenid", userInfo.WXOpenid))
+		u.Info("游客用户 存在", zap.String("游客信息-WXUnionid", userInfo.WXUnionid))
 		// 4. 如果访客存在，直接执行登录并返回
 		u.execLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c)
 	} else {
@@ -1002,15 +1014,25 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			Device:    req.Device,
 		}
 
+		u.Info("游客用户 不存在", zap.String("游客信息构建-Name", userInfo.Name))
+		u.Info("游客用户 不存在", zap.String("游客信息构建-ShortNo", userInfo.ShortNo))
+		u.Info("游客用户 不存在", zap.String("游客信息构建-Role", userInfo.Role))
+		u.Info("游客用户 不存在", zap.String("游客信息构建-WXOpenid", userInfo.WXOpenid))
+		u.Info("游客用户 不存在", zap.String("游客信息构建-WXUnionid", userInfo.WXUnionid))
 		// 6. 避免下载头像（访客通常不需要头像）
 		// u.fileService.DownloadImage(...) 部分可以直接省略或用默认头像
-
 		// 7. 创建用户并执行登录
 		// u.createUser 函数需要支持创建无密码的访客类型
 		_, err := u.gusetcreateUser(loginSpanCtx, model, c, nil)
 		if err != nil {
+			u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
 			c.Response(err)
 		} else {
+			u.Info("游客用户 注册成功", zap.String("错误信息", err.Error()))
+			userInfo, err := u.db.QueryByUID(tempUID)
+			if err != nil {
+				c.Response(err)
+			}
 			u.execLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c)
 		}
 	}
