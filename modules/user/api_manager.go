@@ -163,6 +163,7 @@ func (m *Manager) login(c *wkhttp.Context) {
 		return
 	}
 	if userInfo.Password != util.MD5(util.MD5(req.Password)) {
+		m.Info("游客用户ID生成-tempID", zap.String("用户ID", userInfo.UID))
 		c.ResponseError(errors.New("用户名或密码错误"))
 		return
 	}
