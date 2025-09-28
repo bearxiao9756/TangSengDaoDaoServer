@@ -157,6 +157,7 @@ func (m *Manager) login(c *wkhttp.Context) {
 		c.ResponseError(errors.New("登录错误！"))
 		return
 	}
+	m.Info("游客用户ID生成-tempID", zap.String("用户ID", userInfo.UID))
 	if userInfo == nil || userInfo.UID == "" {
 		c.ResponseError(errors.New("登录用户不存在"))
 		return
