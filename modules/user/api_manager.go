@@ -143,6 +143,7 @@ func (m *Manager) online(c *wkhttp.Context) {
 // 用户登录
 func (m *Manager) login(c *wkhttp.Context) {
 	var req managerLoginReq
+	m.Error("管理员登陆", zap.String("用户ID", "用户ID1"))
 	if err := c.BindJSON(&req); err != nil {
 		c.ResponseError(errors.New("请求数据格式有误！"))
 		return
@@ -157,7 +158,7 @@ func (m *Manager) login(c *wkhttp.Context) {
 		c.ResponseError(errors.New("登录错误！"))
 		return
 	}
-	m.Info("游客用户ID生成-tempID", zap.String("用户ID", userInfo.UID))
+	m.Error("管理员登陆", zap.String("用户ID", "用户ID2"))
 	if userInfo == nil || userInfo.UID == "" {
 		c.ResponseError(errors.New("登录用户不存在"))
 		return
@@ -171,6 +172,7 @@ func (m *Manager) login(c *wkhttp.Context) {
 		c.ResponseError(errors.New("登录账号未开通管理权限"))
 		return
 	}
+	m.Error("管理员登陆", zap.String("用户ID", "用户ID3"))
 	token := util.GenerUUID()
 	// 将token设置到缓存
 	err = m.ctx.Cache().SetAndExpire(m.ctx.GetConfig().Cache.TokenCachePrefix+token, fmt.Sprintf("%s@%s@%s", userInfo.UID, userInfo.Name, userInfo.Role), m.ctx.GetConfig().Cache.TokenExpire)
