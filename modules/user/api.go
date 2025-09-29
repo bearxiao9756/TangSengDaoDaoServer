@@ -1266,42 +1266,46 @@ func (u *User) sentUserWelcomeMsg(publicIP, uid string, kefuUID string) {
 	// }
 	time.Sleep(time.Second * 2)
 
-	userInfo, _ := u.db.QueryByUID(kefuUID)
-
-	//发送登录欢迎消息
-	lastLoginLog := u.loginLog.getLastLoginIP(uid)
-	content := u.ctx.GetConfig().WelcomeMessage
-	var sentContent string
-
-	if appconfig != nil && appconfig.WelcomeMessage != "" {
-		content = appconfig.WelcomeMessage
-	}
-	if lastLoginLog != nil {
-		// ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
-		sentContent = fmt.Sprintf("%s\n%s", content, userInfo.Name)
-	} else {
-		// ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
-
-		u.Info("游客用户", zap.String("欢迎消息", userInfo.Name))
-		sentContent = fmt.Sprintf("%s\n%s", content, userInfo.Name)
-	}
-	err = u.ctx.SendMessage(&config.MsgSendReq{
-		FromUID:     kefuUID,
-		ChannelID:   uid,
-		ChannelType: common.ChannelTypePerson.Uint8(),
-		Payload: []byte(util.ToJson(map[string]interface{}{
-			"content": sentContent,
-			"type":    common.Text,
-		})),
-		Header: config.MsgHeader{
-			RedDot: 1,
-		},
-	})
-	if err != nil {
+	userInfo, err := u.db.QueryByUID(kefuUID)
+	if userInfo == nil || err != nil {
 		u.Error("发送登录消息欢迎消息失败", zap.Error(err))
+	} else {
+		//发送登录欢迎消息
+		lastLoginLog := u.loginLog.getLastLoginIP(uid)
+		content := u.ctx.GetConfig().WelcomeMessage
+		var sentContent string
+
+		if appconfig != nil && appconfig.WelcomeMessage != "" {
+			content = appconfig.WelcomeMessage
+		}
+		if lastLoginLog != nil {
+			// ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
+			sentContent = fmt.Sprintf("%s\n%s", content, userInfo.Name)
+		} else {
+			// ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
+
+			u.Info("游客用户", zap.String("欢迎消息", userInfo.Name))
+			sentContent = fmt.Sprintf("%s\n%s", content, userInfo.Name)
+		}
+		err = u.ctx.SendMessage(&config.MsgSendReq{
+			FromUID:     kefuUID,
+			ChannelID:   uid,
+			ChannelType: common.ChannelTypePerson.Uint8(),
+			Payload: []byte(util.ToJson(map[string]interface{}{
+				"content": sentContent,
+				"type":    common.Text,
+			})),
+			Header: config.MsgHeader{
+				RedDot: 1,
+			},
+		})
+		if err != nil {
+			u.Error("发送登录消息欢迎消息失败", zap.Error(err))
+		}
+		//保存登录日志
+		u.loginLog.add(uid, publicIP)
 	}
-	//保存登录日志
-	u.loginLog.add(uid, publicIP)
+
 }
 
 // sendWelcomeMsg 发送欢迎语
