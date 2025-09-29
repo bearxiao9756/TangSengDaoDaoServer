@@ -3,6 +3,9 @@ package user
 import (
 	"embed"
 	"fmt"
+	"math/rand"
+	"strings"
+	"time"
 
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/common"
 	"github.com/TangSengDaoDao/TangSengDaoDaoServerLib/config"
@@ -20,6 +23,9 @@ var swaggerContent string
 
 //go:embed swagger/friend.yaml
 var friendSwaggerContent string
+var nameFS embed.FS
+var Nicknames []string
+var localRand *rand.Rand
 
 func init() {
 
@@ -150,7 +156,33 @@ func init() {
 			},
 		}
 	})
+	initNamesPlace()
 
+}
+func initNamesPlace() {
+	const namesFilePath = "txt/names.txt"
+	// 初始化随机数种子，确保每次启动程序生成的序列不同
+	localRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	data, err := nameFS.ReadFile(namesFilePath)
+	if err != nil {
+		panic("Failed to read embedded file: " + err.Error())
+	}
+
+	// b. 将字节数据转换为字符串
+	content := string(data)
+
+	// c. 清除首尾空白符（包括换行），然后按行分割
+	// 这将把 "网名1\n网名2\n" 转换为 ["网名1", "网名2"]
+	Nicknames = strings.Split(strings.TrimSpace(content), "\n")
+
+	// 过滤掉可能存在的空行，确保切片只包含有效网名
+	var cleanNames []string
+	for _, name := range Nicknames {
+		if name != "" {
+			cleanNames = append(cleanNames, name)
+		}
+	}
+	Nicknames = cleanNames
 }
 
 func newChannelRespWithUserDetailResp(user *UserDetailResp) *model.ChannelResp {

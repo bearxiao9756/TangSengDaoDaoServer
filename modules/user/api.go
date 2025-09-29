@@ -115,6 +115,7 @@ func New(ctx *config.Context) *User {
 
 // Route 路由配置
 func (u *User) Route(r *wkhttp.WKHttp) {
+
 	auth := r.Group("/v1", u.ctx.AuthMiddleware(r))
 	{
 
@@ -205,6 +206,16 @@ func (u *User) Route(r *wkhttp.WKHttp) {
 	u.ctx.AddOnlineStatusListener(u.handleOnlineStatus)               // 需要放在listenOnlineStatus之后
 	u.ctx.Schedule(time.Minute*5, u.onlineStatusCheck)                // 在线状态定时检查
 
+}
+
+func GenerateRandomName() string {
+	if len(Nicknames) == 0 {
+		return "仙人掌" // 列表为空时的安全返回
+	}
+	// rand.Intn(n) 生成 [0, n) 范围内的随机整数
+	randomIndex := rand.Intn(len(Nicknames))
+
+	return Nicknames[randomIndex]
 }
 
 // app退出登录
@@ -826,6 +837,7 @@ func (u *User) get(c *wkhttp.Context) {
 //	}
 //
 // 微信登录
+
 func (u *User) wxLogin(c *wkhttp.Context) {
 	type wxLoginReq struct {
 		Code   string     `json:"code"`
@@ -997,7 +1009,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	} else {
 		// 5. 如果访客不存在，则创建新的访客账号 (无需密码)
 		// 自动生成用户名（供客服查看）
-		guestNickname := fmt.Sprintf("访客-%s", tempUID[:6])
+		guestNickname := fmt.Sprintf("%s%s", GenerateRandomName(), tempUID[:3])
 		var model = &createUserModel{
 			UID:       tempUID,
 			Zone:      "",
@@ -1093,7 +1105,7 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 	} else {
 		publicIP := util.GetClientPublicIP(c.Request)
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
-		go u.sentWelcomeMsg(publicIP, userInfo.UID)
+		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
 		go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
 	}
 }
@@ -1253,7 +1265,7 @@ func (u *User) sentUserWelcomeMsg(publicIP, uid string, kefuUID string) {
 	// }
 	time.Sleep(time.Second * 2)
 
-	userInfo, err := u.db.QueryByUID(kefuUID)
+	userInfo, _ := u.db.QueryByUID(kefuUID)
 
 	//发送登录欢迎消息
 	lastLoginLog := u.loginLog.getLastLoginIP(uid)
