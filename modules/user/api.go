@@ -972,14 +972,13 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	// 假设您在请求上下文或通过其他方法获取/生成了访客的唯一ID
 	// 简化处理：如果没有持久化 ID，则直接生成一个新的 UID
 	// 在实际生产环境中，这需要结合前端Cookie/Session来做持久化判断。
-	tempUID := util.GenerUUID() // <--- 【重点】实现这个方法来生成或获取访客 UID
-
+	// tempUID := util.GenerUUID() // <--- 【重点】实现这个方法来生成或获取访客 UID
+	tempUID := req.Device.DeviceID
 	u.Info("游客用户ID生成-tempID", zap.String("用户ID", tempUID))
 	// 3. 检查用户是否存在（使用访客ID作为唯一标识）
 	loginSpan := u.ctx.Tracer().StartSpan("guest_login", opentracing.ChildOf(c.GetSpanContext()))
+	loginSpan.SetTag("UID", tempUID)
 	loginSpanCtx := u.ctx.Tracer().ContextWithSpan(context.Background(), loginSpan)
-	// u.Info("游客用户不知道1-loginSpan", zap.String("loginSpan", tempUID))
-	// u.Info("游客用户不知道2-loginSpanCtx", zap.String("loginSpanCtx", tempUID))
 	defer loginSpan.Finish()
 	// 假设 u.db 有一个通过 UID 查询用户的方法
 	userInfo, err := u.db.queryWithWXOpenIDAndWxUnionid(req.Channel, req.Device.DeviceID)
