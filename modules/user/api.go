@@ -2564,82 +2564,58 @@ func (u *User) addSystemFriend(uid string) error {
 	return nil
 }
 
-// func (u *User) addKefuFriend(uid string, kefuUID string) error {
-// 	if uid == "" {
-// 		u.Error("用户ID不能为空")
-// 		return errors.New("用户ID不能为空")
-// 	}
-// 	isFriend, err := u.friendDB.IsFriend(uid, kefuUID)
-// 	if err != nil {
-// 		u.Error("查询用户关系失败")
-// 		return err
-// 	}
-// 	tx, err := u.friendDB.session.Begin()
-// 	if err != nil {
-// 		u.Error("创建数据库事物失败")
-// 		return errors.New("创建数据库事物失败")
-// 	}
-// 	defer func() {
-// 		if err := recover(); err != nil {
-// 			tx.Rollback()
-// 			panic(err)
-// 		}
-// 	}()
-// 	if !isFriend {
-// 		version := u.ctx.GenSeq(common.FriendSeqKey)
-// 		friendsToInsert := []*FriendModel{
-// 			// 用户 -> 客服 (第一条记录)
-// 			{
-// 				UID:     uid,
-// 				ToUID:   kefuUID,
-// 				Version: version,
-// 			},
-// 			// 客服 -> 用户 (第二条记录，双向好友关系)
-// 			{
-// 				UID:     kefuUID,
-// 				ToUID:   uid,
-// 				Version: version,
-// 			}}
-// 		err := u.friendDB.InsertTxs(friendsToInsert, tx)
-// 		if err != nil {
-// 			u.Error("注册用户和客服成为好友失败")
-// 			tx.Rollback()
-// 			return err
-// 		}
-// 	   userInfo, err := u.db.QueryByUID(kefuUID)
-// 	   // 发送确认消息给对方
-// 	   err = u.ctx.SendCMD(config.MsgCMDReq{
-// 		CMD: common.CMDFriendAccept,
-// 		Subscribers: []string{uid, kefuUID},
-// 		Param: map[string]interface{}{
-// 			"to_uid":    uid,
-// 			"from_uid":  kefuUID,
-// 			"from_name": userInfo.Name,
-// 		},
-// 	   })
-// 	if err != nil {
-// 		f.Error("发送消息失败！", zap.Error(err))
-// 		c.ResponseError(errors.New("发送消息失败！"))
-// 		return
-// 	}
-// 	content := "我们已经是好友了，可以愉快的聊天了！"
-// 	if f.ctx.GetConfig().Friend.AddedTipsText != "" {
-// 		content = f.ctx.GetConfig().Friend.AddedTipsText
-// 	}
-// 	payload := []byte(util.ToJson(map[string]interface{}{
-// 		"content": content,
-// 		"type":    common.Tip,
-// 	}))
-// 	}
+func (u *User) addKefuFriend(uid string, kefuUID string) error {
+	if uid == "" {
+		u.Error("用户ID不能为空")
+		return errors.New("用户ID不能为空")
+	}
+	isFriend, err := u.friendDB.IsFriend(uid, kefuUID)
+	if err != nil {
+		u.Error("查询用户关系失败")
+		return err
+	}
+	tx, err := u.friendDB.session.Begin()
+	if err != nil {
+		u.Error("创建数据库事物失败")
+		return errors.New("创建数据库事物失败")
+	}
+	defer func() {
+		if err := recover(); err != nil {
+			tx.Rollback()
+			panic(err)
+		}
+	}()
+	if !isFriend {
+		version := u.ctx.GenSeq(common.FriendSeqKey)
+		friendsToInsert := []*FriendModel{
+			// 用户 -> 客服 (第一条记录)
+			{
+				UID:     uid,
+				ToUID:   kefuUID,
+				Version: version,
+			},
+			// 客服 -> 用户 (第二条记录，双向好友关系)
+			{
+				UID:     kefuUID,
+				ToUID:   uid,
+				Version: version,
+			}}
+		err := u.friendDB.InsertTxs(friendsToInsert, tx)
+		if err != nil {
+			u.Error("注册用户和客服成为好友失败")
+			tx.Rollback()
+			return err
+		}
+	}
 
-// 	err = tx.Commit()
-// 	if err != nil {
-// 		tx.Rollback()
-// 		u.Error("用户注册数据库事物提交失败", zap.Error(err))
-// 		return err
-// 	}
-// 	return nil
-// }
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		u.Error("用户注册数据库事物提交失败", zap.Error(err))
+		return err
+	}
+	return nil
+}
 
 // 重置登录密码
 func (u *User) pwdforget(c *wkhttp.Context) {
@@ -2910,11 +2886,11 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-	// err = u.addKefuFriend(createUser.UID, kefuUID)
-	// if err != nil {
-	// 	u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
-	// 	return nil, err
-	// }
+	err = u.addKefuFriend(createUser.UID, kefuUID)
+	if err != nil {
+		u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
+		return nil, err
+	}
 	// inviteCode := kefuUID
 	// inviteUID := kefuUID
 	// vercode := kefuUID
