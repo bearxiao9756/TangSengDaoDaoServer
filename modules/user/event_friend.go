@@ -98,6 +98,7 @@ func (f *Friend) handleDeleteFriend(data []byte, commit config.EventCommit) {
 
 // 处理用户注册
 func (f *Friend) handleUserRegister(data []byte, commit config.EventCommit) {
+	f.Info("特别注意", zap.String("开始处理注册", "好友事件问题"))
 	var req map[string]interface{}
 	err := util.ReadJsonByByte(data, &req)
 	if err != nil {
