@@ -981,7 +981,6 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	// u.Info("游客用户不知道1-loginSpan", zap.String("loginSpan", tempUID))
 	// u.Info("游客用户不知道2-loginSpanCtx", zap.String("loginSpanCtx", tempUID))
 	defer loginSpan.Finish()
-
 	// 假设 u.db 有一个通过 UID 查询用户的方法
 	userInfo, err := u.db.queryWithWXOpenIDAndWxUnionid(req.Channel, req.Device.DeviceID)
 	if err != nil {
@@ -989,15 +988,20 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		c.ResponseError(errors.New("查询访客信息错误"))
 		return
 	}
+	if userInfo != nil {
 
-	if userInfo != nil && userInfo.IsDestroy != 1 {
-		u.Info("游客用户 存在", zap.String("游客信息-Name", userInfo.Name))
-		// u.Info("游客用户 存在", zap.String("游客信息-ShortNo", userInfo.ShortNo))
-		// u.Info("游客用户 存在", zap.String("游客信息-Role", userInfo.Role))
-		// u.Info("游客用户 存在", zap.String("游客信息-WXOpenid", userInfo.WXOpenid))
-		// u.Info("游客用户 存在", zap.String("游客信息-WXUnionid", userInfo.WXUnionid))
-		// 4. 如果访客存在，直接执行登录并返回
-		u.execLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c)
+		u.Info("游客用户信息", zap.String("用户ID", userInfo.UID))
+		u.Info("游客用户信息", zap.String("用户ID", userInfo.WXOpenid))
+		u.Info("游客用户信息", zap.String("用户ID", userInfo.WXUnionid))
+		u.Info("游客用户信息", zap.Int("用户WXUnionid", userInfo.IsDestroy))
+		u.Info("游客用户信息", zap.String("用户ID", userInfo.Username))
+
+		if userInfo.IsDestroy == 1 {
+			c.ResponseError(errors.New("清除浏览器缓存,重新打开"))
+		} else {
+			u.execLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c)
+		}
+
 	} else {
 		// 5. 如果访客不存在，则创建新的访客账号 (无需密码)
 		// 自动生成用户名（供客服查看）
