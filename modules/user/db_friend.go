@@ -33,6 +33,26 @@ func (d *friendDB) InsertTx(m *FriendModel, tx *dbr.Tx) error {
 	err = d.ctx.GetRedisConn().SAdd(friendKey, m.ToUID)
 	return err
 }
+func (d *friendDB) InsertTxs(models []*FriendModel, tx *dbr.Tx) error {
+	for _, m := range models {
+		// 1. 插入数据库记录
+		_, err := tx.InsertInto("friend").Columns(util.AttrToUnderscore(m)...).Record(m).Exec()
+		if err != nil {
+			// 如果插入失败，事务应该回滚（这取决于你的外部事务管理）
+			return fmt.Errorf("failed to insert friend record for UID %s: %w", m.UID, err)
+		}
+
+		// 2. 更新 Redis 缓存
+		friendKey := fmt.Sprintf("%s%s", CacheKeyFriends, m.UID)
+		// 注意：SAdd 是一个对性能要求不高的操作，可以放在循环内
+		err = d.ctx.GetRedisConn().SAdd(friendKey, m.ToUID)
+		if err != nil {
+			return fmt.Errorf("failed to update Redis for UID %s: %w", m.UID, err)
+		}
+	}
+	// 如果所有记录都插入成功，返回 nil
+	return nil
+}
 
 // Insert 插入好友信息
 func (d *friendDB) Insert(m *FriendModel) error {
