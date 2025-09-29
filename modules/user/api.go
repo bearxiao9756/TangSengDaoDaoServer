@@ -2576,7 +2576,7 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 		version := u.ctx.GenSeq(common.FriendSeqKey)
 		err := u.friendDB.InsertTx(&FriendModel{
 			UID:     uid,
-			ToUID:   u.ctx.GetConfig().Account.SystemUID,
+			ToUID:   kefuUID,
 			Version: version,
 		}, tx)
 		if err != nil {
