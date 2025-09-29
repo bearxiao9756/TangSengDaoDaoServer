@@ -983,7 +983,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	defer loginSpan.Finish()
 
 	// 假设 u.db 有一个通过 UID 查询用户的方法
-	userInfo, err := u.db.QueryByWXUnionid(req.Device.DeviceID)
+	userInfo, err := u.db.queryWithWXOpenIDAndWxUnionid(req.Channel, req.Device.DeviceID)
 	if err != nil {
 		u.Error("通过访客UID查询用户错误", zap.Error(err))
 		c.ResponseError(errors.New("查询访客信息错误"))
