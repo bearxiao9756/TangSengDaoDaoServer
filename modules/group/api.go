@@ -234,7 +234,7 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 	//是否为系统群
 	if groupNo == g.ctx.GetConfig().Account.SystemGroupID {
 		c.Header("Content-Type", "image/jpeg")
-		avatarBytes, err := ioutil.ReadFile("assets/assets/g_avatar.jpeg")
+		avatarBytes, err := ioutil.ReadFile("assets/assets/org_avatar.png")
 		if err != nil {
 			g.Error("头像读取失败！", zap.Error(err))
 			c.Writer.WriteHeader(http.StatusNotFound)
@@ -268,7 +268,7 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 		return
 	}
 	path := g.ctx.GetConfig().GetGroupAvatarFilePath(groupNo)
-	downloadUrl, err := g.fileService.DownloadURL(path, "group_avatar.jpeg")
+	downloadUrl, err := g.fileService.DownloadURL(path, "org_avatar.png")
 	if err != nil {
 		g.Error("获取下载路径失败！", zap.Error(err))
 		c.Writer.WriteHeader(http.StatusInternalServerError)

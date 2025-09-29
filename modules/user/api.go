@@ -988,19 +988,12 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		return
 	}
 	if userInfo != nil {
-
-		u.Info("游客用户信息", zap.String("用户ID", userInfo.UID))
-		u.Info("游客用户信息", zap.String("用户ID", userInfo.WXOpenid))
-		u.Info("游客用户信息", zap.String("用户ID", userInfo.WXUnionid))
-		u.Info("游客用户信息", zap.Int("用户WXUnionid", userInfo.IsDestroy))
-		u.Info("游客用户信息", zap.String("用户ID", userInfo.Username))
-
 		if userInfo.IsDestroy == 1 {
 			c.ResponseError(errors.New("清除浏览器缓存,重新打开"))
 		} else {
-			u.execLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c)
+			u.Info("游客用户信息", zap.String("用户Username", userInfo.Username))
+			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, true)
 		}
-
 	} else {
 		// 5. 如果访客不存在，则创建新的访客账号 (无需密码)
 		// 自动生成用户名（供客服查看）
@@ -1016,15 +1009,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			Flag:      req.Flag,
 			Device:    req.Device,
 		}
-
-		// u.Info("游客用户 不存在", zap.String("游客信息构建-Name", model.Name))
-		// u.Info("游客用户 不存在", zap.String("游客信息构建-UID", model.UID))
-		// u.Info("游客用户 不存在", zap.String("游客信息构建-WXOpenid", model.WXOpenid))
 		u.Info("游客用户 不存在", zap.String("游客信息构建-WXUnionid", model.WXUnionid))
-		// 6. 避免下载头像（访客通常不需要头像）
-		// u.fileService.DownloadImage(...) 部分可以直接省略或用默认头像
-		// 7. 创建用户并执行登录
-		// u.createUser 函数需要支持创建无密码的访客类型
 		_, err := u.gusetcreateUser(loginSpanCtx, model, c, nil, req.Channel)
 		if err != nil {
 			u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
@@ -1035,7 +1020,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			if err != nil {
 				c.Response(err)
 			}
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel)
+			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
 		}
 	}
 }
@@ -1082,7 +1067,7 @@ func (u *User) login(c *wkhttp.Context) {
 }
 
 // 验证登录用户信息
-func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context, c *wkhttp.Context, kefuUID string) {
+func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context, c *wkhttp.Context, kefuUID string, islogin bool) {
 
 	result, err := u.execLogin(userInfo, flag, device, loginSpanCtx)
 	if err != nil {
@@ -1102,13 +1087,15 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 		c.ResponseError(err)
 		return
 	}
-
 	c.Response(result)
-
-	publicIP := util.GetClientPublicIP(c.Request)
-	u.Info("游客用户 登陆或者注册IP", zap.String("注册成功", publicIP))
-	go u.sentWelcomeMsg(publicIP, userInfo.UID)
-	go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+	if islogin {
+		u.Info("游客用户登陆IP", zap.String("注册成功", kefuUID))
+	} else {
+		publicIP := util.GetClientPublicIP(c.Request)
+		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
+		go u.sentWelcomeMsg(publicIP, userInfo.UID)
+		go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+	}
 }
 
 // 验证登录用户信息
