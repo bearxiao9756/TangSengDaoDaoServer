@@ -160,7 +160,7 @@ func init() {
 
 }
 func initNamesPlace() {
-	const namesFilePath = "txt/names.txt"
+	const namesFilePath = "user/txt/names.txt"
 	// 初始化随机数种子，确保每次启动程序生成的序列不同
 	localRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 	data, err := nameFS.ReadFile(namesFilePath)
