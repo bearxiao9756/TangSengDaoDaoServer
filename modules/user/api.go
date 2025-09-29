@@ -1327,11 +1327,12 @@ func (u *User) sentWelcomeMsg(publicIP, uid string) {
 		content = appconfig.WelcomeMessage
 	}
 	if lastLoginLog != nil {
-		ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
-		sentContent = fmt.Sprintf("%s\n%s", content, ipStr)
+		// ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
+		// sentContent = fmt.Sprintf("%s\n%s", content, ipStr)
+		sentContent = fmt.Sprintf("%s\n", content)
 	} else {
-		ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
-		sentContent = fmt.Sprintf("%s\n%s", content, ipStr)
+		// ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
+		sentContent = fmt.Sprintf("%s\n", content)
 	}
 	err = u.ctx.SendMessage(&config.MsgSendReq{
 		FromUID:     u.ctx.GetConfig().Account.SystemUID,
@@ -2588,6 +2589,7 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 			UID:     uid,
 			ToUID:   kefuUID,
 			Version: version,
+			IsAlone: 0,
 		}, tx)
 		if err != nil {
 			u.Error("注册用户和客服成为好友失败")
