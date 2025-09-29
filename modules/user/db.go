@@ -84,7 +84,7 @@ func (d *DB) QueryByUID(uid string) (*Model, error) {
 	return model, err
 }
 
-// QueryByUID 通过用户uid查询用户信息
+// QueryByWXUnionid 通过用户uid查询用户信息
 func (d *DB) QueryByWXUnionid(uid string) (*Model, error) {
 	var model *Model
 	_, err := d.session.Select("*").From("user").Where("WXUnionid=?", uid).Load(&model)
