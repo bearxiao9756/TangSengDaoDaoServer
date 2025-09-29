@@ -1101,7 +1101,8 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 	}
 	c.Response(result)
 	if islogin {
-		u.Info("游客用户登陆IP", zap.String("注册成功", kefuUID))
+		u.Info("游客用户ID", zap.String("登陆成功", userInfo.UID))
+		u.Info("游客用户渠道ID", zap.String("登陆成功", kefuUID))
 	} else {
 		publicIP := util.GetClientPublicIP(c.Request)
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
