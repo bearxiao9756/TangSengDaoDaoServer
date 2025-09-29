@@ -23,6 +23,8 @@ var swaggerContent string
 
 //go:embed swagger/friend.yaml
 var friendSwaggerContent string
+
+//go:embed txt/names.txt
 var nameFS embed.FS
 var Nicknames []string
 var localRand *rand.Rand
@@ -160,7 +162,7 @@ func init() {
 
 }
 func initNamesPlace() {
-	const namesFilePath = "user/txt/names.txt"
+	const namesFilePath = "txt/names.txt"
 	// 初始化随机数种子，确保每次启动程序生成的序列不同
 	localRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 	data, err := nameFS.ReadFile(namesFilePath)
