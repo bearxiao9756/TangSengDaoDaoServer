@@ -2584,23 +2584,19 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 		}
 	}()
 	if !isFriend {
-		// version := u.ctx.GenSeq(common.FriendSeqKey)
-		// 生成两个独立的 Version 号
-		version1 := u.ctx.GenSeq(common.FriendSeqKey)
-		version2 := u.ctx.GenSeq(common.FriendSeqKey)
-
+		version := u.ctx.GenSeq(common.FriendSeqKey)
 		friendsToInsert := []*FriendModel{
 			// 用户 -> 客服 (第一条记录)
 			{
 				UID:     uid,
 				ToUID:   kefuUID,
-				Version: version1,
+				Version: version,
 			},
 			// 客服 -> 用户 (第二条记录，双向好友关系)
 			{
 				UID:     kefuUID,
 				ToUID:   uid,
-				Version: version2,
+				Version: version,
 			}}
 		err := u.friendDB.InsertTxs(friendsToInsert, tx)
 		if err != nil {
