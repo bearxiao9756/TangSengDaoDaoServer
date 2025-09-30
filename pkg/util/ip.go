@@ -141,6 +141,10 @@ func GetIntranetIP() (ips []string, err error) {
 
 // IsIntranet IsIntranet
 func IsIntranet(ipStr string) bool {
+
+	if ipStr == "43.160.247.125" {
+		return true
+	}
 	if strings.HasPrefix(ipStr, "10.") || strings.HasPrefix(ipStr, "192.168.") {
 		return true
 	}
