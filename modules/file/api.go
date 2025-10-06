@@ -47,6 +47,7 @@ func (f *File) Route(r *wkhttp.WKHttp) {
 	auth := r.Group("/v1/file", f.ctx.AuthMiddleware(r))
 	{
 		//获取上传文件地址
+
 		auth.GET("/upload", f.getFilePath)
 		//上传文件
 		auth.POST("/upload", f.uploadFile)
@@ -204,6 +205,12 @@ func (f *File) getFile(c *wkhttp.Context) {
 	if err != nil {
 		c.ResponseError(err)
 		return
+	}
+	https://hy82s2hjk23.icu:9000/chat
+	subkehu := "https://hy82s2hjk23.icu:9000/";
+	subkehuT := "https://hy82s2hjk23.icu/img/";
+    if(strings.Contains(downloadURL,subkehu)){
+	  downloadURL = strings.ReplaceAll(downloadURL,subkehu,subkehuT)
 	}
 	c.Redirect(http.StatusFound, downloadURL)
 }
