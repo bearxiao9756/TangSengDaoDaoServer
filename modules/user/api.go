@@ -416,6 +416,16 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
+    // http://hy82s2hjk23.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
+    subkehu := "https://hy82s2hjk23.icu:9000/";
+	subkehu1 := "http://hy82s2hjk23.icu:9000/";
+	subkehuT := "https://hy82s2hjk23.icu/img/";
+    if(strings.Contains(downloadURL,subkehu)){
+	  downloadURL = strings.ReplaceAll(downloadURL,subkehu,subkehuT)
+	}
+	if(strings.Contains(downloadURL,subkehu1)){
+	  downloadURL = strings.ReplaceAll(downloadURL,subkehu1,subkehuT)
+	}
 
 	if strings.Contains(downloadUrl, "?") {
 		c.Redirect(http.StatusFound, fmt.Sprintf("%s&v=%s", downloadUrl, v))
