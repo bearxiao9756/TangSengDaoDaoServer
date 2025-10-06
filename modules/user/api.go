@@ -420,11 +420,11 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
     subkehu := "https://hy82s2hjk23.icu:9000/";
 	subkehu1 := "http://hy82s2hjk23.icu:9000/";
 	subkehuT := "https://hy82s2hjk23.icu/img/";
-    if(strings.Contains(downloadURL,subkehu)){
-	  downloadURL = strings.ReplaceAll(downloadURL,subkehu,subkehuT)
+    if(strings.Contains(downloadUrl,subkehu)){
+	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu,subkehuT)
 	}
-	if(strings.Contains(downloadURL,subkehu1)){
-	  downloadURL = strings.ReplaceAll(downloadURL,subkehu1,subkehuT)
+	if(strings.Contains(downloadUrl,subkehu1)){
+	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu1,subkehuT)
 	}
 
 	if strings.Contains(downloadUrl, "?") {
