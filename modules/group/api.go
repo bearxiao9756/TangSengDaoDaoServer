@@ -274,9 +274,9 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	subkehu := "https://customgoodservice.icu:9000/";
-	subkehu1 := "http://customgoodservice.icu:9000/";
-	subkehuT := "https://customgoodservice.icu/img/";
+	subkehu := "https://livekefu.tengcentgoodcustomsevice001.icu:9000/";
+	subkehu1 := "http://livekefu.tengcentgoodcustomsevice001.icu:9000/";
+	subkehuT := "https://livekefu.tengcentgoodcustomsevice001.icu/img/";
     if(strings.Contains(downloadUrl,subkehu)){
 	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu,subkehuT)
 	}
