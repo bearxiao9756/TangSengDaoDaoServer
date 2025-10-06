@@ -206,7 +206,6 @@ func (f *File) getFile(c *wkhttp.Context) {
 		c.ResponseError(err)
 		return
 	}
-	https://hy82s2hjk23.icu:9000/chat
 	subkehu := "https://hy82s2hjk23.icu:9000/";
 	subkehuT := "https://hy82s2hjk23.icu/img/";
     if(strings.Contains(downloadURL,subkehu)){
