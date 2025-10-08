@@ -232,17 +232,17 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 	groupNo := c.Param("group_no")
 	v := c.Query("v")
 	//是否为系统群
-	if groupNo == g.ctx.GetConfig().Account.SystemGroupID {
-		c.Header("Content-Type", "image/jpeg")
-		avatarBytes, err := ioutil.ReadFile("assets/assets/org_avatar.png")
-		if err != nil {
-			g.Error("头像读取失败！", zap.Error(err))
-			c.Writer.WriteHeader(http.StatusNotFound)
-			return
-		}
-		c.Writer.Write(avatarBytes)
-		return
-	}
+	// if groupNo == g.ctx.GetConfig().Account.SystemGroupID {
+	// 	c.Header("Content-Type", "image/jpeg")
+	// 	avatarBytes, err := ioutil.ReadFile("assets/assets/org_avatar.png")
+	// 	if err != nil {
+	// 		g.Error("头像读取失败！", zap.Error(err))
+	// 		c.Writer.WriteHeader(http.StatusNotFound)
+	// 		return
+	// 	}
+	// 	c.Writer.Write(avatarBytes)
+	// 	return
+	// }
 	// 组织群
 	if strings.HasPrefix(groupNo, "org_") {
 		c.Header("Content-Type", "image/jpeg")
