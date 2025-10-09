@@ -1296,7 +1296,7 @@ func (u *User) sentUserWelcomeMsg(publicIP, uid string, kefuUID string) {
 			// ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
 
 			u.Info("游客用户", zap.String("欢迎消息", userInfo.Name))
-			sentContent = fmt.Sprintf("%s\n%s", content, userInfo.Name)
+			sentContent = fmt.Sprintf("%s%s", content, userInfo.Name)
 		}
 		err = u.ctx.SendMessage(&config.MsgSendReq{
 			FromUID:     kefuUID,
