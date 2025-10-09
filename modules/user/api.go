@@ -2946,7 +2946,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("更新IM的token失败！", zap.Error(err))
 		return nil, err
 	}
-	go u.sentWelcomeMsg(publicIP, createUser.UID)
+	// go u.sentWelcomeMsg(publicIP, createUser.UID)
 
 	if u.ctx.GetConfig().ShortNo.NumOn {
 		err = u.commonService.SetShortnoUsed(userModel.ShortNo, "user")
