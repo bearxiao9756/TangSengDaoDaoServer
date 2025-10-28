@@ -416,10 +416,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-    // http://sdzb.livekefu.aike001.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
-    subkehu := "https://sdzb.livekefu.aike001.icu:9000/";
-	subkehu1 := "http://sdzb.livekefu.aike001.icu:9000/";
-	subkehuT := "https://sdzb.livekefu.aike001.icu/img/";
+    // http://hy82s2hjk23.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
+    subkehu := "https://hy82s2hjk23.icu:9000/";
+	subkehu1 := "http://hy82s2hjk23.icu:9000/";
+	subkehuT := "https://hy82s2hjk23.icu/img/";
     if(strings.Contains(downloadUrl,subkehu)){
 	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu,subkehuT)
 	}
