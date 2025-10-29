@@ -169,6 +169,72 @@ func (g *Group) handleRegisterUserEvent(data []byte, commit config.EventCommit) 
 	commit(nil)
 }
 
+func (g *Group) handleRegisterUserEventChali(data []byte, commit config.EventCommit) {
+	var req map[string]interface{}
+	err := util.ReadJsonByByte(data, &req)
+	if err != nil {
+		g.Error("处理用户注册加入群聊参数有误")
+		commit(err)
+		return
+	}
+	uid := req["uid"].(string)
+	gid := req["gid"].(string)
+	mid := req["mid"].(string)
+	if uid == "" {
+		g.Error("处理用户注册加入群聊UID不能为空 错误1")
+		commit(errors.New("处理用户注册加入群聊UID不能为空 错误1"))
+		return
+	}
+	if gid == "" {
+		g.Error("处理用户注册加入群聊UID不能为空 错误2")
+		commit(errors.New("处理用户注册加入群聊UID不能为空 错误2"))
+		return
+	}
+	if mid == "" {
+		g.Error("处理用户注册加入群聊UID不能为空 错误3")
+		commit(errors.New("处理用户注册加入群聊UID不能为空 错误3"))
+		return
+	}
+	//查询群聊是否存在
+	groupModel, err := g.db.QueryWithGroupNo(gid)
+	if err != nil {
+		g.Error("查询群详情失败")
+		commit(err)
+		return
+	}
+	tx, err := g.db.session.Begin()
+	if err != nil {
+		g.Error("开启事物失败")
+		commit(err)
+		return
+	}
+	defer func() {
+		if err := recover(); err != nil {
+			tx.RollbackUnlessCommitted()
+			commit(err.(error))
+			panic(err)
+		}
+	}()
+	err = tx.Commit()
+	if err != nil {
+		g.Error("事物提交失败")
+		tx.Rollback()
+		commit(err)
+		return
+	}
+
+	//将新注册的用户添加到系统群
+	realMemberUids := make([]string, 0)
+	realMemberUids = append(realMemberUids, uid)
+	err = g.addMembers(realMemberUids, gid, mid, "系统账号")
+	if err != nil {
+		g.Error("添加注册账号到系统群失败！")
+		commit(err)
+		return
+	}
+	commit(nil)
+}
+
 // 处理群成员添加事件
 func (g *Group) handleGroupMemberAddEvent(data []byte, commit config.EventCommit) {
 

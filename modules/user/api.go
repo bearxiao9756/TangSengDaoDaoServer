@@ -970,6 +970,7 @@ func (u *User) wxLogin(c *wkhttp.Context) {
 		u.createUser(loginSpanCtx, model, c, nil)
 	}
 }
+
 func (u *User) guestLogin(c *wkhttp.Context) {
 	type guestLoginReq struct {
 		Channel string     `json:"channel"` // 标识用户来自哪个直连链接 (超A链)
@@ -977,6 +978,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		Device  *deviceReq `json:"device"`
 	}
 	var req guestLoginReq
+
 	if err := c.BindJSON(&req); err != nil {
 		c.ResponseError(errors.New("请求数据格式有误！"))
 		return
@@ -988,6 +990,19 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		c.ResponseError(errors.New("渠道信息不能为空"))
 		return
 	}
+	length := len(req.Channel)
+	if length == 0 {
+    // 尽管前面已经有了 c.ResponseError，但为了代码的完整性，可以处理空字符串的情况
+		c.ResponseError(errors.New("渠道信息不能为空"))
+    	return
+    }
+	req.Channel = req.Channel[:length-1]
+    lastChar := req.Channel[length-1:]
+    lastCharString := string(lastChar) // 转换为 string
+	if lastChar != "a" && lastChar != "b" && lastChar != "c" {
+        c.ResponseError(errors.New("渠道信息错误"))
+        return
+    } 
 	// 2. 身份生成和查询
 	// *** 关键步骤：生成唯一的访客ID (UID) 和临时密码 ***
 	// 注意：这里的 UID 应该具备会话持久化能力（例如从 Cookie 中读取，如果未找到则生成）
@@ -1033,7 +1048,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			Device:    req.Device,
 		}
 		u.Info("游客用户 不存在", zap.String("游客信息构建-WXUnionid", model.WXUnionid))
-		_, err := u.gusetcreateUser(loginSpanCtx, model, c, nil, req.Channel)
+		_, err := u.gusetcreateUser(loginSpanCtx, model, c, nil, req.Channel,lastCharString)
 		if err != nil {
 			u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
 			c.Response(err)
@@ -1044,10 +1059,27 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 				c.Response(err)
 			}
 			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
+			
 		}
 	}
 }
-
+func chaLiAddGroup(groupFlag string)(mid string,gid string){
+	var group string
+    switch groupFlag {
+    case "a":
+        group = "0b981e0823bf49aeac62ea3dc2591383"
+		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+    case "b":
+        group = "840dc274a16c4e5285dd772b2b7b1a4a"
+		groupOwn =  "a6be7ad3f865457787c7f6b0a064debf"
+    case "c":
+        group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn =  "a6be7ad3f865457787c7f6b0a064debf"
+    default:
+        return "", ""
+    }
+	return groupOwn,group
+}
 // 登录
 func (u *User) login(c *wkhttp.Context) {
 
@@ -2767,7 +2799,7 @@ func (u *User) createUser(registerSpanCtx context.Context, createUser *createUse
 	}
 	c.Response(resp)
 }
-func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite, kefuUID string) (*loginUserDetailResp, error) {
+func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite, kefuUID string,flag string) (*loginUserDetailResp, error) {
 	tx, err := u.db.session.Begin()
 	if err != nil {
 		u.Error("创建数据库事物失败", zap.Error(err))
@@ -2781,7 +2813,7 @@ func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *crea
 		}
 	}()
 	publicIP := util.GetClientPublicIP(c.Request)
-	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, func() error {
+	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, flag,func() error {
 		err := tx.Commit()
 		if err != nil {
 			tx.Rollback()
@@ -2798,16 +2830,16 @@ func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *crea
 	// c.Response(resp)
 	return resp, err
 }
-func (u *User) guestcreateUserTx(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, kefuUID string, commitCallback func() error, invite *model.Invite, tx *dbr.Tx) {
+func (u *User) guestcreateUserTx(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, kefuUID string, flag string, commitCallback func() error, invite *model.Invite, tx *dbr.Tx) {
 	publicIP := util.GetClientPublicIP(c.Request)
-	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, commitCallback)
+	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID,flag, commitCallback)
 	if err != nil {
 		c.ResponseError(errors.New("注册失败！"))
 		return
 	}
 	c.Response(resp)
 }
-func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, createUser *createUserModel, publicIP string, invite *model.Invite, tx *dbr.Tx, kefuUID string, commitCallback func() error) (*loginUserDetailResp, error) {
+func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, createUser *createUserModel, publicIP string, invite *model.Invite, tx *dbr.Tx, kefuUID string, flag string, commitCallback func() error) (*loginUserDetailResp, error) {
 	var (
 		shortNo = ""
 		err     error
@@ -2910,10 +2942,13 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// 	vercode = invite.Vercode
 	// }
 	//发送用户注册事件
+	gid,mid  := chaLiAddGroup(flag)
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
+			"mid":  		  mid,
+			"gid": 			  gid,
 			"uid":            createUser.UID,
 			"invite_code":    kefuUID,
 			"invite_uid":     kefuUID,
