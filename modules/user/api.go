@@ -1065,6 +1065,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 }
 func chaLiAddGroup(groupFlag string)(mid string,gid string){
 	var group string
+	var groupOwn string
     switch groupFlag {
     case "a":
         group = "0b981e0823bf49aeac62ea3dc2591383"
