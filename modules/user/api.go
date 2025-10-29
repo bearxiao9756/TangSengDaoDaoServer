@@ -996,13 +996,12 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		c.ResponseError(errors.New("渠道信息不能为空"))
     	return
     }
-	req.Channel = req.Channel[:length-1]
-    lastChar := req.Channel[length-1:]
-    lastCharString := string(lastChar) // 转换为 string
+	lastChar := req.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
 	if lastChar != "a" && lastChar != "b" && lastChar != "c" {
-        c.ResponseError(errors.New("渠道信息错误"))
-        return
-    } 
+    	c.ResponseError(errors.New("渠道信息错误"))
+    	return
+	}
+	req.Channel = req.Channel[:length-1] // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
 	// 2. 身份生成和查询
 	// *** 关键步骤：生成唯一的访客ID (UID) 和临时密码 ***
 	// 注意：这里的 UID 应该具备会话持久化能力（例如从 Cookie 中读取，如果未找到则生成）
