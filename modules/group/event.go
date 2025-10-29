@@ -215,6 +215,11 @@ func (g *Group) handleRegisterUserEventChali(data []byte, commit config.EventCom
 			panic(err)
 		}
 	}()
+	if groupModel == nil {
+		g.Error("群组已经不存在了")
+		commit(errors.New("群组已经不存在了"))
+		return
+	}
 	err = tx.Commit()
 	if err != nil {
 		g.Error("事物提交失败")
