@@ -2945,7 +2945,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// 	vercode = invite.Vercode
 	// }
 	//发送用户注册事件
-	gid,mid  := chaLiAddGroup(flag)
+	mid,gid  := chaLiAddGroup(flag)
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
