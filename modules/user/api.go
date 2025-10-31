@@ -1185,7 +1185,7 @@ func (u *User) execLoginAndRespose(userInfo *Model, flag config.DeviceFlag, devi
 	c.Response(result)
 
 	publicIP := util.GetClientPublicIP(c.Request)
-	go u.sentWelcomeMsg(publicIP, userInfo.UID)
+	// go u.sentWelcomeMsg(publicIP, userInfo.UID)
 }
 
 func (u *User) execLogin(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context) (*loginUserDetailResp, error) {
@@ -1329,12 +1329,13 @@ func (u *User) sentUserWelcomeMsg(publicIP, uid string, kefuUID string) {
 		}
 		if lastLoginLog != nil {
 			// ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
-			sentContent = fmt.Sprintf("%s\n%s", content, userInfo.Name)
+			sentContent = fmt.Sprintf("%s\n", content)
 		} else {
 			// ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
 
 			u.Info("游客用户", zap.String("欢迎消息", userInfo.Name))
-			sentContent = fmt.Sprintf("%s%s", content, userInfo.Name)
+			// sentContent = fmt.Sprintf("%s%s", content, userInfo.Name)
+			sentContent = fmt.Sprintf("%s", content)
 		}
 		err = u.ctx.SendMessage(&config.MsgSendReq{
 			FromUID:     kefuUID,
@@ -3143,7 +3144,7 @@ func (u *User) createUserWithRespAndTx(registerSpanCtx context.Context, createUs
 		u.Error("更新IM的token失败！", zap.Error(err))
 		return nil, err
 	}
-	go u.sentWelcomeMsg(publicIP, createUser.UID)
+	// go u.sentWelcomeMsg(publicIP, createUser.UID)
 
 	if u.ctx.GetConfig().ShortNo.NumOn {
 		err = u.commonService.SetShortnoUsed(userModel.ShortNo, "user")

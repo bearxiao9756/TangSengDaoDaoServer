@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  description: "辰韬咨询 API"
+  description: "坤元服务 API"
   version: "1.0.0"
-  title: "辰韬咨询 API"
+  title: "坤元服务 API"
 host: "api.botgate.cn"
 tags:
   - name: "file"

@@ -1,4 +1,4 @@
-## 辰韬咨询
+## 坤元服务
 
 <p align="center">
 <img align="center" width="150px" src="./docs/logo.svg">
@@ -52,7 +52,7 @@
 演示地址
 ------------
 
-| Android扫描体验 | iOS扫描体验(商店版本 apple store 搜“辰韬咨询”) |
+| Android扫描体验 | iOS扫描体验(商店版本 apple store 搜“坤元服务”) |
 |:---:|:---:|
 |![](docs/download/android.png)|![](docs/download/iOS.png)|
 
@@ -100,15 +100,15 @@
 ------------
 
 
-### 辰韬咨询（负责业务）
+### 坤元服务（负责业务）
 
 | 项目名 | Github地址 | Gitee地址 | 文档 | 说明 |
 | ---- | ---------- | --------- | ---- | ---- |
-|   TangSengDaoDaoServer   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoServer)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoServer)  |  [文档](https://tsdaodao.com/dev/backend/deploy-compose.html)|    辰韬咨询的业务端，负责一些业务逻辑，比如：好友关系，群组，朋友圈等 （通讯端使用的是 WuKongIM）  |
-|   TangSengDaoDaoAndroid   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoAndroid)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoAndroid) | [文档](https://tsdaodao.com/dev/android/intro.html)    |    辰韬咨询的Android端   |
-|   TangSengDaoDaoiOS   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoiOS)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoiOS) | [文档](https://tsdaodao.com/dev/ios/intro.html)       |    辰韬咨询的iOS端   |
-|   TangSengDaoDaoWeb   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoWeb)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoWeb) | [文档](https://tsdaodao.com/dev/web/intro.html)       |    辰韬咨询的Web/PC端   |
-|   TangSengDaoDaoManager   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoManager)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoManager) | 无      |    辰韬咨询的后台管理系统  |
+|   TangSengDaoDaoServer   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoServer)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoServer)  |  [文档](https://tsdaodao.com/dev/backend/deploy-compose.html)|    坤元服务的业务端，负责一些业务逻辑，比如：好友关系，群组，朋友圈等 （通讯端使用的是 WuKongIM）  |
+|   TangSengDaoDaoAndroid   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoAndroid)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoAndroid) | [文档](https://tsdaodao.com/dev/android/intro.html)    |    坤元服务的Android端   |
+|   TangSengDaoDaoiOS   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoiOS)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoiOS) | [文档](https://tsdaodao.com/dev/ios/intro.html)       |    坤元服务的iOS端   |
+|   TangSengDaoDaoWeb   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoWeb)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoWeb) | [文档](https://tsdaodao.com/dev/web/intro.html)       |    坤元服务的Web/PC端   |
+|   TangSengDaoDaoManager   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoManager)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoManager) | 无      |    坤元服务的后台管理系统  |
 
 
 ### 悟空IM（负责通讯）
@@ -127,7 +127,7 @@
 技术文档
 ------------
 
-辰韬咨询：
+坤元服务：
 
 https://tsdaodao.com
 
@@ -214,12 +214,12 @@ Star
 加入群聊
 ------------
 
-微信：加群请备注“辰韬咨询”
+微信：加群请备注“坤元服务”
 
 <img src="docs/tsddwx.png" width="200px" height="200px">
 
 许可证
 ------------
 
-辰韬咨询 使用 Apache 2.0 许可证。有关详情，请参阅 LICENSE 文件。
+坤元服务 使用 Apache 2.0 许可证。有关详情，请参阅 LICENSE 文件。
 
