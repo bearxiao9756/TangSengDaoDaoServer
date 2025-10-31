@@ -1004,6 +1004,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
     	c.ResponseError(errors.New("渠道信息错误"))
     	return
 	}
+	req.Device.DeviceID = req.Device.DeviceID.strings.ReplaceAll(input, "-", "")
 	req.Channel = req.Channel[:length-1] // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
 	lastCharString := string(lastChar) // 转换为 string
 
@@ -1016,7 +1017,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	// 简化处理：如果没有持久化 ID，则直接生成一个新的 UID
 	// 在实际生产环境中，这需要结合前端Cookie/Session来做持久化判断。
 	// tempUID := util.GenerUUID() // <--- 【重点】实现这个方法来生成或获取访客 UID
-	tempUID := req.Device.DeviceID
+	tempUID :=  req.Device.DeviceID
 	u.Info("游客用户ID生成-tempID", zap.String("用户ID", tempUID))
 	// 3. 检查用户是否存在（使用访客ID作为唯一标识）
 	loginSpan := u.ctx.Tracer().StartSpan("guest_login", opentracing.ChildOf(c.GetSpanContext()))
@@ -1075,8 +1076,7 @@ func chaLiAddGroup(groupFlag string)(mid string,gid string){
     case "a":
         // group = "0b981e0823bf49aeac62ea3dc2591383"
 		group = "42ea22cd5b09446d8f721a3e5b3d70ed"
-		18833330003
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn = "5d9a175f70fe42c6906884b1a8421f3f"
     case "b":
         group = "840dc274a16c4e5285dd772b2b7b1a4a"
 		groupOwn =  "a6be7ad3f865457787c7f6b0a064debf"
