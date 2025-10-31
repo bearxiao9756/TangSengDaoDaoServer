@@ -1004,7 +1004,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
     	c.ResponseError(errors.New("渠道信息错误"))
     	return
 	}
-	req.Device.DeviceID = strings.ReplaceAll(input, "-", "")
+	req.Device.DeviceID = strings.ReplaceAll(req.Device.DeviceID, "-", "")
 	req.Channel = req.Channel[:length-1] // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
 	lastCharString := string(lastChar) // 转换为 string
 
