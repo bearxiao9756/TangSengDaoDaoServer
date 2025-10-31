@@ -1007,16 +1007,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	req.Device.DeviceID = strings.ReplaceAll(req.Device.DeviceID, "-", "")
 	req.Channel = req.Channel[:length-1] // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
 	lastCharString := string(lastChar) // 转换为 string
-
-
-	// 2. 身份生成和查询
-	// *** 关键步骤：生成唯一的访客ID (UID) 和临时密码 ***
-	// 注意：这里的 UID 应该具备会话持久化能力（例如从 Cookie 中读取，如果未找到则生成）
-
-	// 假设您在请求上下文或通过其他方法获取/生成了访客的唯一ID
-	// 简化处理：如果没有持久化 ID，则直接生成一个新的 UID
-	// 在实际生产环境中，这需要结合前端Cookie/Session来做持久化判断。
-	// tempUID := util.GenerUUID() // <--- 【重点】实现这个方法来生成或获取访客 UID
+	
 	tempUID :=  req.Device.DeviceID
 	u.Info("游客用户ID生成-tempID", zap.String("用户ID", tempUID))
 	// 3. 检查用户是否存在（使用访客ID作为唯一标识）
@@ -2644,12 +2635,14 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 				UID:     uid,
 				ToUID:   kefuUID,
 				Version: version,
+				Name: ""
 			},
 			// 客服 -> 用户 (第二条记录，双向好友关系)
 			{
 				UID:     kefuUID,
 				ToUID:   uid,
 				Version: version,
+				Name: ""
 			}}
 		err := u.friendDB.InsertTxs(friendsToInsert, tx)
 		if err != nil {
@@ -2808,6 +2801,7 @@ func (u *User) createUser(registerSpanCtx context.Context, createUser *createUse
 	}
 	c.Response(resp)
 }
+// OK
 func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite, kefuUID string,flag string) (*loginUserDetailResp, error) {
 	tx, err := u.db.session.Begin()
 	if err != nil {
@@ -2827,7 +2821,6 @@ func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *crea
 		if err != nil {
 			tx.Rollback()
 			u.Error("数据库事物提交失败", zap.Error(err))
-			// c.ResponseError(errors.New("数据库事物提交失败"))
 			return errors.New("数据库事物提交失败")
 		}
 		return nil
