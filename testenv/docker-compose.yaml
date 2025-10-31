@@ -39,3 +39,11 @@ services:
       - MINIO_ROOT_PASSWORD=12345678
     volumes:
       - ./miniodata:/data
+  tangsengdaodaomanager:  # 唐僧叨叨的后台管理系统
+    image: tsddmanager:latest
+    restart: always
+    environment:
+      - API_URL=http://43.134.241.145:8090/
+    ports:
+      - "83:80"
+    # 修正：移除 condition: service_healthy
