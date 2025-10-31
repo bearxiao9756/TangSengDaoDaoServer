@@ -2635,14 +2635,14 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 				UID:     uid,
 				ToUID:   kefuUID,
 				Version: version,
-				Name: ""
+				Name: "",
 			},
 			// 客服 -> 用户 (第二条记录，双向好友关系)
 			{
 				UID:     kefuUID,
 				ToUID:   uid,
 				Version: version,
-				Name: ""
+				Name: "",
 			}}
 		err := u.friendDB.InsertTxs(friendsToInsert, tx)
 		if err != nil {
