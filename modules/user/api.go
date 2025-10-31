@@ -1184,7 +1184,7 @@ func (u *User) execLoginAndRespose(userInfo *Model, flag config.DeviceFlag, devi
 
 	c.Response(result)
 
-	publicIP := util.GetClientPublicIP(c.Request)
+	// publicIP := util.GetClientPublicIP(c.Request)
 	// go u.sentWelcomeMsg(publicIP, userInfo.UID)
 }
 
