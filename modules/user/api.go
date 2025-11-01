@@ -416,11 +416,11 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-    // http://123gov.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
-    subkehu := "https://123gov.icu:9000/";
-	subkehu1 := "http://123gov.icu:9000/";
-	subkehu2 := "http://123gov.icu:8090/";
-	subkehuT := "https://123gov.icu/img/";
+    // http://hy82s2hjk23.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
+    subkehu := "https://hy82s2hjk23.icu:9000/";
+	subkehu1 := "http://hy82s2hjk23.icu:9000/";
+	subkehu2 := "http://hy82s2hjk23.icu:8090/";
+	subkehuT := "https://hy82s2hjk23.icu/img/";
     if(strings.Contains(downloadUrl,subkehu)){
 	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu,subkehuT)
 	}
@@ -2943,12 +2943,12 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// 	vercode = invite.Vercode
 	// }
 	//发送用户注册事件
-	mid,gid  := chaLiAddGroup(flag)
+	_,gid  := chaLiAddGroup(flag)
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
-			"mid":  		  mid,
+			"mid":  		  kefuUID,
 			"gid": 			  gid,
 			"uid":            createUser.UID,
 			"invite_code":    kefuUID,
