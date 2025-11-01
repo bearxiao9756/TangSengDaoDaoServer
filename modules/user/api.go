@@ -1068,19 +1068,19 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		}
 	}
 }
-func chaLiAddGroup(groupFlag string)(mid string,gid string){
+func chaLiAddGroup(groupFlag string,kefuUID string)(mid string,gid string){
 	var group string
 	var groupOwn string
     switch groupFlag {
     case "a":
         group = "0b981e0823bf49aeac62ea3dc2591383"
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn = kefuUID
     case "b":
         group = "840dc274a16c4e5285dd772b2b7b1a4a"
-		groupOwn =  "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn =  kefuUID
     case "c":
         group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		groupOwn =  "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn =  kefuUID
     default:
         return "", ""
     }
@@ -2949,7 +2949,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// 	vercode = invite.Vercode
 	// }
 	//发送用户注册事件
-	mid,gid  := chaLiAddGroup(flag)
+	mid,gid  := chaLiAddGroup(flag,kefuUID)
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
