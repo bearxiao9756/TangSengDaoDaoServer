@@ -305,7 +305,7 @@ func (u *User) updateSystemUserToken() {
 		Token:       util.GenerUUID(),
 	})
 	if err != nil {
-		u.Error("更新IM的token失败！", zap.Error(err))
+		u.Error("更新IM的token失败！ A", zap.Error(err))
 	}
 
 	_, err = u.ctx.UpdateIMToken(config.UpdateIMTokenReq{
@@ -315,7 +315,7 @@ func (u *User) updateSystemUserToken() {
 		Token:       util.GenerUUID(),
 	})
 	if err != nil {
-		u.Error("更新IM的token失败！", zap.Error(err))
+		u.Error("更新IM的token失败！ B", zap.Error(err))
 	}
 
 	// 系统管理员
@@ -326,7 +326,7 @@ func (u *User) updateSystemUserToken() {
 		Token:       util.GenerUUID(),
 	})
 	if err != nil {
-		u.Error("更新IM的token失败！", zap.Error(err))
+		u.Error("更新IM的token失败！C", zap.Error(err))
 	}
 
 }
@@ -1237,7 +1237,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		DeviceLevel: config.DeviceLevelSlave,
 	})
 	if err != nil {
-		u.Error("更新IM的token失败！", zap.Error(err))
+		u.Error("更新IM的token失败！D", zap.Error(err))
 		return nil, err
 	}
 	// go u.sentWelcomeMsg(publicIP, createUser.UID)
@@ -1473,10 +1473,10 @@ func (u *User) execLogin(userInfo *Model, flag config.DeviceFlag, device *device
 	}
 	imResp, err := u.ctx.UpdateIMToken(imTokenReq)
 	if err != nil {
-		u.Error("更新IM的token失败！", zap.Error(err))
+		u.Error("更新IM的token失败！E", zap.Error(err))
 		updateTokenSpan.SetTag("err", err)
 		updateTokenSpan.Finish()
-		return nil, errors.New("更新IM的token失败！")
+		return nil, errors.New("更新IM的token失败！F")
 	}
 	updateTokenSpan.Finish()
 
@@ -1976,8 +1976,8 @@ func (u *User) loginWithAuthCode(c *wkhttp.Context) {
 		DeviceLevel: config.DeviceLevelSlave,
 	})
 	if err != nil {
-		u.Error("更新IM的token失败！", zap.Error(err))
-		c.ResponseError(errors.New("更新IM的token失败！"))
+		u.Error("更新IM的token失败！G", zap.Error(err))
+		c.ResponseError(errors.New("更新IM的token失败！H"))
 		return
 	}
 	if imResp.Status == config.UpdateTokenStatusBan {
@@ -2597,8 +2597,8 @@ func (u *User) loginCheckPhone(c *wkhttp.Context) {
 		DeviceLevel: config.DeviceLevelMaster,
 	})
 	if err != nil {
-		u.Error("更新IM的token失败！", zap.Error(err))
-		c.ResponseError(errors.New("更新IM的token失败！"))
+		u.Error("更新IM的token失败！I", zap.Error(err))
+		c.ResponseError(errors.New("更新IM的token失败！G"))
 		return
 	}
 	if imResp.Status == config.UpdateTokenStatusBan {
@@ -3153,7 +3153,7 @@ func (u *User) createUserWithRespAndTx(registerSpanCtx context.Context, createUs
 		DeviceLevel: config.DeviceLevelSlave,
 	})
 	if err != nil {
-		u.Error("更新IM的token失败！", zap.Error(err))
+		u.Error("更新IM的token失败！K", zap.Error(err))
 		return nil, err
 	}
 	// go u.sentWelcomeMsg(publicIP, createUser.UID)
