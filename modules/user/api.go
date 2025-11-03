@@ -833,19 +833,25 @@ func (u *User) userUpdateSetting(c *wkhttp.Context) {
 	func (u *User) userConversationInfoGet(c *wkhttp.Context) {
 		uid := c.Param("uid")
 		loginUID := c.MustGet("uid").(string)
-		model, err := u.db.QueryDetailByUID(uid, loginUID)
+		// model, err := u.db.QueryDetailByUID(uid, loginUID)
+		// if err != nil {
+		// 	u.Error("查询用户信息失败！", zap.Error(err), zap.String("uid", uid))
+		// 	c.ResponseError(errors.New("查询用户信息失败！"))
+		// 	return
+		// }
+		// if model == nil {
+		// 	c.ResponseError(errors.New("用户信息不存在！"))
+		// 	return
+		// }
+		userDetailResp, err := u.userService.GetUserDetail(uid, loginUID)
 		if err != nil {
 			u.Error("查询用户信息失败！", zap.Error(err), zap.String("uid", uid))
 			c.ResponseError(errors.New("查询用户信息失败！"))
 			return
 		}
-		if model == nil {
+		if userDetailResp == nil {
 			c.ResponseError(errors.New("用户信息不存在！"))
 			return
-		}
-		userDetailResp := 
-		if uid == loginUID {
-			userDetailResp.Name = u.ctx.GetConfig().FileHelperName
 		}
 		c.Response(userDetailResp)
 	}
