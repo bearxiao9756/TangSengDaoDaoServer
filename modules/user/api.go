@@ -745,110 +745,110 @@ func (u *User) userUpdateSetting(c *wkhttp.Context) {
 	c.ResponseOK()
 }
 
-// 获取用户详情
-func (u *User) get(c *wkhttp.Context) {
-	uid := c.Param("uid")
-	groupNo := c.Query("group_no")
-	loginUID := c.MustGet("uid").(string)
+// // 获取用户详情
+// func (u *User) get(c *wkhttp.Context) {
+// 	uid := c.Param("uid")
+// 	groupNo := c.Query("group_no")
+// 	loginUID := c.MustGet("uid").(string)
 
-	if u.ctx.GetConfig().IsVisitor(uid) { // 访客频道
-		c.Request.URL.Path = fmt.Sprintf("/v1/hotline/visitors/%s/im", uid)
-		u.ctx.GetHttpRoute().HandleContext(c)
-		return
-	}
+// 	if u.ctx.GetConfig().IsVisitor(uid) { // 访客频道
+// 		c.Request.URL.Path = fmt.Sprintf("/v1/hotline/visitors/%s/im", uid)
+// 		u.ctx.GetHttpRoute().HandleContext(c)
+// 		return
+// 	}
 
-	userDetailResp, err := u.userService.GetUserDetail(uid, loginUID)
-	if err != nil {
-		u.Error("获取用户详情失败！", zap.Error(err))
-		c.ResponseError(errors.New("获取用户详情失败！"))
-		return
-	}
-	if userDetailResp == nil {
-		c.ResponseError(errors.New("用户不存在！"))
-		return
-	}
-	isShowShortNo := false
-	vercode := ""
-	var groupMember *model.GroupMemberResp
-	if groupNo != "" {
-		modules := register.GetModules(u.ctx)
-		for _, m := range modules {
-			if m.BussDataSource.IsShowShortNo != nil && vercode == "" {
-				tempShowShortNo, tempVercode, _ := m.BussDataSource.IsShowShortNo(groupNo, uid, loginUID)
-				if tempShowShortNo {
-					isShowShortNo = tempShowShortNo
-					vercode = tempVercode
-				}
-			}
-			if m.BussDataSource.GetGroupMember != nil && groupMember == nil {
-				groupMember, _ = m.BussDataSource.GetGroupMember(groupNo, uid)
-			}
-		}
-	}
+// 	userDetailResp, err := u.userService.GetUserDetail(uid, loginUID)
+// 	if err != nil {
+// 		u.Error("获取用户详情失败！", zap.Error(err))
+// 		c.ResponseError(errors.New("获取用户详情失败！"))
+// 		return
+// 	}
+// 	if userDetailResp == nil {
+// 		c.ResponseError(errors.New("用户不存在！"))
+// 		return
+// 	}
+// 	isShowShortNo := false
+// 	vercode := ""
+// 	var groupMember *model.GroupMemberResp
+// 	if groupNo != "" {
+// 		modules := register.GetModules(u.ctx)
+// 		for _, m := range modules {
+// 			if m.BussDataSource.IsShowShortNo != nil && vercode == "" {
+// 				tempShowShortNo, tempVercode, _ := m.BussDataSource.IsShowShortNo(groupNo, uid, loginUID)
+// 				if tempShowShortNo {
+// 					isShowShortNo = tempShowShortNo
+// 					vercode = tempVercode
+// 				}
+// 			}
+// 			if m.BussDataSource.GetGroupMember != nil && groupMember == nil {
+// 				groupMember, _ = m.BussDataSource.GetGroupMember(groupNo, uid)
+// 			}
+// 		}
+// 	}
 
-	if groupMember != nil && groupMember.InviteUID != "" && groupMember.IsDeleted == 0 {
-		inviteJoinGroupUserInfo, err := u.userService.GetUserDetail(groupMember.InviteUID, uid)
-		if err != nil {
-			u.Error("获取加入群聊邀请用户详情失败！", zap.Error(err))
-		}
-		if inviteJoinGroupUserInfo != nil {
-			var name = inviteJoinGroupUserInfo.Name
-			if inviteJoinGroupUserInfo.Remark != "" {
-				name = inviteJoinGroupUserInfo.Remark
-			}
-			userDetailResp.JoinGroupInviteUID = groupMember.InviteUID
-			userDetailResp.JoinGroupTime = groupMember.CreatedAt
-			userDetailResp.JoinGroupInviteName = name
-		}
-		userDetailResp.GroupMember = &GroupMemberResp{
-			UID:                groupMember.UID,
-			Name:               groupMember.Name,
-			GroupNo:            groupMember.GroupNo,
-			Remark:             groupMember.Remark,
-			Role:               groupMember.Role,
-			Status:             groupMember.Status,
-			InviteUID:          groupMember.InviteUID,
-			Robot:              groupMember.Role,
-			ForbiddenExpirTime: groupMember.ForbiddenExpirTime,
-			CreatedAt:          groupMember.CreatedAt,
-		}
-	}
+// 	if groupMember != nil && groupMember.InviteUID != "" && groupMember.IsDeleted == 0 {
+// 		inviteJoinGroupUserInfo, err := u.userService.GetUserDetail(groupMember.InviteUID, uid)
+// 		if err != nil {
+// 			u.Error("获取加入群聊邀请用户详情失败！", zap.Error(err))
+// 		}
+// 		if inviteJoinGroupUserInfo != nil {
+// 			var name = inviteJoinGroupUserInfo.Name
+// 			if inviteJoinGroupUserInfo.Remark != "" {
+// 				name = inviteJoinGroupUserInfo.Remark
+// 			}
+// 			userDetailResp.JoinGroupInviteUID = groupMember.InviteUID
+// 			userDetailResp.JoinGroupTime = groupMember.CreatedAt
+// 			userDetailResp.JoinGroupInviteName = name
+// 		}
+// 		userDetailResp.GroupMember = &GroupMemberResp{
+// 			UID:                groupMember.UID,
+// 			Name:               groupMember.Name,
+// 			GroupNo:            groupMember.GroupNo,
+// 			Remark:             groupMember.Remark,
+// 			Role:               groupMember.Role,
+// 			Status:             groupMember.Status,
+// 			InviteUID:          groupMember.InviteUID,
+// 			Robot:              groupMember.Role,
+// 			ForbiddenExpirTime: groupMember.ForbiddenExpirTime,
+// 			CreatedAt:          groupMember.CreatedAt,
+// 		}
+// 	}
 
-	if userDetailResp.Follow == 1 || uid == loginUID {
-		isShowShortNo = true
-	}
-	if !isShowShortNo {
-		userDetailResp.ShortNo = ""
-		userDetailResp.Vercode = ""
-	} else {
-		if groupNo != "" {
-			userDetailResp.Vercode = vercode
-		}
-	}
-	c.Response(userDetailResp)
-}
+// 	if userDetailResp.Follow == 1 || uid == loginUID {
+// 		isShowShortNo = true
+// 	}
+// 	if !isShowShortNo {
+// 		userDetailResp.ShortNo = ""
+// 		userDetailResp.Vercode = ""
+// 	} else {
+// 		if groupNo != "" {
+// 			userDetailResp.Vercode = vercode
+// 		}
+// 	}
+// 	c.Response(userDetailResp)
+// }
 
 //	获取用户详情
 //
-//	func (u *User) userConversationInfoGet(c *wkhttp.Context) {
-//		uid := c.Param("uid")
-//		loginUID := c.MustGet("uid").(string)
-//		model, err := u.db.QueryDetailByUID(uid, loginUID)
-//		if err != nil {
-//			u.Error("查询用户信息失败！", zap.Error(err), zap.String("uid", uid))
-//			c.ResponseError(errors.New("查询用户信息失败！"))
-//			return
-//		}
-//		if model == nil {
-//			c.ResponseError(errors.New("用户信息不存在！"))
-//			return
-//		}
-//		userDetailResp := newUserDetailResp(model)
-//		if uid == loginUID {
-//			userDetailResp.Name = u.ctx.GetConfig().FileHelperName
-//		}
-//		c.Response(userDetailResp)
-//	}
+	func (u *User) userConversationInfoGet(c *wkhttp.Context) {
+		uid := c.Param("uid")
+		loginUID := c.MustGet("uid").(string)
+		model, err := u.db.QueryDetailByUID(uid, loginUID)
+		if err != nil {
+			u.Error("查询用户信息失败！", zap.Error(err), zap.String("uid", uid))
+			c.ResponseError(errors.New("查询用户信息失败！"))
+			return
+		}
+		if model == nil {
+			c.ResponseError(errors.New("用户信息不存在！"))
+			return
+		}
+		userDetailResp := newUserDetailResp(model)
+		if uid == loginUID {
+			userDetailResp.Name = u.ctx.GetConfig().FileHelperName
+		}
+		c.Response(userDetailResp)
+	}
 //
 // 微信登录
 
