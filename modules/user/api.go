@@ -1187,7 +1187,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-	// err = u.addKefuFriend(createUser.UID, kefuUID)
+	err = u.addKefuFriend(createUser.UID, kefuUID)
 	// if err != nil {
 	// 	u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
 	// 	return nil, err
@@ -1256,7 +1256,7 @@ func chaLiAddGroup(groupFlag string,kefuUID string)(mid string,gid string){
 	var groupOwn string
     switch groupFlag {
     case "a":
-        group = "0b981e0823bf49aeac62ea3dc2591383"
+        group = "0bc6866b61cf434b8380ebd5f78a16da"
 		groupOwn = kefuUID
     case "b":
         group = "840dc274a16c4e5285dd772b2b7b1a4a"
