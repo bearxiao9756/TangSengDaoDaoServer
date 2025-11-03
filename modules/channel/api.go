@@ -35,8 +35,6 @@ func New(ctx *config.Context) *Channel {
 		groupService:     group.NewService(ctx),
 		channelSettingDB: newChannelSettingDB(ctx),
 	}
-
-  	// c.ctx.AddEventListener(event.EventUserRegister, g.handleRegisterUserEvent)
 	return c
 }
 

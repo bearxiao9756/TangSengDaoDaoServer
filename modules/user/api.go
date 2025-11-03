@@ -2853,12 +2853,16 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 			panic(err)
 		}
 	}()
+		// 	Vercode:       "10000@4",
+		// SourceVercode: "111@2",
 	if !isFriend {
 		version := u.ctx.GenSeq(common.FriendSeqKey)
 		err := u.friendDB.InsertTx(&FriendModel{
 			UID:     uid,
 			ToUID:   kefuUID,
 			Version: version,
+			SourceVercode:  fmt.Sprintf("%s@%d",kefuUID, common.User),
+			Vercode:fmt.Sprintf("%s@%d",uid, common.User) ,
 		}, tx)
 		if err != nil {
 			u.Error("注册用户和系统账号成为好友失败")
