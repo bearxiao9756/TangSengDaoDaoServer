@@ -999,6 +999,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		c.ResponseError(errors.New("渠道信息不能为空"))
     	return
     }
+	req.Device.DeviceID = strings.ReplaceAll(req.Device.DeviceID,"-","")
 	lastChar := req.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
 	if lastChar != "a" && lastChar != "b" && lastChar != "c" {
     	c.ResponseError(errors.New("渠道信息错误"))
