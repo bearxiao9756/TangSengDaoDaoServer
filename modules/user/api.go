@@ -2822,17 +2822,17 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 		version := u.ctx.GenSeq(common.FriendSeqKey)
 		friendsToInsert := []*FriendModel{
 			// 用户 -> 客服 (第一条记录)
-			// {
-			// 	UID:     uid,
-			// 	ToUID:   kefuUID,
-			// 	Version: version,
-			// },
+			{
+				UID:     uid,
+				ToUID:   kefuUID,
+				Version: version,
+			},
 			// 客服 -> 用户 (第二条记录，双向好友关系)
 			{
 				UID:     kefuUID,
 				ToUID:   uid,
 				Version: version,
-			},
+			}
 		}
 		err := u.friendDB.InsertTxs(friendsToInsert, tx)
 		if err != nil {
