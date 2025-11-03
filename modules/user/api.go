@@ -2832,7 +2832,7 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 				UID:     kefuUID,
 				ToUID:   uid,
 				Version: version,
-			}
+			},
 		}
 		err := u.friendDB.InsertTxs(friendsToInsert, tx)
 		if err != nil {
