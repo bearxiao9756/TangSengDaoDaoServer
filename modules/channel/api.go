@@ -27,13 +27,17 @@ type Channel struct {
 }
 
 func New(ctx *config.Context) *Channel {
-	return &Channel{
+
+    c :=  &Channel{
 		ctx:              ctx,
 		Log:              log.NewTLog("Channel"),
 		userService:      user.NewService(ctx),
 		groupService:     group.NewService(ctx),
 		channelSettingDB: newChannelSettingDB(ctx),
 	}
+
+  	// c.ctx.AddEventListener(event.EventUserRegister, g.handleRegisterUserEvent)
+	return c
 }
 
 // Route 路由配置

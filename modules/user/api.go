@@ -1010,13 +1010,6 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 
 
 	// 2. 身份生成和查询
-	// *** 关键步骤：生成唯一的访客ID (UID) 和临时密码 ***
-	// 注意：这里的 UID 应该具备会话持久化能力（例如从 Cookie 中读取，如果未找到则生成）
-
-	// 假设您在请求上下文或通过其他方法获取/生成了访客的唯一ID
-	// 简化处理：如果没有持久化 ID，则直接生成一个新的 UID
-	// 在实际生产环境中，这需要结合前端Cookie/Session来做持久化判断。
-	// tempUID := util.GenerUUID() // <--- 【重点】实现这个方法来生成或获取访客 UID
 	tempUID := req.Device.DeviceID
 	u.Info("游客用户ID生成-tempID", zap.String("用户ID", tempUID))
 	// 3. 检查用户是否存在（使用访客ID作为唯一标识）
@@ -1033,7 +1026,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	}
 	if userInfo != nil {
 		if userInfo.IsDestroy == 1 {
-			c.ResponseError(errors.New("清除浏览器缓存,重新打开"))
+			c.ResponseError(errors.New("哦吼，请稍候再试"))
 		} else {
 			u.Info("游客用户信息", zap.String("用户Username", userInfo.Username))
 			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, true)
@@ -1046,7 +1039,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			UID:       tempUID,
 			Zone:      "",
 			Phone:     "",
-			Password:  "", // 无需密码
+			Password:  "", 
 			Name:      guestNickname,
 			WXOpenid:  req.Channel,
 			WXUnionid: req.Device.DeviceID,
@@ -1068,6 +1061,199 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			
 		}
 	}
+}
+func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite, kefuUID string,flag string) (*loginUserDetailResp, error) {
+	tx, err := u.db.session.Begin()
+	if err != nil {
+		u.Error("创建数据库事物失败", zap.Error(err))
+		c.ResponseError(errors.New("创建数据库事物失败"))
+		return nil, errors.New("创建数据库事物失败")
+	}
+	defer func() {
+		if err := recover(); err != nil {
+			tx.Rollback()
+			panic(err)
+		}
+	}()
+	publicIP := util.GetClientPublicIP(c.Request)
+	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, flag,func() error {
+		err := tx.Commit()
+		if err != nil {
+			tx.Rollback()
+			u.Error("数据库事物提交失败", zap.Error(err))
+			// c.ResponseError(errors.New("数据库事物提交失败"))
+			return errors.New("数据库事物提交失败")
+		}
+		return nil
+	})
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	// c.Response(resp)
+	return resp, err
+}
+func (u *User) guestcreateUserTx(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, kefuUID string, flag string, commitCallback func() error, invite *model.Invite, tx *dbr.Tx) {
+	publicIP := util.GetClientPublicIP(c.Request)
+	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID,flag, commitCallback)
+	if err != nil {
+		c.ResponseError(errors.New("注册失败！"))
+		return
+	}
+	c.Response(resp)
+}
+func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, createUser *createUserModel, publicIP string, invite *model.Invite, tx *dbr.Tx, kefuUID string, flag string, commitCallback func() error) (*loginUserDetailResp, error) {
+	var (
+		shortNo = ""
+		err     error
+	)
+	if u.ctx.GetConfig().ShortNo.NumOn {
+		shortNo, err = u.commonService.GetShortno()
+		if err != nil {
+			u.Error("获取短编号失败！", zap.Error(err))
+			return nil, err
+		}
+	} else {
+		shortNo = util.Ten2Hex(time.Now().UnixNano())
+	}
+
+	userModel := &Model{}
+	userModel.UID = createUser.UID
+	rand.Seed(time.Now().Unix())
+	if createUser.Name != "" {
+		userModel.Name = createUser.Name
+	} else {
+		appconfig, err := u.commonService.GetAppConfig()
+		if err != nil {
+			u.Error("获取应用配置失败！", zap.Error(err))
+			return nil, err
+		}
+		if appconfig != nil && appconfig.RegisterUserMustCompleteInfoOn == 1 {
+			userModel.Name = ""
+		} else {
+			userModel.Name = Names[rand.Intn(len(Names)-1)]
+		}
+	}
+	userModel.Sex = createUser.Sex
+	userModel.Vercode = fmt.Sprintf("%s@%d", util.GenerUUID(), common.User)
+	userModel.QRVercode = fmt.Sprintf("%s@%d", util.GenerUUID(), common.QRCode)
+	userModel.Phone = createUser.Phone
+	userModel.Zone = createUser.Zone
+	if createUser.Phone != "" {
+		userModel.Username = fmt.Sprintf("%s%s", createUser.Zone, createUser.Phone)
+	}
+	if createUser.Password != "" {
+		userModel.Password = util.MD5(util.MD5(createUser.Password))
+	}
+	if createUser.Username != "" {
+		userModel.Username = createUser.Username
+	}
+
+	userModel.ShortNo = shortNo
+	userModel.OfflineProtection = 0
+	userModel.NewMsgNotice = 1
+	userModel.MsgShowDetail = 1
+	userModel.SearchByPhone = 1
+	userModel.SearchByShort = 1
+	userModel.VoiceOn = 1
+	userModel.ShockOn = 1
+	userModel.IsUploadAvatar = createUser.IsUploadAvatar
+	userModel.WXOpenid = createUser.WXOpenid
+	userModel.WXUnionid = createUser.WXUnionid
+	userModel.GiteeUID = createUser.GiteeUID
+	userModel.GithubUID = createUser.GithubUID
+	userModel.Status = int(common.UserAvailable)
+	err = u.db.insertTx(userModel, tx)
+	if err != nil {
+		u.Error("注册用户失败", zap.Error(err))
+		return nil, err
+	}
+	if createUser.Device != nil {
+		err = u.deviceDB.insertOrUpdateDeviceTx(&deviceModel{
+			UID:         createUser.UID,
+			DeviceID:    createUser.Device.DeviceID,
+			DeviceName:  createUser.Device.DeviceName,
+			DeviceModel: createUser.Device.DeviceModel,
+			LastLogin:   time.Now().Unix(),
+		}, tx)
+		if err != nil {
+			u.Error("添加用户设备信息失败", zap.Error(err))
+			return nil, err
+		}
+	}
+	err = u.addSystemFriend(createUser.UID)
+	if err != nil {
+		u.Error("添加注册用户和系统账号为好友关系失败", zap.Error(err))
+		return nil, err
+	}
+	err = u.addFileHelperFriend(createUser.UID)
+	if err != nil {
+		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
+		return nil, err
+	}
+	err = u.addKefuFriend(createUser.UID, kefuUID)
+	if err != nil {
+		u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
+		return nil, err
+	}
+	// inviteCode := kefuUID
+	// inviteUID := kefuUID
+	// vercode := kefuUID
+	// if invite != nil {
+	// 	inviteCode = invite.InviteCode
+	// 	inviteUID = invite.Uid
+	// 	vercode = invite.Vercode
+	// }
+	//发送用户注册事件
+	mid,gid  := chaLiAddGroup(flag,kefuUID)
+	eventID, err := u.ctx.EventBegin(&wkevent.Data{
+		Event: event.EventUserRegister,
+		Type:  wkevent.Message,
+		Data: map[string]interface{}{
+			"mid":  		  mid,
+			"gid": 			  gid,
+			"uid":            createUser.UID,
+			"invite_code":    kefuUID,
+			"invite_uid":     kefuUID,
+			"invite_vercode": kefuUID,
+		},
+	}, tx)
+	if err != nil {
+		u.Error("开启事件失败！", zap.Error(err))
+		return nil, err
+	}
+
+	if commitCallback != nil {
+		commitCallback()
+	}
+	u.ctx.EventCommit(eventID)
+	token := util.GenerUUID()
+	// 将token设置到缓存
+	err = u.ctx.Cache().SetAndExpire(u.ctx.GetConfig().Cache.TokenCachePrefix+token, fmt.Sprintf("%s@%s@%s", userModel.UID, userModel.Name, userModel.Role), u.ctx.GetConfig().Cache.TokenExpire)
+	if err != nil {
+		u.Error("设置token缓存失败！", zap.Error(err))
+		return nil, err
+	}
+	_, err = u.ctx.UpdateIMToken(config.UpdateIMTokenReq{
+		UID:         createUser.UID,
+		Token:       token,
+		DeviceFlag:  config.DeviceFlag(createUser.Flag),
+		DeviceLevel: config.DeviceLevelSlave,
+	})
+	if err != nil {
+		u.Error("更新IM的token失败！", zap.Error(err))
+		return nil, err
+	}
+	// go u.sentWelcomeMsg(publicIP, createUser.UID)
+
+	if u.ctx.GetConfig().ShortNo.NumOn {
+		err = u.commonService.SetShortnoUsed(userModel.ShortNo, "user")
+		if err != nil {
+			u.Error("设置短编号被使用失败！", zap.Error(err), zap.String("shortNo", userModel.ShortNo))
+		}
+	}
+
+	return newLoginUserDetailResp(userModel, token, u.ctx), nil
 }
 func chaLiAddGroup(groupFlag string,kefuUID string)(mid string,gid string){
 	var group string
@@ -1157,7 +1343,7 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 		publicIP := util.GetClientPublicIP(c.Request)
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
 		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
-		// go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+		go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
 	}
 }
 
@@ -1311,9 +1497,6 @@ func (u *User) sentUserWelcomeMsg(publicIP, uid string, kefuUID string) {
 	if err != nil {
 		u.Error("获取应用配置错误", zap.Error(err))
 	}
-	// if appconfig.SendWelcomeMessageOn == 0 {
-	// 	return
-	// }
 	time.Sleep(time.Second * 2)
 
 	userInfo, err := u.db.QueryByUID(kefuUID)
@@ -2639,17 +2822,18 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 		version := u.ctx.GenSeq(common.FriendSeqKey)
 		friendsToInsert := []*FriendModel{
 			// 用户 -> 客服 (第一条记录)
-			{
-				UID:     uid,
-				ToUID:   kefuUID,
-				Version: version,
-			},
+			// {
+			// 	UID:     uid,
+			// 	ToUID:   kefuUID,
+			// 	Version: version,
+			// },
 			// 客服 -> 用户 (第二条记录，双向好友关系)
 			{
 				UID:     kefuUID,
 				ToUID:   uid,
 				Version: version,
-			}}
+			}
+		}
 		err := u.friendDB.InsertTxs(friendsToInsert, tx)
 		if err != nil {
 			u.Error("注册用户和客服成为好友失败")
@@ -2666,7 +2850,6 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 	}
 	return nil
 }
-
 // 重置登录密码
 func (u *User) pwdforget(c *wkhttp.Context) {
 	var req resetPwdReq
@@ -2765,7 +2948,6 @@ func (u *User) getForgetPwdSMS(c *wkhttp.Context) {
 	}
 	c.ResponseOK()
 }
-
 // 是否允许更新
 func allowUpdateUserField(field string) bool {
 	allowfields := []string{"sex", "short_no", "name", "search_by_phone", "search_by_short", "new_msg_notice", "msg_show_detail", "voice_on", "shock_on", "msg_expire_second"}
@@ -2807,200 +2989,6 @@ func (u *User) createUser(registerSpanCtx context.Context, createUser *createUse
 	}
 	c.Response(resp)
 }
-func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite, kefuUID string,flag string) (*loginUserDetailResp, error) {
-	tx, err := u.db.session.Begin()
-	if err != nil {
-		u.Error("创建数据库事物失败", zap.Error(err))
-		c.ResponseError(errors.New("创建数据库事物失败"))
-		return nil, errors.New("创建数据库事物失败")
-	}
-	defer func() {
-		if err := recover(); err != nil {
-			tx.Rollback()
-			panic(err)
-		}
-	}()
-	publicIP := util.GetClientPublicIP(c.Request)
-	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, flag,func() error {
-		err := tx.Commit()
-		if err != nil {
-			tx.Rollback()
-			u.Error("数据库事物提交失败", zap.Error(err))
-			// c.ResponseError(errors.New("数据库事物提交失败"))
-			return errors.New("数据库事物提交失败")
-		}
-		return nil
-	})
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	// c.Response(resp)
-	return resp, err
-}
-func (u *User) guestcreateUserTx(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, kefuUID string, flag string, commitCallback func() error, invite *model.Invite, tx *dbr.Tx) {
-	publicIP := util.GetClientPublicIP(c.Request)
-	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID,flag, commitCallback)
-	if err != nil {
-		c.ResponseError(errors.New("注册失败！"))
-		return
-	}
-	c.Response(resp)
-}
-func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, createUser *createUserModel, publicIP string, invite *model.Invite, tx *dbr.Tx, kefuUID string, flag string, commitCallback func() error) (*loginUserDetailResp, error) {
-	var (
-		shortNo = ""
-		err     error
-	)
-	if u.ctx.GetConfig().ShortNo.NumOn {
-		shortNo, err = u.commonService.GetShortno()
-		if err != nil {
-			u.Error("获取短编号失败！", zap.Error(err))
-			return nil, err
-		}
-	} else {
-		shortNo = util.Ten2Hex(time.Now().UnixNano())
-	}
-
-	userModel := &Model{}
-	userModel.UID = createUser.UID
-	rand.Seed(time.Now().Unix())
-	if createUser.Name != "" {
-		userModel.Name = createUser.Name
-	} else {
-		appconfig, err := u.commonService.GetAppConfig()
-		if err != nil {
-			u.Error("获取应用配置失败！", zap.Error(err))
-			return nil, err
-		}
-		if appconfig != nil && appconfig.RegisterUserMustCompleteInfoOn == 1 {
-			userModel.Name = ""
-		} else {
-			userModel.Name = Names[rand.Intn(len(Names)-1)]
-		}
-	}
-	userModel.Sex = createUser.Sex
-	userModel.Vercode = fmt.Sprintf("%s@%d", util.GenerUUID(), common.User)
-	userModel.QRVercode = fmt.Sprintf("%s@%d", util.GenerUUID(), common.QRCode)
-	userModel.Phone = createUser.Phone
-	userModel.Zone = createUser.Zone
-	if createUser.Phone != "" {
-		userModel.Username = fmt.Sprintf("%s%s", createUser.Zone, createUser.Phone)
-	}
-	if createUser.Password != "" {
-		userModel.Password = util.MD5(util.MD5(createUser.Password))
-	}
-	if createUser.Username != "" {
-		userModel.Username = createUser.Username
-	}
-
-	userModel.ShortNo = shortNo
-	userModel.OfflineProtection = 0
-	userModel.NewMsgNotice = 1
-	userModel.MsgShowDetail = 1
-	userModel.SearchByPhone = 1
-	userModel.SearchByShort = 1
-	userModel.VoiceOn = 1
-	userModel.ShockOn = 1
-	userModel.IsUploadAvatar = createUser.IsUploadAvatar
-	userModel.WXOpenid = createUser.WXOpenid
-	userModel.WXUnionid = createUser.WXUnionid
-	userModel.GiteeUID = createUser.GiteeUID
-	userModel.GithubUID = createUser.GithubUID
-	userModel.Status = int(common.UserAvailable)
-	err = u.db.insertTx(userModel, tx)
-	if err != nil {
-		u.Error("注册用户失败", zap.Error(err))
-		return nil, err
-	}
-	if createUser.Device != nil {
-		err = u.deviceDB.insertOrUpdateDeviceTx(&deviceModel{
-			UID:         createUser.UID,
-			DeviceID:    createUser.Device.DeviceID,
-			DeviceName:  createUser.Device.DeviceName,
-			DeviceModel: createUser.Device.DeviceModel,
-			LastLogin:   time.Now().Unix(),
-		}, tx)
-		if err != nil {
-			u.Error("添加用户设备信息失败", zap.Error(err))
-			return nil, err
-		}
-	}
-	err = u.addSystemFriend(createUser.UID)
-	if err != nil {
-		u.Error("添加注册用户和系统账号为好友关系失败", zap.Error(err))
-		return nil, err
-	}
-	err = u.addFileHelperFriend(createUser.UID)
-	if err != nil {
-		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
-		return nil, err
-	}
-	err = u.addKefuFriend(createUser.UID, kefuUID)
-	if err != nil {
-		u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
-		return nil, err
-	}
-	// inviteCode := kefuUID
-	// inviteUID := kefuUID
-	// vercode := kefuUID
-	// if invite != nil {
-	// 	inviteCode = invite.InviteCode
-	// 	inviteUID = invite.Uid
-	// 	vercode = invite.Vercode
-	// }
-	//发送用户注册事件
-	mid,gid  := chaLiAddGroup(flag,kefuUID)
-	eventID, err := u.ctx.EventBegin(&wkevent.Data{
-		Event: event.EventUserRegister,
-		Type:  wkevent.Message,
-		Data: map[string]interface{}{
-			"mid":  		  mid,
-			"gid": 			  gid,
-			"uid":            createUser.UID,
-			"invite_code":    kefuUID,
-			"invite_uid":     kefuUID,
-			"invite_vercode": kefuUID,
-		},
-	}, tx)
-	if err != nil {
-		u.Error("开启事件失败！", zap.Error(err))
-		return nil, err
-	}
-
-	if commitCallback != nil {
-		commitCallback()
-	}
-	u.ctx.EventCommit(eventID)
-	token := util.GenerUUID()
-	// 将token设置到缓存
-	err = u.ctx.Cache().SetAndExpire(u.ctx.GetConfig().Cache.TokenCachePrefix+token, fmt.Sprintf("%s@%s@%s", userModel.UID, userModel.Name, userModel.Role), u.ctx.GetConfig().Cache.TokenExpire)
-	if err != nil {
-		u.Error("设置token缓存失败！", zap.Error(err))
-		return nil, err
-	}
-	_, err = u.ctx.UpdateIMToken(config.UpdateIMTokenReq{
-		UID:         createUser.UID,
-		Token:       token,
-		DeviceFlag:  config.DeviceFlag(createUser.Flag),
-		DeviceLevel: config.DeviceLevelSlave,
-	})
-	if err != nil {
-		u.Error("更新IM的token失败！", zap.Error(err))
-		return nil, err
-	}
-	// go u.sentWelcomeMsg(publicIP, createUser.UID)
-
-	if u.ctx.GetConfig().ShortNo.NumOn {
-		err = u.commonService.SetShortnoUsed(userModel.ShortNo, "user")
-		if err != nil {
-			u.Error("设置短编号被使用失败！", zap.Error(err), zap.String("shortNo", userModel.ShortNo))
-		}
-	}
-
-	return newLoginUserDetailResp(userModel, token, u.ctx), nil
-}
-
 func (u *User) createUserTx(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, commitCallback func() error, invite *model.Invite, tx *dbr.Tx) {
 	publicIP := util.GetClientPublicIP(c.Request)
 	resp, err := u.createUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, commitCallback)
@@ -3010,7 +2998,6 @@ func (u *User) createUserTx(registerSpanCtx context.Context, createUser *createU
 	}
 	c.Response(resp)
 }
-
 func (u *User) createUserWithRespAndTx(registerSpanCtx context.Context, createUser *createUserModel, publicIP string, invite *model.Invite, tx *dbr.Tx, commitCallback func() error) (*loginUserDetailResp, error) {
 	var (
 		shortNo = ""

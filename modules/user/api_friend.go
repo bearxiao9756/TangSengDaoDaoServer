@@ -812,7 +812,7 @@ func (f *Friend) friendSync(c *wkhttp.Context) {
 	}
 	c.JSON(http.StatusOK, resps)
 }
-
+// 搜索好友
 func (f *Friend) friendSearch(c *wkhttp.Context) {
 	uid := c.MustGet("uid").(string)
 	keyword := c.Query("keyword")
