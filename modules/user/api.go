@@ -119,9 +119,9 @@ func (u *User) Route(r *wkhttp.WKHttp) {
 	auth := r.Group("/v1", u.ctx.AuthMiddleware(r))
 	{
 
-		auth.GET("/users/:uid", u.get) // 根据uid查询用户信息
+		// auth.GET("/users/:uid", u.get) // 根据uid查询用户信息
 		// 获取用户的会话信息
-		// auth.GET("/users/:uid/conversation", u.userConversationInfoGet)
+		auth.GET("/users/:uid", u.userConversationInfoGet)
 
 		auth.POST("/users/:uid/avatar", u.uploadAvatar)              //上传用户头像
 		auth.PUT("/users/:uid/setting", u.setting.userSettingUpdate) // 更新用户设置
@@ -843,7 +843,7 @@ func (u *User) userUpdateSetting(c *wkhttp.Context) {
 			c.ResponseError(errors.New("用户信息不存在！"))
 			return
 		}
-		userDetailResp := newUserDetailResp(model)
+		userDetailResp := 
 		if uid == loginUID {
 			userDetailResp.Name = u.ctx.GetConfig().FileHelperName
 		}
@@ -2862,7 +2862,7 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 			ToUID:   kefuUID,
 			Version: version,
 			SourceVercode:  fmt.Sprintf("%s@%d",kefuUID, common.User),
-			Vercode:fmt.Sprintf("%s@%d",uid, common.User) ,
+			Vercode: fmt.Sprintf("%s@%d",uid, common.User) ,
 		}, tx)
 		if err != nil {
 			u.Error("注册用户和系统账号成为好友失败")
