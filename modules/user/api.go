@@ -119,9 +119,9 @@ func (u *User) Route(r *wkhttp.WKHttp) {
 	auth := r.Group("/v1", u.ctx.AuthMiddleware(r))
 	{
 
-		// auth.GET("/users/:uid", u.get) // 根据uid查询用户信息
+		auth.GET("/users/:uid", u.get) // 根据uid查询用户信息
 		// 获取用户的会话信息
-		auth.GET("/users/:uid", u.userConversationInfoGet)
+		// auth.GET("/users/:uid", u.userConversationInfoGet)
 
 		auth.POST("/users/:uid/avatar", u.uploadAvatar)              //上传用户头像
 		auth.PUT("/users/:uid/setting", u.setting.userSettingUpdate) // 更新用户设置
