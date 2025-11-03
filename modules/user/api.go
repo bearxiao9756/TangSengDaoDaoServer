@@ -2769,25 +2769,6 @@ func (u *User) addSystemFriend(uid string) error {
 			return err
 		}
 	}
-	// systemIsFriend, err := u.friendDB.IsFriend(u.ctx.GetConfig().SystemUID, uid)
-	// if err != nil {
-	// 	u.Error("查询系统账号和注册用户关系失败")
-	// 	tx.Rollback()
-	// 	return err
-	// }
-	// if !systemIsFriend {
-	// 	version := u.ctx.GenSeq(common.FriendSeqKey)
-	// 	err := u.friendDB.InsertTx(&FriendModel{
-	// 		UID:     u.ctx.GetConfig().SystemUID,
-	// 		ToUID:   uid,
-	// 		Version: version,
-	// 	}, tx)
-	// 	if err != nil {
-	// 		u.Error("系统账号和注册用户成为好友失败")
-	// 		tx.Rollback()
-	// 		return err
-	// 	}
-	// }
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
@@ -2797,7 +2778,61 @@ func (u *User) addSystemFriend(uid string) error {
 	return nil
 }
 
+// func (u *User) addKefuFriend(uid string, kefuUID string) error {
+// 	if uid == "" {
+// 		u.Error("用户ID不能为空")
+// 		return errors.New("用户ID不能为空")
+// 	}
+// 	isFriend, err := u.friendDB.IsFriend(uid, kefuUID)
+// 	if err != nil {
+// 		u.Error("查询用户关系失败")
+// 		return err
+// 	}
+// 	tx, err := u.friendDB.session.Begin()
+// 	if err != nil {
+// 		u.Error("创建数据库事物失败")
+// 		return errors.New("创建数据库事物失败")
+// 	}
+// 	defer func() {
+// 		if err := recover(); err != nil {
+// 			tx.Rollback()
+// 			panic(err)
+// 		}
+// 	}()
+// 	if !isFriend {
+// 		version := u.ctx.GenSeq(common.FriendSeqKey)
+// 		friendsToInsert := []*FriendModel{
+// 			// 用户 -> 客服 (第一条记录)
+// 			{
+// 				UID:     uid,
+// 				ToUID:   kefuUID,
+// 				Version: version,
+// 			},
+// 			// 客服 -> 用户 (第二条记录，双向好友关系)
+// 			{
+// 				UID:     kefuUID,
+// 				ToUID:   uid,
+// 				Version: version,
+// 			},
+// 		}
+// 		err := u.friendDB.InsertTxs(friendsToInsert, tx)
+// 		if err != nil {
+// 			u.Error("注册用户和客服成为好友失败")
+// 			tx.Rollback()
+// 			return err
+// 		}
+// 	}
+
+// 	err = tx.Commit()
+// 	if err != nil {
+// 		tx.Rollback()
+// 		u.Error("用户注册数据库事物提交失败", zap.Error(err))
+// 		return err
+// 	}
+// 	return nil
+// }
 func (u *User) addKefuFriend(uid string, kefuUID string) error {
+
 	if uid == "" {
 		u.Error("用户ID不能为空")
 		return errors.New("用户ID不能为空")
@@ -2820,28 +2855,17 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 	}()
 	if !isFriend {
 		version := u.ctx.GenSeq(common.FriendSeqKey)
-		friendsToInsert := []*FriendModel{
-			// 用户 -> 客服 (第一条记录)
-			{
-				UID:     uid,
-				ToUID:   kefuUID,
-				Version: version,
-			},
-			// 客服 -> 用户 (第二条记录，双向好友关系)
-			{
-				UID:     kefuUID,
-				ToUID:   uid,
-				Version: version,
-			},
-		}
-		err := u.friendDB.InsertTxs(friendsToInsert, tx)
+		err := u.friendDB.InsertTx(&FriendModel{
+			UID:     uid,
+			ToUID:   kefuUID,
+			Version: version,
+		}, tx)
 		if err != nil {
-			u.Error("注册用户和客服成为好友失败")
+			u.Error("注册用户和系统账号成为好友失败")
 			tx.Rollback()
 			return err
 		}
 	}
-
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
