@@ -1059,7 +1059,9 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	}
 }
 func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite, kefuUID string, flag string) (*loginUserDetailResp, error) {
+	u.Info("游客用户 注册", zap.String("调用注册方法 创建数据库失误", kefuUID))
 	tx, err := u.db.session.Begin()
+
 	if err != nil {
 		u.Error("创建数据库事物失败", zap.Error(err))
 		c.ResponseError(errors.New("创建数据库事物失败"))
@@ -1112,7 +1114,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	} else {
 		shortNo = util.Ten2Hex(time.Now().UnixNano())
 	}
-
+	u.Info("游客注册 ", zap.String("编号获取成功shortNo", shortNo))
 	userModel := &Model{}
 	userModel.UID = createUser.UID
 	rand.Seed(time.Now().Unix())
@@ -1182,7 +1184,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和系统账号为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-
+	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功", shortNo))
 	err = u.addFileHelperFriend(createUser.UID)
 	if err != nil {
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
@@ -1190,11 +1192,12 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	}
 
 	kefuInfo, err := u.db.QueryByUID(kefuUID)
-	// err = u.addKefuFriend(createUser.UID, kefuUID)
+	err = u.addKefuFriend(createUser.UID, kefuUID)
 	if err != nil {
 		u.Error("添加注册用户和客服为好友关系失败", zap.String("shortNo", kefuInfo.Name))
 		return nil, err
 	}
+	u.Info("游客注册 ", zap.String("添加注册用户和客服为好友关系失败", shortNo))
 	// inviteCode := kefuUID
 	// inviteUID := kefuUID
 	// vercode := kefuUID
@@ -1203,6 +1206,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// 	inviteUID = invite.Uid
 	// 	vercode = invite.Vercode
 	// }
+	u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
 	//发送用户注册事件
 	// 搜索
 	auser, err := u.chaliSearch(shortNo)
@@ -1810,6 +1814,7 @@ func (u *User) chaliSearch(uid string) (userResp, error) {
 		u.Error("查询用户信息失败！", zap.Error(err), zap.String("keyword", uid))
 		return userResp{}, errors.New("查询用户信息失败！")
 	}
+
 	return userResp{
 			UID:     useModel.UID,
 			Name:    useModel.Name,
