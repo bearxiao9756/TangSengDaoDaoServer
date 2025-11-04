@@ -416,19 +416,19 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-    // http://dabobo.acone.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
-    subkehu := "https://dabobo.acone.icu:9000/";
-	subkehu1 := "http://dabobo.acone.icu:9000/";
-	subkehu2 := "http://dabobo.acone.icu:8090/";
-	subkehuT := "https://dabobo.acone.icu/img/";
-    if(strings.Contains(downloadUrl,subkehu)){
-	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu,subkehuT)
+	// http://dabobo.acone.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
+	subkehu := "https://dabobo.acone.icu:9000/"
+	subkehu1 := "http://dabobo.acone.icu:9000/"
+	subkehu2 := "http://dabobo.acone.icu:8090/"
+	subkehuT := "https://dabobo.acone.icu/img/"
+	if strings.Contains(downloadUrl, subkehu) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu, subkehuT)
 	}
-	if(strings.Contains(downloadUrl,subkehu1)){
-	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu1,subkehuT)
+	if strings.Contains(downloadUrl, subkehu1) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu1, subkehuT)
 	}
-	if(strings.Contains(downloadUrl,subkehu2)){
-	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu2,subkehuT)
+	if strings.Contains(downloadUrl, subkehu2) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu2, subkehuT)
 	}
 	if strings.Contains(downloadUrl, "?") {
 		c.Redirect(http.StatusFound, fmt.Sprintf("%s&v=%s", downloadUrl, v))
@@ -830,21 +830,21 @@ func (u *User) get(c *wkhttp.Context) {
 
 //	获取用户详情
 //
-	// func (u *User) userConversationInfoGet(c *wkhttp.Context) {
-	// 	uid := c.Param("uid")
-	// 	loginUID := c.MustGet("uid").(string)
-	// 	userDetailResp, err := u.userService.GetUserDetail(uid, loginUID)
-	// 	if err != nil {
-	// 		u.Error("查询用户信息失败！", zap.Error(err), zap.String("uid", uid))
-	// 		c.ResponseError(errors.New("查询用户信息失败！"))
-	// 		return
-	// 	}
-	// 	if userDetailResp == nil {
-	// 		c.ResponseError(errors.New("用户信息不存在！"))
-	// 		return
-	// 	}
-	// 	c.Response(userDetailResp)
-	// }
+// func (u *User) userConversationInfoGet(c *wkhttp.Context) {
+// 	uid := c.Param("uid")
+// 	loginUID := c.MustGet("uid").(string)
+// 	userDetailResp, err := u.userService.GetUserDetail(uid, loginUID)
+// 	if err != nil {
+// 		u.Error("查询用户信息失败！", zap.Error(err), zap.String("uid", uid))
+// 		c.ResponseError(errors.New("查询用户信息失败！"))
+// 		return
+// 	}
+// 	if userDetailResp == nil {
+// 		c.ResponseError(errors.New("用户信息不存在！"))
+// 		return
+// 	}
+// 	c.Response(userDetailResp)
+// }
 //
 // 微信登录
 
@@ -991,19 +991,18 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	}
 	length := len(req.Channel)
 	if length == 0 {
-    // 尽管前面已经有了 c.ResponseError，但为了代码的完整性，可以处理空字符串的情况
+		// 尽管前面已经有了 c.ResponseError，但为了代码的完整性，可以处理空字符串的情况
 		c.ResponseError(errors.New("渠道信息不能为空"))
-    	return
-    }
-	req.Device.DeviceID = strings.ReplaceAll(req.Device.DeviceID,"-","")
+		return
+	}
+	req.Device.DeviceID = strings.ReplaceAll(req.Device.DeviceID, "-", "")
 	lastChar := req.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
 	if lastChar != "a" && lastChar != "b" && lastChar != "c" {
-    	c.ResponseError(errors.New("渠道信息错误"))
-    	return
+		c.ResponseError(errors.New("渠道信息错误"))
+		return
 	}
 	req.Channel = req.Channel[:length-1] // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
-	lastCharString := string(lastChar) // 转换为 string
-
+	lastCharString := string(lastChar)   // 转换为 string
 
 	// 2. 身份生成和查询
 	tempUID := req.Device.DeviceID
@@ -1035,7 +1034,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			UID:       tempUID,
 			Zone:      "",
 			Phone:     "",
-			Password:  "", 
+			Password:  "",
 			Name:      guestNickname,
 			WXOpenid:  req.Channel,
 			WXUnionid: req.Device.DeviceID,
@@ -1043,22 +1042,23 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			Device:    req.Device,
 		}
 		u.Info("游客用户 不存在", zap.String("游客信息构建-WXUnionid", model.WXUnionid))
-		_, err := u.gusetcreateUser(loginSpanCtx, model, c, nil, req.Channel,lastCharString)
+		_, err := u.gusetcreateUser(loginSpanCtx, model, c, nil, req.Channel, lastCharString)
 		if err != nil {
 			u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
 			c.Response(err)
 		} else {
 			userInfo, err := u.db.QueryByUID(tempUID)
 			u.Info("游客用户 注册成功", zap.String("注册成功", userInfo.Name))
+			u.Error("游客用户 注册成功", zap.String("注册成功", userInfo.Name))
 			if err != nil {
 				c.Response(err)
 			}
 			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
-			
+
 		}
 	}
 }
-func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite, kefuUID string,flag string) (*loginUserDetailResp, error) {
+func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite, kefuUID string, flag string) (*loginUserDetailResp, error) {
 	tx, err := u.db.session.Begin()
 	if err != nil {
 		u.Error("创建数据库事物失败", zap.Error(err))
@@ -1072,7 +1072,7 @@ func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *crea
 		}
 	}()
 	publicIP := util.GetClientPublicIP(c.Request)
-	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, flag,func() error {
+	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, flag, func() error {
 		err := tx.Commit()
 		if err != nil {
 			tx.Rollback()
@@ -1091,7 +1091,7 @@ func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *crea
 }
 func (u *User) guestcreateUserTx(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, kefuUID string, flag string, commitCallback func() error, invite *model.Invite, tx *dbr.Tx) {
 	publicIP := util.GetClientPublicIP(c.Request)
-	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID,flag, commitCallback)
+	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, flag, commitCallback)
 	if err != nil {
 		c.ResponseError(errors.New("注册失败！"))
 		return
@@ -1182,16 +1182,19 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和系统账号为好友关系失败", zap.Error(err))
 		return nil, err
 	}
+
 	err = u.addFileHelperFriend(createUser.UID)
 	if err != nil {
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 		return nil, err
 	}
+
+	kefuInfo, err := u.db.QueryByUID(kefuUID)
 	// err = u.addKefuFriend(createUser.UID, kefuUID)
-	// if err != nil {
-	// 	u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
-	// 	return nil, err
-	// }
+	if err != nil {
+		u.Error("添加注册用户和客服为好友关系失败", zap.String("shortNo", kefuInfo.Name))
+		return nil, err
+	}
 	// inviteCode := kefuUID
 	// inviteUID := kefuUID
 	// vercode := kefuUID
@@ -1201,13 +1204,31 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// 	vercode = invite.Vercode
 	// }
 	//发送用户注册事件
-	mid,gid  := chaLiAddGroup(flag,kefuUID)
+	// 搜索
+	auser, err := u.chaliSearch(shortNo)
+	if err != nil {
+		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
+		return nil, err
+	}
+	u.Info("auser", zap.String("shortNo", auser.Name))
+	// 申请
+	// 同意
+
+	// 同步
+
+	// 确认事件发布
+
+	mid, gid := chaLiAddGroup(flag, kefuUID)
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
-			"mid":  		  mid,
-			"gid": 			  gid,
+			"mid":            mid,
+			"mid_name":       kefuInfo.Name,
+			"remark":         u.ctx.GetConfig().WelcomeMessage,
+			"gid":            gid,
+			"uid_short_no":   shortNo,
+			"vercode":        auser.Vercode,
 			"uid":            createUser.UID,
 			"invite_code":    kefuUID,
 			"invite_uid":     kefuUID,
@@ -1251,24 +1272,26 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 
 	return newLoginUserDetailResp(userModel, token, u.ctx), nil
 }
-func chaLiAddGroup(groupFlag string,kefuUID string)(mid string,gid string){
+
+func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 	var group string
 	var groupOwn string
-    switch groupFlag {
-    case "a":
-        group = "0bc6866b61cf434b8380ebd5f78a16da"
+	switch groupFlag {
+	case "a":
+		group = "0bc6866b61cf434b8380ebd5f78a16da"
 		groupOwn = kefuUID
-    case "b":
-        group = "840dc274a16c4e5285dd772b2b7b1a4a"
-		groupOwn =  kefuUID
-    case "c":
-        group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		groupOwn =  kefuUID
-    default:
-        return "", ""
-    }
-	return groupOwn,group
+	case "b":
+		group = "840dc274a16c4e5285dd772b2b7b1a4a"
+		groupOwn = kefuUID
+	case "c":
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	default:
+		return "", ""
+	}
+	return groupOwn, group
 }
+
 // 登录
 func (u *User) login(c *wkhttp.Context) {
 
@@ -1313,22 +1336,9 @@ func (u *User) login(c *wkhttp.Context) {
 // 验证登录用户信息
 func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context, c *wkhttp.Context, kefuUID string, islogin bool) {
 
-	result, err := u.execLogin(userInfo, flag, device, loginSpanCtx)
+	result, err := u.guestExecLogin(userInfo, flag, device, loginSpanCtx)
 	if err != nil {
-		if errors.Is(err, ErrUserNeedVerification) {
-			phone := ""
-			if len(userInfo.Phone) > 5 {
-				phone = fmt.Sprintf("%s******%s", userInfo.Phone[0:3], userInfo.Phone[len(userInfo.Phone)-2:])
-			}
-			c.ResponseWithStatus(http.StatusBadRequest, map[string]interface{}{
-				"status": 110,
-				"msg":    "需要验证手机号码！",
-				"uid":    userInfo.UID,
-				"phone":  phone,
-			})
-			return
-		}
-		c.ResponseError(err)
+		c.ResponseError(errors.New("用户注册，登陆失败"))
 		return
 	}
 	c.Response(result)
@@ -1341,6 +1351,121 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 		go u.sentWelcomeMsg(publicIP, userInfo.UID)
 		// go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
 	}
+}
+func (u *User) guestExecLogin(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context) (*loginUserDetailResp, error) {
+	if userInfo.Status == int(common.UserDisable) {
+		return nil, errors.New("该用户已被禁用")
+	}
+	deviceLevel := config.DeviceLevelSlave
+	if flag == config.APP {
+		deviceLevel = config.DeviceLevelMaster
+	}
+	//app登录验证设备锁
+	if flag == 0 && userInfo.DeviceLock == 1 {
+		if device == nil {
+			return nil, errors.New("登录设备信息不能为空！")
+		}
+		var existDevice bool
+		var err error
+		existDevice, err = u.deviceDB.existDeviceWithDeviceIDAndUIDCtx(loginSpanCtx, device.DeviceID, userInfo.UID)
+		if err != nil {
+			u.Error("查询是否存在的设备失败", zap.Error(err))
+			return nil, errors.New("查询是否存在的设备失败")
+		}
+		if existDevice {
+			err = u.deviceDB.updateDeviceLastLoginCtx(loginSpanCtx, time.Now().Unix(), device.DeviceID, userInfo.UID)
+			if err != nil {
+				u.Error("更新用户登录设备失败", zap.Error(err))
+				return nil, errors.New("更新用户登录设备失败")
+			}
+		}
+		if !existDevice {
+			err := u.ctx.GetRedisConn().SetAndExpire(fmt.Sprintf("%s%s", u.ctx.GetConfig().Cache.LoginDeviceCachePrefix, userInfo.UID), util.ToJson(device), u.ctx.GetConfig().Cache.LoginDeviceCacheExpire)
+			if err != nil {
+				u.Error("缓存登录设备失败！", zap.Error(err))
+				return nil, errors.New("缓存登录设备失败！")
+			}
+			return nil, ErrUserNeedVerification
+		}
+	}
+	//更新最后一次登录设备信息
+	// flag == config.APP &&
+	if device != nil {
+		err := u.deviceDB.insertOrUpdateDeviceCtx(loginSpanCtx, &deviceModel{
+			UID:         userInfo.UID,
+			DeviceID:    device.DeviceID,
+			DeviceName:  device.DeviceName,
+			DeviceModel: device.DeviceModel,
+			LastLogin:   time.Now().Unix(),
+		})
+		if err != nil {
+			u.Error("更新用户登录设备失败", zap.Error(err))
+			return nil, errors.New("更新用户登录设备失败")
+		}
+
+	}
+	token := util.GenerUUID()
+	// 将token设置到缓存
+	tokenSpan, _ := u.ctx.Tracer().StartSpanFromContext(loginSpanCtx, "SetAndExpire")
+	tokenSpan.SetTag("key", "token")
+	// 获取老的token并清除老token数据
+	oldToken, err := u.ctx.Cache().Get(fmt.Sprintf("%s%d%s", u.ctx.GetConfig().Cache.UIDTokenCachePrefix, flag, userInfo.UID))
+	if err != nil {
+		u.Error("获取旧token错误", zap.Error(err))
+		tokenSpan.Finish()
+		return nil, errors.New("获取旧token错误")
+	}
+	if flag == config.APP {
+		if oldToken != "" {
+			err = u.ctx.Cache().Delete(u.ctx.GetConfig().Cache.TokenCachePrefix + oldToken)
+			if err != nil {
+				u.Error("清除旧token数据错误", zap.Error(err))
+				tokenSpan.Finish()
+				return nil, errors.New("清除旧token数据错误")
+			}
+		}
+	} else { // PC暂时不执行删除操作，因为PC可以同时登陆
+		if strings.TrimSpace(oldToken) != "" { // 如果是web或pc类设备 因为支持多登所以这里依然使用老token
+			token = oldToken
+		}
+	}
+
+	err = u.ctx.Cache().SetAndExpire(u.ctx.GetConfig().Cache.TokenCachePrefix+token, fmt.Sprintf("%s@%s@%s", userInfo.UID, userInfo.Name, userInfo.Role), u.ctx.GetConfig().Cache.TokenExpire)
+	if err != nil {
+		u.Error("设置token缓存失败！", zap.Error(err))
+		tokenSpan.Finish()
+		return nil, errors.New("设置token缓存失败！")
+	}
+	err = u.ctx.Cache().SetAndExpire(fmt.Sprintf("%s%d%s", u.ctx.GetConfig().Cache.UIDTokenCachePrefix, flag, userInfo.UID), token, u.ctx.GetConfig().Cache.TokenExpire)
+	if err != nil {
+		u.Error("设置uidtoken缓存失败！", zap.Error(err))
+		tokenSpan.Finish()
+		return nil, errors.New("设置uidtoken缓存失败！")
+	}
+	tokenSpan.Finish()
+
+	updateTokenSpan, _ := u.ctx.Tracer().StartSpanFromContext(loginSpanCtx, "UpdateIMToken")
+
+	imTokenReq := config.UpdateIMTokenReq{
+		UID:         userInfo.UID,
+		Token:       token,
+		DeviceFlag:  config.DeviceFlag(flag),
+		DeviceLevel: deviceLevel,
+	}
+	imResp, err := u.ctx.UpdateIMToken(imTokenReq)
+	if err != nil {
+		u.Error("更新IM的token失败！E", zap.Error(err))
+		updateTokenSpan.SetTag("err", err)
+		updateTokenSpan.Finish()
+		return nil, errors.New("更新IM的token失败！F")
+	}
+	updateTokenSpan.Finish()
+
+	if imResp.Status == config.UpdateTokenStatusBan {
+		return nil, errors.New("此账号已经被封禁！")
+	}
+
+	return newLoginUserDetailResp(userInfo, token, u.ctx), nil
 }
 
 // 验证登录用户信息
@@ -1676,6 +1801,20 @@ func (u *User) register(c *wkhttp.Context) {
 		Device:   req.Device,
 	}
 	u.createUser(registerSpanCtx, model, c, invite)
+}
+
+// 查理搜索用户(内部使用)
+func (u *User) chaliSearch(uid string) (userResp, error) {
+	useModel, err := u.db.QueryByKeyword(uid)
+	if err != nil {
+		u.Error("查询用户信息失败！", zap.Error(err), zap.String("keyword", uid))
+		return userResp{}, errors.New("查询用户信息失败！")
+	}
+	return userResp{
+			UID:     useModel.UID,
+			Name:    useModel.Name,
+			Vercode: useModel.Vercode},
+		nil
 }
 
 // 搜索用户
@@ -2827,53 +2966,7 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 	}
 	return nil
 }
-// func (u *User) addKefuFriend(uid string, kefuUID string) error {
 
-// 	if uid == "" {
-// 		u.Error("用户ID不能为空")
-// 		return errors.New("用户ID不能为空")
-// 	}
-// 	isFriend, err := u.friendDB.IsFriend(uid, kefuUID)
-// 	if err != nil {
-// 		u.Error("查询用户关系失败")
-// 		return err
-// 	}
-// 	tx, err := u.friendDB.session.Begin()
-// 	if err != nil {
-// 		u.Error("创建数据库事物失败")
-// 		return errors.New("创建数据库事物失败")
-// 	}
-// 	defer func() {
-// 		if err := recover(); err != nil {
-// 			tx.Rollback()
-// 			panic(err)
-// 		}
-// 	}()
-// 		// 	Vercode:       "10000@4",
-// 		// SourceVercode: "111@2",
-// 	if !isFriend {
-// 		version := u.ctx.GenSeq(common.FriendSeqKey)
-// 		err := u.friendDB.InsertTx(&FriendModel{
-// 			UID:     uid,
-// 			ToUID:   kefuUID,
-// 			Version: version,
-// 			SourceVercode:  fmt.Sprintf("%s@%d",kefuUID, common.User),
-// 			Vercode: fmt.Sprintf("%s@%d",uid, common.User) ,
-// 		}, tx)
-// 		if err != nil {
-// 			u.Error("注册用户和系统账号成为好友失败")
-// 			tx.Rollback()
-// 			return err
-// 		}
-// 	}
-// 	err = tx.Commit()
-// 	if err != nil {
-// 		tx.Rollback()
-// 		u.Error("用户注册数据库事物提交失败", zap.Error(err))
-// 		return err
-// 	}
-// 	return nil
-// }
 // 重置登录密码
 func (u *User) pwdforget(c *wkhttp.Context) {
 	var req resetPwdReq
@@ -2972,6 +3065,7 @@ func (u *User) getForgetPwdSMS(c *wkhttp.Context) {
 	}
 	c.ResponseOK()
 }
+
 // 是否允许更新
 func allowUpdateUserField(field string) bool {
 	allowfields := []string{"sex", "short_no", "name", "search_by_phone", "search_by_short", "new_msg_notice", "msg_show_detail", "voice_on", "shock_on", "msg_expire_second"}

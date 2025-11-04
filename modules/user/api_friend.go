@@ -44,7 +44,7 @@ func NewFriend(ctx *config.Context) *Friend {
 	}
 	f.ctx.AddEventListener(event.FriendSure, f.handleFriendSure)
 	f.ctx.AddEventListener(event.FriendDelete, f.handleDeleteFriend)
-	f.ctx.AddEventListener(event.EventUserRegister, f.handleUserRegister)
+	// f.ctx.AddEventListener(event.EventUserRegister, f.handleUserRegister)
 	f.ctx.AddEventListener(event.EventUserRegister, f.handleUserRegisterchali)
 	return f
 }
@@ -485,6 +485,447 @@ func (f *Friend) friendApply(c *wkhttp.Context) {
 	c.ResponseOK()
 }
 
+// 查理好友申请 (内部使用)
+func (f *Friend) chaliFriendApply(fromUID string, fromName string, toUID string, vercode string, remark string) (string, error) {
+	// fromUID := c.GetLoginUID()
+	// fromName := c.GetLoginName()
+
+	// var req applyReq
+	// if err := c.BindJSON(&req); err != nil {
+	// 	f.Error(common.ErrData.Error(), zap.Error(err))
+	// 	c.ResponseError(common.ErrData)
+	// 	return
+	// }
+	// if err := req.Check(); err != nil {
+	// 	c.ResponseError(err)
+	// 	return
+	// }
+	// if fromUID == req.ToUID {
+	// 	c.ResponseError(errors.New("不能添加自己为好友！"))
+	// 	return
+	// }
+	loginUserInfo, err := f.userDB.QueryByUID(fromUID)
+	if err != nil {
+		f.Error("查询用户信息错误", zap.Error(err))
+		return "", errors.New("查询用户信息错误")
+	}
+	if loginUserInfo == nil || loginUserInfo.IsDestroy == 1 || loginUserInfo.Status != 1 {
+		f.Error("登录用户不存在！", zap.String("uid", fromUID))
+		return "", errors.New("登录用户不存在！")
+	}
+	// 是否是好友
+	isFriendLoginUser, err := f.db.IsFriend(fromUID, toUID)
+	if err != nil {
+		f.Error("查询是否是好友失败！", zap.Error(err), zap.String("uid", fromUID), zap.String("toUid", toUID))
+		return "", errors.New("查询是否是好友失败！")
+	}
+	isFriendToUser, err := f.db.IsFriend(toUID, fromUID)
+	if err != nil {
+		f.Error("查询是否是好友失败！", zap.Error(err), zap.String("uid", fromUID), zap.String("toUid", toUID))
+		return "", errors.New("查询是否是好友失败！")
+	}
+	if isFriendLoginUser && isFriendToUser {
+		return "", errors.New("已经是好友，不能再申请！")
+	}
+
+	toUser, err := f.userDB.QueryByUID(toUID)
+	if err != nil {
+		f.Error("查询接收者用户信息失败！", zap.Error(err), zap.String("uid", fromUID))
+		return "", errors.New("查询用户信息失败！")
+	}
+	if toUser == nil || toUser.IsDestroy == 1 {
+		f.Error("接收好友请求的用户不存在！", zap.String("to_uid", toUID))
+		return "", errors.New("接收好友请求的用户不存在！")
+	}
+	// verifyVercode := true
+	// if Vercode == "" {
+	// 	friend, err := f.db.queryWithUID(fromUID, toUID)
+	// 	if err != nil {
+	// 		f.Error("查询好友信息错误", zap.String("to_uid", toUID))
+	// 		c.ResponseError(errors.New("查询好友信息错误"))
+	// 		return
+	// 	}
+	// 	if friend == nil {
+	// 		f.Error("好友信息不存在", zap.String("to_uid", toUID))
+	// 		c.ResponseError(errors.New("好友信息不存在"))
+	// 		return
+	// 	}
+	// 	if friend.SourceVercode == "" {
+	// 		f.Error("验证码不能为空", zap.String("to_uid", toUID))
+	// 		c.ResponseError(errors.New("验证码不能为空"))
+	// 		return
+	// 	}
+	// 	vercode = friend.SourceVercode
+	// 	verifyVercode = false
+	// }
+
+	// if verifyVercode {
+	// 	//验证code是否有效
+	// 	err = source.CheckRequestAddFriendCode(req.Vercode, fromUID)
+	// 	if err != nil {
+	// 		c.ResponseError(err)
+	// 		return
+	// 	}
+	// }
+
+	// 设置token
+	token := util.GenerUUID()
+
+	err = f.ctx.Cache().SetAndExpire(f.ctx.GetConfig().Cache.FriendApplyTokenCachePrefix+token+toUser.UID, util.ToJson(map[string]interface{}{
+		"from_uid": fromUID,
+		"vercode":  vercode,
+		"remark":   remark,
+	}), f.ctx.GetConfig().Cache.FriendApplyExpire)
+
+	if err != nil {
+		f.Error("设置申请token失败！", zap.Error(err))
+		return "", errors.New("设置申请token失败！")
+	}
+	// 查询好友申请记录
+	apply, err := f.db.queryApplyWithUidAndToUid(toUID, fromUID)
+	if err != nil {
+		f.Error("查询好友申请记录错误", zap.String("to_uid", toUID))
+		return "", errors.New("查询好友申请记录错误")
+	}
+	// 查询用户红点
+	userRedDot, err := f.userDB.queryUserRedDot(toUID, UserRedDotCategoryFriendApply)
+	if err != nil {
+		f.Error("查询用户通讯录红点信息错误", zap.String("to_uid", toUID))
+		return "", errors.New("查询用户通讯录红点信息错误")
+	}
+	tx, err := f.ctx.DB().Begin()
+	if err != nil {
+		f.Error("开启事务失败！", zap.Error(err))
+		return "", errors.New("开启事务失败！")
+	}
+	defer func() {
+		if err := recover(); err != nil {
+			tx.Rollback()
+			panic(err)
+		}
+	}()
+	isAddCount := false
+	if apply == nil {
+		err = f.db.insertApplyTx(&FriendApplyModel{
+			Status: 0,
+			UID:    toUID,
+			ToUID:  fromUID,
+			Remark: remark,
+			Token:  token,
+		}, tx)
+		if err != nil {
+			tx.Rollback()
+			f.Error("新增好友申请记录错误", zap.String("to_uid", toUID))
+			return "", errors.New("新增好友申请记录错误")
+		}
+	} else {
+		// if apply.Status != 0 {
+		isAddCount = true
+		apply.Status = 0
+		apply.Token = token
+		err = f.db.updateApplyTx(apply, tx)
+		if err != nil {
+			tx.Rollback()
+			f.Error("修改好友申请记录错误", zap.String("to_uid", toUID))
+			return "", errors.New("修改好友申请记录错误")
+		}
+		// }
+
+	}
+	// 新增红点
+	if userRedDot == nil {
+		err = f.userDB.insertUserRedDotTx(&userRedDotModel{
+			UID:      toUID,
+			Count:    1,
+			IsDot:    0,
+			Category: UserRedDotCategoryFriendApply,
+		}, tx)
+		if err != nil {
+			tx.Rollback()
+			f.Error("新增用户通讯录红点信息错误", zap.String("to_uid", toUID))
+			return "", errors.New("新增用户通讯录红点信息错误")
+		}
+	} else {
+		if isAddCount || userRedDot.Count == 0 {
+			userRedDot.Count++
+			err = f.userDB.updateUserRedDotTx(userRedDot, tx)
+			if err != nil {
+				tx.Rollback()
+				f.Error("修改用户通讯录红点信息错误", zap.String("to_uid", toUID))
+				return "", errors.New("修改用户通讯录红点信息错误")
+			}
+		}
+
+	}
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
+		f.Error("提交事物错误", zap.Error(err))
+		return "", errors.New("提交事物错误")
+	}
+	// 发送消息
+	err = f.ctx.SendCMD(config.MsgCMDReq{
+		CMD:         common.CMDFriendRequest,
+		ChannelID:   toUser.UID,
+		ChannelType: common.ChannelTypePerson.Uint8(),
+		Param: map[string]interface{}{
+			"apply_uid":  fromUID,
+			"apply_name": fromName,
+			"to_uid":     toUser.UID,
+			"remark":     remark,
+			"token":      token,
+		},
+	})
+	return token, err
+}
+
+// 查理好友确认 (内部使用)
+func (f *Friend) chalifriendSure(toUID string, toName, token string) error {
+	loginUID := toUID
+	name := toName
+	// var req sureReq
+	// if err := c.BindJSON(&req); err != nil {
+	// 	f.Error(common.ErrData.Error(), zap.Error(err))
+	// 	c.ResponseError(common.ErrData)
+	// 	return
+	// }
+	// if err := req.Check(); err != nil {
+	// 	c.ResponseError(err)
+	// 	return
+	// }
+	key := f.ctx.GetConfig().Cache.FriendApplyTokenCachePrefix + token + loginUID
+	tokenVaule, err := f.ctx.Cache().Get(key) // 获取申请人的uid
+	if err != nil {
+		f.Error("获取好友申请token的信息失败！", zap.Error(err), zap.String("key", key))
+		// c.ResponseError(errors.New("获取好友申请token的信息失败！"))
+		return errors.New("获取好友申请token的信息失败！")
+	}
+	// tokenVaule := token
+	valueMap, err := util.JsonToMap(tokenVaule)
+	if err != nil {
+		f.Error("获取token信息错误", zap.Error(err), zap.String("key", key))
+		return errors.New("获取token信息错误")
+	}
+
+	loginUser, err := f.userDB.QueryByUID(loginUID)
+	if err != nil {
+		f.Error("查询用户信息失败！", zap.Error(err), zap.String("uid", loginUID))
+		return errors.New("查询用户信息失败！")
+	}
+	if loginUser == nil || loginUser.IsDestroy == 1 {
+		f.Error("当前用户不存在或已注销！", zap.String("uid", loginUID))
+		return errors.New("当前用户不存在或已注销！")
+	}
+
+	applyUID := valueMap["from_uid"].(string)
+	vercode := valueMap["vercode"].(string)
+	remark := ""
+	if valueMap["remark"] != nil {
+		remark = valueMap["remark"].(string)
+	}
+	// applyUID := fromUID
+	applyUser, err := f.userDB.QueryByUID(applyUID)
+	if err != nil {
+		f.Error("查询申请人用户信息失败！", zap.Error(err))
+		return errors.New("查询申请人用户信息失败！")
+	}
+	if applyUser == nil || applyUser.IsDestroy == 1 {
+		f.Error("申请人不存在或已注销！", zap.String("uid", applyUID))
+		return errors.New("申请人不存在")
+	}
+	if remark == "" {
+		remark = fmt.Sprintf("我是%s", applyUser.Name)
+	}
+	if strings.TrimSpace(applyUID) == "" || strings.TrimSpace(vercode) == "" {
+		return errors.New("好友申请无效或已过期！")
+	}
+	channelServiceObj := register.GetService(ChannelServiceName)
+	var channelService chservice.IService
+	if channelServiceObj != nil {
+		channelService = channelServiceObj.(chservice.IService)
+	}
+	if channelService != nil {
+		if applyUser.MsgExpireSecond > 0 {
+			err = channelService.CreateOrUpdateMsgAutoDelete(common.GetFakeChannelIDWith(applyUID, loginUID), common.ChannelTypePerson.Uint8(), applyUser.MsgExpireSecond)
+			if err != nil {
+				f.Warn("设置消息自动删除失败", zap.Error(err))
+			}
+		}
+	}
+	// 是否是好友
+	applyFriendModel, err := f.db.queryWithUID(loginUID, applyUID)
+	if err != nil {
+		f.Error("查询是否是好友失败！", zap.Error(err), zap.String("uid", loginUID), zap.String("toUid", applyUID))
+		return errors.New("查询是否是好友失败！")
+	}
+	// 添加好友到数据库
+	tx, err := f.ctx.DB().Begin()
+	if err != nil {
+		f.Error("开启事务失败！", zap.Error(err))
+		return errors.New("开启事务失败！")
+	}
+	defer func() {
+		if err := recover(); err != nil {
+			tx.Rollback()
+			panic(err)
+		}
+	}()
+	version := f.ctx.GenSeq(common.FriendSeqKey)
+	if applyFriendModel == nil {
+		// 验证code
+		err = source.CheckSource(vercode)
+		if err != nil {
+			return err
+		}
+		util.CheckErr(err)
+		err = f.db.InsertTx(&FriendModel{
+			UID:           loginUID,
+			ToUID:         applyUID,
+			Version:       version,
+			Initiator:     0,
+			IsAlone:       0,
+			Vercode:       fmt.Sprintf("%s@%d", util.GenerUUID(), common.Friend),
+			SourceVercode: vercode,
+		}, tx)
+		if err != nil {
+			tx.Rollback()
+			return errors.New("添加好友失败！")
+		}
+	} else {
+		err = f.db.updateRelationshipTx(loginUID, applyUID, 0, 0, vercode, version, tx)
+		if err != nil {
+			tx.Rollback()
+			return errors.New("修改好友关系失败")
+		}
+	}
+	// 是否是好友
+	loginFriendModel, err := f.db.queryWithUID(applyUID, loginUID)
+	//loginIsFriend, err := f.db.IsFriend(applyUID, loginUID)
+	if err != nil {
+		tx.Rollback()
+		f.Error("查询被添加者是否是好友失败！", zap.Error(err), zap.String("uid", loginUID), zap.String("toUid", applyUID))
+		return errors.New("查询被添加者是否是好友失败！")
+	}
+	if loginFriendModel == nil {
+		err = f.db.InsertTx(&FriendModel{
+			UID:           applyUID,
+			ToUID:         loginUID,
+			Version:       version,
+			Initiator:     1,
+			IsAlone:       0,
+			Vercode:       fmt.Sprintf("%s@%d", util.GenerUUID(), common.Friend),
+			SourceVercode: vercode,
+		}, tx)
+		if err != nil {
+			tx.Rollback()
+			return errors.New("添加好友失败！")
+		}
+	} else {
+		err = f.db.updateRelationshipTx(applyUID, loginUID, 0, 0, vercode, version, tx)
+		if err != nil {
+			tx.Rollback()
+			return errors.New("修改好友关系失败")
+		}
+	}
+	// 发布好友确认事件
+	eventID, err := f.ctx.EventBegin(&wkevent.Data{
+		Event: event.FriendSure,
+		Type:  wkevent.None,
+		Data: map[string]interface{}{
+			"uid":    loginUID,
+			"to_uid": applyUID,
+		},
+	}, tx)
+	if err != nil {
+		f.Error("发送好友确认事件失败", zap.Error(err))
+		tx.Rollback()
+		return errors.New("发送好友确认事件失败")
+	}
+	// 查询好友申请记录
+	apply, err := f.db.queryApplyWithUidAndToUid(loginUID, applyUID)
+	if err != nil {
+		f.Error("查询好友申请记录错误", zap.Error(err))
+		tx.Rollback()
+		return errors.New("查询好友申请记录错误")
+	}
+	if apply != nil {
+		apply.Status = 1
+		err = f.db.updateApplyTx(apply, tx)
+		if err != nil {
+			f.Error("修改好友申请记录错误", zap.Error(err))
+			tx.Rollback()
+			return errors.New("修改好友申请记录错误")
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		f.Error("提交事务失败！", zap.Error(err))
+		return errors.New("提交事务失败！")
+	}
+	f.ctx.EventCommit(eventID)
+
+	// 发送确认消息给对方
+	err = f.ctx.SendCMD(config.MsgCMDReq{
+		CMD:         common.CMDFriendAccept,
+		Subscribers: []string{applyUID, loginUID},
+		Param: map[string]interface{}{
+			"to_uid":    applyUID,
+			"from_uid":  loginUID,
+			"from_name": name,
+		},
+	})
+	if err != nil {
+		f.Error("发送消息失败！", zap.Error(err))
+		return errors.New("发送消息失败！")
+	}
+	content := "我们已经是好友了，可以愉快的聊天了！"
+	if f.ctx.GetConfig().Friend.AddedTipsText != "" {
+		content = f.ctx.GetConfig().Friend.AddedTipsText
+	}
+	payload := []byte(util.ToJson(map[string]interface{}{
+		"content": content,
+		"type":    common.Tip,
+	}))
+
+	err = f.ctx.SendMessage(&config.MsgSendReq{
+		FromUID:     loginUID,
+		ChannelID:   applyUID,
+		ChannelType: common.ChannelTypePerson.Uint8(),
+		Payload:     payload,
+		Header: config.MsgHeader{
+			RedDot: 1,
+		},
+	})
+	if err != nil {
+		f.Error("发送通过好友请求消息失败！", zap.Error(err))
+		return errors.New("发送通过好友请求消息失败！")
+	}
+
+	payload = []byte(util.ToJson(map[string]interface{}{
+		"content": remark,
+		"type":    common.Text,
+	}))
+
+	err = f.ctx.SendMessage(&config.MsgSendReq{
+		FromUID:     applyUID,
+		ChannelID:   loginUID,
+		ChannelType: common.ChannelTypePerson.Uint8(),
+		Payload:     payload,
+		Header: config.MsgHeader{
+			RedDot: 1,
+		},
+	})
+	if err != nil {
+		f.Error("发送接受好友请求消息失败！", zap.Error(err))
+		return errors.New("发送接受好友请求消息失败！")
+	}
+
+	err = f.ctx.Cache().Delete(key)
+	if err != nil {
+		f.Error("删除缓存数据错误", zap.Error(err))
+		return errors.New("删除缓存数据错误")
+	}
+	return err
+}
+
 // 确认好友
 func (f *Friend) friendSure(c *wkhttp.Context) {
 	loginUID := c.GetLoginUID()
@@ -813,6 +1254,7 @@ func (f *Friend) friendSync(c *wkhttp.Context) {
 	}
 	c.JSON(http.StatusOK, resps)
 }
+
 // 搜索好友
 func (f *Friend) friendSearch(c *wkhttp.Context) {
 	uid := c.MustGet("uid").(string)
