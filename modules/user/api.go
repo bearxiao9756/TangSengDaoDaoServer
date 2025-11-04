@@ -1191,10 +1191,10 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		return nil, err
 	}
 
-	kefuInfo, err := u.db.QueryByUID(kefuUID)
+	// kefuInfo, err := u.db.QueryByUID(kefuUID)
 	err = u.addKefuFriend(createUser.UID, kefuUID)
 	if err != nil {
-		u.Error("添加注册用户和客服为好友关系失败", zap.String("shortNo", kefuInfo.Name))
+		u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
 		return nil, err
 	}
 	u.Info("游客注册 ", zap.String("添加注册用户和客服为好友关系失败", shortNo))
@@ -1206,15 +1206,15 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// 	inviteUID = invite.Uid
 	// 	vercode = invite.Vercode
 	// }
-	u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
-	//发送用户注册事件
-	// 搜索
-	auser, err := u.chaliSearch(shortNo)
-	if err != nil {
-		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
-		return nil, err
-	}
-	u.Info("auser", zap.String("shortNo", auser.Name))
+	// u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
+	// //发送用户注册事件
+	// // 搜索
+	// auser, err := u.chaliSearch(shortNo)
+	// if err != nil {
+	// 	u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
+	// 	return nil, err
+	// }
+	// u.Info("auser", zap.String("shortNo", auser.Name))
 	// 申请
 	// 同意
 
@@ -1227,12 +1227,12 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
-			"mid":            mid,
-			"mid_name":       kefuInfo.Name,
-			"remark":         u.ctx.GetConfig().WelcomeMessage,
-			"gid":            gid,
-			"uid_short_no":   shortNo,
-			"vercode":        auser.Vercode,
+			"mid": mid,
+			// "mid_name":       kefuInfo.Name,
+			// "remark":         u.ctx.GetConfig().WelcomeMessage,
+			"gid":          gid,
+			"uid_short_no": shortNo,
+			// "vercode":        auser.Vercode,
 			"uid":            createUser.UID,
 			"invite_code":    kefuUID,
 			"invite_uid":     kefuUID,
