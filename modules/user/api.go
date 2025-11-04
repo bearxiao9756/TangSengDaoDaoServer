@@ -747,22 +747,25 @@ func (u *User) userUpdateSetting(c *wkhttp.Context) {
 
 // 获取用户详情
 func (u *User) get(c *wkhttp.Context) {
+	u.Info("特别注意1", zap.String("获取用户信息", "开始"))
 	uid := c.Param("uid")
 	groupNo := c.Query("group_no")
+	u.Info("特别注意2", zap.String("获取用户信息", uid))
 	loginUID := c.MustGet("uid").(string)
-
+	u.Info("特别注意3", zap.String("获取用户信息", loginUID))
 	if u.ctx.GetConfig().IsVisitor(uid) { // 访客频道
 		c.Request.URL.Path = fmt.Sprintf("/v1/hotline/visitors/%s/im", uid)
 		u.ctx.GetHttpRoute().HandleContext(c)
 		return
 	}
-
+	u.Info("特别注意4", zap.String("获取用户信息", "开始查询"))
 	userDetailResp, err := u.userService.GetUserDetail(uid, loginUID)
 	if err != nil {
 		u.Error("获取用户详情失败！", zap.Error(err))
 		c.ResponseError(errors.New("获取用户详情失败！"))
 		return
 	}
+	u.Info("特别注意5", zap.String("获取用户信息", userDetailResp.Name), zap.String("获取用户信息", userDetailResp.SourceDesc))
 	if userDetailResp == nil {
 		c.ResponseError(errors.New("用户不存在！"))
 		return
@@ -785,7 +788,7 @@ func (u *User) get(c *wkhttp.Context) {
 			}
 		}
 	}
-
+	u.Info("特别注意6", zap.String("获取用户信息", userDetailResp.Name), zap.String("获取用户信息", userDetailResp.SourceDesc))
 	if groupMember != nil && groupMember.InviteUID != "" && groupMember.IsDeleted == 0 {
 		inviteJoinGroupUserInfo, err := u.userService.GetUserDetail(groupMember.InviteUID, uid)
 		if err != nil {
@@ -813,10 +816,12 @@ func (u *User) get(c *wkhttp.Context) {
 			CreatedAt:          groupMember.CreatedAt,
 		}
 	}
-
+	u.Info("特别注意7", zap.String("获取用户信息", userDetailResp.Name), zap.String("获取用户信息", userDetailResp.SourceDesc))
 	if userDetailResp.Follow == 1 || uid == loginUID {
 		isShowShortNo = true
 	}
+	u.Info("特别注意8", zap.String("获取用户信息", userDetailResp.Name), zap.String("获取用户信息", userDetailResp.SourceDesc))
+
 	if !isShowShortNo {
 		userDetailResp.ShortNo = ""
 		userDetailResp.Vercode = ""
@@ -825,6 +830,7 @@ func (u *User) get(c *wkhttp.Context) {
 			userDetailResp.Vercode = vercode
 		}
 	}
+	u.Info("特别注意9", zap.String("获取用户信息", userDetailResp.Name), zap.String("获取用户信息", userDetailResp.SourceDesc))
 	c.Response(userDetailResp)
 }
 
