@@ -1079,7 +1079,6 @@ func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *crea
 		if err != nil {
 			tx.Rollback()
 			u.Error("数据库事物提交失败", zap.Error(err))
-			// c.ResponseError(errors.New("数据库事物提交失败"))
 			return errors.New("数据库事物提交失败")
 		}
 		return nil
@@ -1090,15 +1089,6 @@ func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *crea
 	}
 	// c.Response(resp)
 	return resp, err
-}
-func (u *User) guestcreateUserTx(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, kefuUID string, flag string, commitCallback func() error, invite *model.Invite, tx *dbr.Tx) {
-	publicIP := util.GetClientPublicIP(c.Request)
-	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, flag, commitCallback)
-	if err != nil {
-		c.ResponseError(errors.New("注册失败！"))
-		return
-	}
-	c.Response(resp)
 }
 func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, createUser *createUserModel, publicIP string, invite *model.Invite, tx *dbr.Tx, kefuUID string, flag string, commitCallback func() error) (*loginUserDetailResp, error) {
 	var (
@@ -1191,13 +1181,13 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		return nil, err
 	}
 
-	// kefuInfo, err := u.db.QueryByUID(kefuUID)
+	kefuInfo, err := u.db.QueryByUID(kefuUID)
 	err = u.addKefuFriend(createUser.UID, kefuUID)
 	if err != nil {
 		u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-	u.Info("游客注册 ", zap.String("添加注册用户和客服为好友关系失败", shortNo))
+	u.Info("游客注册 ", zap.String("添加注册用户和客服为好友关系失败", shortNo), zap.String("添加注册用户和客服为好友关系失败", kefuInfo.Username))
 	// inviteCode := kefuUID
 	// inviteUID := kefuUID
 	// vercode := kefuUID
