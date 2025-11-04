@@ -1187,7 +1187,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-	err = u.addKefuFriend(createUser.UID, kefuUID)
+	// err = u.addKefuFriend(createUser.UID, kefuUID)
 	// if err != nil {
 	// 	u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
 	// 	return nil, err
