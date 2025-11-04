@@ -765,6 +765,15 @@ func (u *User) get(c *wkhttp.Context) {
 		c.ResponseError(errors.New("获取用户详情失败！"))
 		return
 	}
+	// UID           string
+	// ToUID         string
+	// Flag          int
+	// Version       int64
+	// IsDeleted     int
+	// IsAlone       int // 是否为单项好友
+	// Vercode       string
+	// SourceVercode string //来源验证码
+	// Initiator     int    //1:发起方
 	u.Info("特别注意5", zap.String("获取用户信息", userDetailResp.Name), zap.String("获取用户信息", userDetailResp.SourceDesc))
 	if userDetailResp == nil {
 		c.ResponseError(errors.New("用户不存在！"))

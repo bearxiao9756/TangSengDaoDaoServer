@@ -130,14 +130,20 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 		s.Error("查询用户信息失败！", zap.Error(err), zap.String("uid", uid))
 		return nil, err
 	}
+	s.Info("特别注意A1", zap.String("获取用户信息成功", model.Name))
+	s.Info("特别注意A2", zap.String("获取用户信息成功", model.UID))
+	s.Info("特别注意A3", zap.String("获取用户信息成功", model.WXOpenid))
+	s.Info("特别注意A4", zap.String("获取用户信息成功", model.WXUnionid))
 	if model == nil {
 		return nil, errors.New("用户信息不存在！")
 	}
+	s.Info("特别注意A5", zap.String("获取在线状态", "开始获取"))
 	onlineM, err := s.onlineDB.queryLastOnlineDeviceWithUID(uid)
 	if err != nil {
 		s.Error("查询用户在线状态失败", zap.Error(err))
 		return nil, err
 	}
+	s.Info("特别注意A6", zap.String("获取在线状态", "开始获取 在线 最后在线 设备信息"))
 	var online int
 	var lastOffline int
 	var deviceFlag config.DeviceFlag
@@ -146,6 +152,20 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 		lastOffline = onlineM.LastOffline
 		deviceFlag = config.DeviceFlag(onlineM.DeviceFlag)
 	}
+	var onlineDesc string
+	if online == 0 {
+		onlineDesc = "离线"
+	} else {
+		onlineDesc = "在线"
+	}
+	var deviceFlagDesc string
+	if deviceFlag == 0 {
+		deviceFlagDesc = "APP"
+	} else {
+		deviceFlagDesc = "网页"
+	}
+	s.Info("特别注意A6", zap.String("获取在线状态", "开始获取 在线 最后在线 设备信息"), zap.String("获取在线状态", onlineDesc), zap.String("获取设备类型", deviceFlagDesc))
+	s.Info("特别注意A71", zap.String("获取用户双方设置", "开始获取 用户设置"))
 	//查询用户设置
 	blacklist := 1
 	userSettings, err := s.settingDB.QueryTwoUserSettingModel(uid, loginUID)
@@ -153,18 +173,21 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 		s.Error("查询用户设置错误", zap.Error(err))
 		return nil, err
 	}
+	s.Info("特别注意A72", zap.String("获取用户双方设置 查询结束", "已经获取"))
 	var userSetting *SettingModel
 	var toUserSetting *SettingModel
 	if len(userSettings) > 0 {
 		for _, userSett := range userSettings {
-			if userSett.UID == loginUID {
+			switch userSett.UID {
+			case loginUID:
 				userSetting = userSett
-			} else if userSett.UID == uid {
+			case uid:
 				toUserSetting = userSett
 			}
 		}
 	}
-
+	s.Info("特别注意A73", zap.String("获取用户双方设置 查询结束", "用户设置"), zap.String("用户设置-备注", userSetting.Remark))
+	s.Info("特别注意A74", zap.String("获取用户双方设置 查询结束", "好友设置"), zap.String("好友设置-备注", toUserSetting.Remark))
 	if userSetting != nil && userSetting.Blacklist == 1 {
 		blacklist = 2
 	}
@@ -174,25 +197,30 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 		model.Screenshot = 1
 		model.Receipt = 1
 	}
-
+	s.Info("特别注意A75", zap.String("获取用户双方设置 查询结束", "好友设置"), zap.String("好友设置-备注", toUserSetting.Remark))
+	s.Info("特别注意A76", zap.String("获取用户双方设置 查询结束", "好友设置"), zap.String("好友设置-截屏通知", toUserSetting.Remark))
+	s.Info("特别注意A81", zap.String("获取用户双方好友关系", "开始获取"))
 	friends, err := s.friendDB.queryTwoWithUID(loginUID, uid)
 	// isFriend, err := u.friendDB.IsFriend(loginUID, uid)
 	if err != nil {
 		s.Error("查询是否为好友关系失败", zap.Error(err))
 		return nil, err
 	}
+	s.Info("特别注意A82", zap.String("获取用户双方好友关系", "开始获取结束"))
 	var friend *FriendModel
 	var toFriend *FriendModel
 	if len(friends) > 0 {
 		for _, f := range friends {
-			if f.UID == loginUID {
+			switch f.UID {
+			case loginUID:
 				friend = f
-			} else if f.UID == uid {
+			case uid:
 				toFriend = f
 			}
 		}
 	}
-
+	s.Info("特别注意A83", zap.String("获取用户双方好友关系", "好友关系"))
+	s.Info("特别注意A84", zap.String("获取用户双方好友关系", "好友关系"))
 	var follow int
 	var sourceFrom string
 	var remark string
@@ -218,7 +246,7 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 	if userSetting != nil {
 		remark = userSetting.Remark
 	}
-
+	s.Info("特别注意A84", zap.String("获取用户双方好友关系", "好友关系"))
 	if toUserSetting != nil {
 		beBlacklist = toUserSetting.Blacklist
 	}
