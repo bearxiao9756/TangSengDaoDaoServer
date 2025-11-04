@@ -1180,14 +1180,11 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-
-	kefuInfo, err := u.db.QueryByUID(kefuUID)
 	err = u.addKefuFriend(createUser.UID, kefuUID)
 	if err != nil {
 		u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-	u.Info("游客注册 ", zap.String("添加注册用户和客服为好友关系失败", shortNo), zap.String("添加注册用户和客服为好友关系失败", kefuInfo.Username))
 	// inviteCode := kefuUID
 	// inviteUID := kefuUID
 	// vercode := kefuUID
@@ -2931,18 +2928,26 @@ func (u *User) addKefuFriend(uid string, kefuUID string) error {
 	}()
 	if !isFriend {
 		version := u.ctx.GenSeq(common.FriendSeqKey)
+
+		sourcecode := util.GenerUUID()
 		friendsToInsert := []*FriendModel{
 			// 用户 -> 客服 (第一条记录)
 			{
-				UID:     uid,
-				ToUID:   kefuUID,
-				Version: version,
+				UID:           uid,
+				ToUID:         kefuUID,
+				Version:       version,
+				Initiator:     1,
+				Vercode:       fmt.Sprintf("%s@%d", util.GenerUUID(), common.Friend),
+				SourceVercode: fmt.Sprintf("%s@%d", sourcecode, common.InvitationCode),
 			},
 			// 客服 -> 用户 (第二条记录，双向好友关系)
 			{
-				UID:     kefuUID,
-				ToUID:   uid,
-				Version: version,
+				UID:           kefuUID,
+				ToUID:         uid,
+				Version:       version,
+				Initiator:     0,
+				Vercode:       fmt.Sprintf("%s@%d", util.GenerUUID(), common.Friend),
+				SourceVercode: fmt.Sprintf("%s@%d", sourcecode, common.InvitationCode),
 			},
 		}
 		err := u.friendDB.InsertTxs(friendsToInsert, tx)
