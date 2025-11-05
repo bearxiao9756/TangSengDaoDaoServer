@@ -820,11 +820,13 @@ func (u *User) get(c *wkhttp.Context) {
 	}
 	u.Info("特别注意4", zap.String("获取用户信息", "开始查询"))
 	userDetailResp, err := u.userService.GetUserDetail(uid, loginUID)
+	u.Info("特别注意41", zap.String("获取用户信息", "开始查询"))
 	if err != nil {
 		u.Error("获取用户详情失败！", zap.Error(err))
 		c.ResponseError(errors.New("获取用户详情失败！"))
 		return
 	}
+	u.Info("特别注意42", zap.String("获取用户信息", "开始查询"))
 	// UID           string
 	// ToUID         string
 	// Flag          int
@@ -839,6 +841,7 @@ func (u *User) get(c *wkhttp.Context) {
 		c.ResponseError(errors.New("用户不存在！"))
 		return
 	}
+
 	isShowShortNo := false
 	vercode := ""
 	var groupMember *model.GroupMemberResp
