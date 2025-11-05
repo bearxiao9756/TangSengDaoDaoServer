@@ -275,19 +275,19 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	subkehu := "https://hy82s2hjk23.icu:9000/";
-	subkehu1 := "http://hy82s2hjk23.icu:9000/";
-	subkehu2 := "http://hy82s2hjk23.icu:8090/";
-	subkehuT := "https://hy82s2hjk23.icu/img/";
+	subkehu := "https://123hao:9000/"
+	subkehu1 := "http://123hao:9000/"
+	subkehu2 := "http://123hao:8090/"
+	subkehuT := "https://123hao/img/"
 
-    if(strings.Contains(downloadUrl,subkehu)){
-	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu,subkehuT)
+	if strings.Contains(downloadUrl, subkehu) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu, subkehuT)
 	}
-	if(strings.Contains(downloadUrl,subkehu1)){
-	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu1,subkehuT)
+	if strings.Contains(downloadUrl, subkehu1) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu1, subkehuT)
 	}
-	if(strings.Contains(downloadUrl,subkehu2)){
-	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu2,subkehuT)
+	if strings.Contains(downloadUrl, subkehu2) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu2, subkehuT)
 	}
 	if strings.Contains(downloadUrl, "?") {
 		c.Redirect(http.StatusFound, fmt.Sprintf("%s&v=%s", downloadUrl, v))

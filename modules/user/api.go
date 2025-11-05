@@ -416,19 +416,19 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-    // http://hy82s2hjk23.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
-    subkehu := "https://hy82s2hjk23.icu:9000/";
-	subkehu1 := "http://hy82s2hjk23.icu:9000/";
-	subkehu2 := "http://hy82s2hjk23.icu:8090/";
-	subkehuT := "https://hy82s2hjk23.icu/img/";
-    if(strings.Contains(downloadUrl,subkehu)){
-	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu,subkehuT)
+	// http://123hao:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
+	subkehu := "https://123hao:9000/"
+	subkehu1 := "http://123hao:9000/"
+	subkehu2 := "http://123hao:8090/"
+	subkehuT := "https://123hao/img/"
+	if strings.Contains(downloadUrl, subkehu) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu, subkehuT)
 	}
-	if(strings.Contains(downloadUrl,subkehu1)){
-	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu1,subkehuT)
+	if strings.Contains(downloadUrl, subkehu1) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu1, subkehuT)
 	}
-	if(strings.Contains(downloadUrl,subkehu2)){
-	  downloadUrl = strings.ReplaceAll(downloadUrl,subkehu2,subkehuT)
+	if strings.Contains(downloadUrl, subkehu2) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu2, subkehuT)
 	}
 	if strings.Contains(downloadUrl, "?") {
 		c.Redirect(http.StatusFound, fmt.Sprintf("%s&v=%s", downloadUrl, v))
@@ -995,18 +995,17 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	}
 	length := len(req.Channel)
 	if length == 0 {
-    // 尽管前面已经有了 c.ResponseError，但为了代码的完整性，可以处理空字符串的情况
+		// 尽管前面已经有了 c.ResponseError，但为了代码的完整性，可以处理空字符串的情况
 		c.ResponseError(errors.New("渠道信息不能为空"))
-    	return
-    }
+		return
+	}
 	lastChar := req.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
 	if lastChar != "a" && lastChar != "b" && lastChar != "c" {
-    	c.ResponseError(errors.New("渠道信息错误"))
-    	return
+		c.ResponseError(errors.New("渠道信息错误"))
+		return
 	}
 	req.Channel = req.Channel[:length-1] // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
-	lastCharString := string(lastChar) // 转换为 string
-
+	lastCharString := string(lastChar)   // 转换为 string
 
 	// 2. 身份生成和查询
 	// *** 关键步骤：生成唯一的访客ID (UID) 和临时密码 ***
@@ -1053,7 +1052,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			Device:    req.Device,
 		}
 		u.Info("游客用户 不存在", zap.String("游客信息构建-WXUnionid", model.WXUnionid))
-		_, err := u.gusetcreateUser(loginSpanCtx, model, c, nil, req.Channel,lastCharString)
+		_, err := u.gusetcreateUser(loginSpanCtx, model, c, nil, req.Channel, lastCharString)
 		if err != nil {
 			u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
 			c.Response(err)
@@ -1064,28 +1063,29 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 				c.Response(err)
 			}
 			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
-			
+
 		}
 	}
 }
-func chaLiAddGroup(groupFlag string,kefuUID string)(mid string,gid string){
+func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 	var group string
 	var groupOwn string
-    switch groupFlag {
-    case "a":
-        group = "0b981e0823bf49aeac62ea3dc2591383"
+	switch groupFlag {
+	case "a":
+		group = "0b981e0823bf49aeac62ea3dc2591383"
 		groupOwn = kefuUID
-    case "b":
-        group = "840dc274a16c4e5285dd772b2b7b1a4a"
-		groupOwn =  kefuUID
-    case "c":
-        group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		groupOwn =  kefuUID
-    default:
-        return "", ""
-    }
-	return groupOwn,group
+	case "b":
+		group = "840dc274a16c4e5285dd772b2b7b1a4a"
+		groupOwn = kefuUID
+	case "c":
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	default:
+		return "", ""
+	}
+	return groupOwn, group
 }
+
 // 登录
 func (u *User) login(c *wkhttp.Context) {
 
@@ -2806,7 +2806,7 @@ func (u *User) createUser(registerSpanCtx context.Context, createUser *createUse
 	}
 	c.Response(resp)
 }
-func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite, kefuUID string,flag string) (*loginUserDetailResp, error) {
+func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, invite *model.Invite, kefuUID string, flag string) (*loginUserDetailResp, error) {
 	tx, err := u.db.session.Begin()
 	if err != nil {
 		u.Error("创建数据库事物失败", zap.Error(err))
@@ -2820,7 +2820,7 @@ func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *crea
 		}
 	}()
 	publicIP := util.GetClientPublicIP(c.Request)
-	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, flag,func() error {
+	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, flag, func() error {
 		err := tx.Commit()
 		if err != nil {
 			tx.Rollback()
@@ -2839,7 +2839,7 @@ func (u *User) gusetcreateUser(registerSpanCtx context.Context, createUser *crea
 }
 func (u *User) guestcreateUserTx(registerSpanCtx context.Context, createUser *createUserModel, c *wkhttp.Context, kefuUID string, flag string, commitCallback func() error, invite *model.Invite, tx *dbr.Tx) {
 	publicIP := util.GetClientPublicIP(c.Request)
-	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID,flag, commitCallback)
+	resp, err := u.guestcreateUserWithRespAndTx(registerSpanCtx, createUser, publicIP, invite, tx, kefuUID, flag, commitCallback)
 	if err != nil {
 		c.ResponseError(errors.New("注册失败！"))
 		return
@@ -2949,13 +2949,13 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// 	vercode = invite.Vercode
 	// }
 	//发送用户注册事件
-	mid,gid  := chaLiAddGroup(flag,kefuUID)
+	mid, gid := chaLiAddGroup(flag, kefuUID)
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
-			"mid":  		  mid,
-			"gid": 			  gid,
+			"mid":            mid,
+			"gid":            gid,
 			"uid":            createUser.UID,
 			"invite_code":    kefuUID,
 			"invite_uid":     kefuUID,
