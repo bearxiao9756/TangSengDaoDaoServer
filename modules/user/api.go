@@ -1044,7 +1044,7 @@ func (u *User) wxLogin(c *wkhttp.Context) {
 		u.createUser(loginSpanCtx, model, c, nil)
 	}
 }
-func (u *User) guestLogin(c *wkhttp.Context) {
+func (u *User) guestLoginWX(c *wkhttp.Context) {
 	type guestLoginReq struct {
 		Channel string     `json:"channel"` // 标识用户来自哪个直连链接 (超A链)
 		Flag    int        `json:"flag"`
@@ -1142,7 +1142,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		}
 	}
 }
-func (u *User) guestLoginWX(c *wkhttp.Context) {
+func (u *User) guestLogin(c *wkhttp.Context) {
 	type guestLoginReq struct {
 		Channel string     `json:"channel"` // 标识用户来自哪个直连链接 (超A链)
 		Flag    int        `json:"flag"`
@@ -1202,12 +1202,16 @@ func (u *User) guestLoginWX(c *wkhttp.Context) {
 		// 5. 如果访客不存在，则创建新的访客账号 (无需密码)
 		// 自动生成用户名（供客服查看）
 		guestNickname := fmt.Sprintf("%s%s", GenerateRandomName(), tempUID[:3])
+		guestPhone := u.generateUniqueMockPhoneNumber()
+		username := fmt.Sprintf("%s%s", "0086", guestPhone)
 		var model = &createUserModel{
 			UID:       tempUID,
-			Zone:      "",
-			Phone:     "",
-			Password:  "",
+			Zone:      "86",
+			Sex:       1,
+			Phone:     guestPhone,
+			Password:  "qeqweqweqwe",
 			Name:      guestNickname,
+			Username:  username,
 			WXOpenid:  req.Channel,
 			WXUnionid: req.Device.DeviceID,
 			Flag:      req.Flag,
@@ -1226,7 +1230,6 @@ func (u *User) guestLoginWX(c *wkhttp.Context) {
 				c.Response(err)
 			}
 			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
-
 		}
 	}
 }
