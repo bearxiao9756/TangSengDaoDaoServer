@@ -177,20 +177,33 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 	var userSetting *SettingModel
 	var toUserSetting *SettingModel
 	if len(userSettings) > 0 {
+		s.Info("特别注意A722", zap.String("获取用户双方设置 查询结束", "用户设置"), zap.String("用户设置-备注", "1"))
 		for _, userSett := range userSettings {
 			switch userSett.UID {
 			case loginUID:
+				s.Info("特别注意A722", zap.String("获取用户双方设置 查询结束", "用户设置"), zap.String("用户设置-备注", "2"))
 				userSetting = userSett
 			case uid:
+				s.Info("特别注意A722", zap.String("获取用户双方设置 查询结束", "用户设置"), zap.String("用户设置-备注", "3"))
 				toUserSetting = userSett
 			}
 		}
 	}
-	s.Info("特别注意A73", zap.String("获取用户双方设置 查询结束", "用户设置"), zap.String("用户设置-备注", userSetting.Remark))
-	s.Info("特别注意A74", zap.String("获取用户双方设置 查询结束", "好友设置"), zap.String("好友设置-备注", toUserSetting.Remark))
+	if userSetting != nil {
+		s.Info("特别注意A736", zap.String("获取用户双方设置 查询结束", "用户设置"), zap.String("用户设置-备注", userSetting.Remark))
+	} else {
+		s.Info("特别注意A738", zap.String("获取用户双方设置 查询结束", "用户设置"), zap.String("用户设置-备注", "未设置备注"))
+	}
+	if toUserSetting != nil {
+		s.Info("特别注意A746", zap.String("获取用户双方设置 查询结束", "好友设置"), zap.String("好友设置-备注", toUserSetting.Remark))
+
+	} else {
+		s.Info("特别注意A748", zap.String("获取用户双方设置 查询结束", "好友设置"), zap.String("好友设置-备注", "好友没有做其他设置"))
+	}
 	if userSetting != nil && userSetting.Blacklist == 1 {
 		blacklist = 2
 	}
+
 	// 默认打开撤回通知/截屏通知
 	if userSetting == nil {
 		model.RevokeRemind = 1
