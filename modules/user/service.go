@@ -210,8 +210,8 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 		model.Screenshot = 1
 		model.Receipt = 1
 	}
-	s.Info("特别注意A75", zap.String("获取用户双方设置 查询结束", "好友设置"), zap.String("好友设置-备注", toUserSetting.Remark))
-	s.Info("特别注意A76", zap.String("获取用户双方设置 查询结束", "好友设置"), zap.String("好友设置-截屏通知", toUserSetting.Remark))
+	s.Info("特别注意A75", zap.String("获取用户双方设置 查询结束", "好友设置"))
+	s.Info("特别注意A76", zap.String("获取用户双方设置 查询结束", "好友设置"))
 	s.Info("特别注意A81", zap.String("获取用户双方好友关系", "开始获取"))
 	friends, err := s.friendDB.queryTwoWithUID(loginUID, uid)
 	// isFriend, err := u.friendDB.IsFriend(loginUID, uid)
