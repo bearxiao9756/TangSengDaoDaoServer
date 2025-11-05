@@ -243,26 +243,31 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 	if friend != nil && friend.IsDeleted == 0 {
 		follow = 1
 		//查询加好友来源
+		s.Info("特别注意A841", zap.String("获取用户双方好友关系", "好友关系"))
 		sourceFrom = source.GetSoruce(friend.SourceVercode)
 		if friend.Initiator == 0 && sourceFrom != "" {
 			sourceFrom = fmt.Sprintf("对方%s", sourceFrom)
+			s.Info("特别注意A82", zap.String("获取用户双方好友关系", "好友关系"))
 		}
-
+		s.Info("特别注意A843", zap.String("获取用户双方好友关系", "好友关系"))
 		if toFriend != nil {
 			beDeleted = toFriend.IsDeleted
 
 		} else {
 			beDeleted = 1
 		}
+		s.Info("特别注意A844", zap.String("获取用户双方好友关系", "好友关系"))
 		vercode = friend.Vercode
 	}
+	s.Info("特别注意A85", zap.String("获取用户双方好友关系", "好友关系"))
 	if userSetting != nil {
 		remark = userSetting.Remark
 	}
-	s.Info("特别注意A84", zap.String("获取用户双方好友关系", "好友关系"))
+	s.Info("特别注意A86", zap.String("获取用户双方好友关系", "好友关系"))
 	if toUserSetting != nil {
 		beBlacklist = toUserSetting.Blacklist
 	}
+	s.Info("特别注意A87", zap.String("获取用户双方好友关系", "好友关系"))
 	return NewUserDetailResp(model, remark, loginUID, sourceFrom, online, lastOffline, deviceFlag, follow, blacklist, beDeleted, beBlacklist, userSetting, vercode), nil
 }
 
@@ -972,7 +977,6 @@ func NewUserDetailResp(m *Detail, remark, loginUID string, sourceFrom string, on
 		flameSecond = setting.FlameSecond
 
 	}
-
 	return &UserDetailResp{
 		UID:            m.UID,
 		Name:           m.Name,
