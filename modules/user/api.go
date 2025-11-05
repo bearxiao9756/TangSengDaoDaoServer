@@ -258,7 +258,9 @@ func (u *User) isPhoneNumberInDB(phone string) bool {
 	}
 	return false // 仅为占位符，实际需连接DB
 }
+
 func (u *User) generateUniqueMockPhoneNumber() string {
+
 	const maxAttempts = 1000 // 设置最大尝试次数，防止无限循环
 	attempts := 0
 
@@ -273,9 +275,7 @@ func (u *User) generateUniqueMockPhoneNumber() string {
 
 		attempts++
 	}
-
-	// 如果尝试了太多次仍未找到，抛出错误或返回一个特殊的失败标记
-	panic("Failed to generate a unique phone number after 1000 attempts. Check DB size or random space.")
+	return ""
 }
 
 // app退出登录
@@ -1202,7 +1202,8 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		// 5. 如果访客不存在，则创建新的访客账号 (无需密码)
 		// 自动生成用户名（供客服查看）
 		guestNickname := fmt.Sprintf("%s%s", GenerateRandomName(), tempUID[:3])
-		guestPhone := u.generateUniqueMockPhoneNumber()
+		// guestPhone := u.generateUniqueMockPhoneNumber()
+		guestPhone := "18844403332"
 		username := fmt.Sprintf("%s%s", "0086", guestPhone)
 		var model = &createUserModel{
 			UID:       tempUID,
