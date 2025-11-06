@@ -1518,8 +1518,8 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 	} else {
 		publicIP := util.GetClientPublicIP(c.Request)
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
-		go u.sentWelcomeMsg(publicIP, userInfo.UID)
-		// go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
+		go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
 	}
 }
 func (u *User) guestExecLogin(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context) (*loginUserDetailResp, error) {
