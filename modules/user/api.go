@@ -476,11 +476,11 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	// http://dabobo.acone.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
-	subkehu := "https://dabobo.acone.icu:9000/"
-	subkehu1 := "http://dabobo.acone.icu:9000/"
-	subkehu2 := "http://dabobo.acone.icu:8090/"
-	subkehuT := "https://dabobo.acone.icu/img/"
+	// http://123back.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
+	subkehu := "https://123back.icu:9000/"
+	subkehu1 := "http://123back.icu:9000/"
+	subkehu2 := "http://123back.icu:8090/"
+	subkehuT := "https://123back.icu/img/"
 	if strings.Contains(downloadUrl, subkehu) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu, subkehuT)
 	}

@@ -206,18 +206,18 @@ func (f *File) getFile(c *wkhttp.Context) {
 		c.ResponseError(err)
 		return
 	}
-	subkehu := "https://dabobo.acone.icu:9000/";
-	subkehu1 := "http://dabobo.acone.icu:9000/";
-	subkehu2 := "http://dabobo.acone.icu:8090/";
-	subkehuT := "https://dabobo.acone.icu/img/";
-    if(strings.Contains(downloadURL,subkehu)){
-	  downloadURL = strings.ReplaceAll(downloadURL,subkehu,subkehuT)
+	subkehu := "https://123back.icu:9000/"
+	subkehu1 := "http://123back.icu:9000/"
+	subkehu2 := "http://123back.icu:8090/"
+	subkehuT := "https://123back.icu/img/"
+	if strings.Contains(downloadURL, subkehu) {
+		downloadURL = strings.ReplaceAll(downloadURL, subkehu, subkehuT)
 	}
-	if(strings.Contains(downloadURL,subkehu1)){
-	  downloadURL = strings.ReplaceAll(downloadURL,subkehu1,subkehuT)
+	if strings.Contains(downloadURL, subkehu1) {
+		downloadURL = strings.ReplaceAll(downloadURL, subkehu1, subkehuT)
 	}
-	if(strings.Contains(downloadURL,subkehu2)){
-	  downloadURL = strings.ReplaceAll(downloadURL,subkehu2,subkehuT)
+	if strings.Contains(downloadURL, subkehu2) {
+		downloadURL = strings.ReplaceAll(downloadURL, subkehu2, subkehuT)
 	}
 	c.Redirect(http.StatusFound, downloadURL)
 }
