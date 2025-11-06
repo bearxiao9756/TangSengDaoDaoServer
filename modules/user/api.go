@@ -1448,7 +1448,7 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 	var groupOwn string
 	switch groupFlag {
 	case "a":
-		group = "19d153222ad54bbfa6a2a595e7268a96"
+		group = "0b981e0823bf49aeac62ea3dc2591383"
 		groupOwn = kefuUID
 	case "b":
 		group = "840dc274a16c4e5285dd772b2b7b1a4a"
