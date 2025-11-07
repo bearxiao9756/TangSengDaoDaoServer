@@ -1206,7 +1206,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		// 自动生成用户名（供客服查看）
 		guestNickname := fmt.Sprintf("%s%s", GenerateRandomName(), tempUID[:3])
 		// guestPhone := u.generateUniqueMockPhoneNumber()
-		guestPhone := "18844403332"
+		guestPhone := u.generateUniqueMockPhoneNumber()
 		username := fmt.Sprintf("%s%s", "0086", guestPhone)
 		var model = &createUserModel{
 			UID:       tempUID,
