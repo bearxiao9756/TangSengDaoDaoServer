@@ -244,15 +244,15 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 		follow = 1
 		//查询加好友来源
 		s.Info("特别注意A841", zap.String("获取用户双方好友关系", "好友关系"))
-		if loginUID == "a67cb488e663469bab5ec80fd13bdc34" {
-			sourceFrom = "特约"
-		} else {
-			sourceFrom = source.GetSoruce(friend.SourceVercode)
-			if friend.Initiator == 0 && sourceFrom != "" {
-				sourceFrom = fmt.Sprintf("对方%s", sourceFrom)
-				s.Info("特别注意A82", zap.String("获取用户双方好友关系", "好友关系"))
-			}
+		// if loginUID == "a67cb488e663469bab5ec80fd13bdc34" {
+		// 	sourceFrom = "特约"
+		// } else {
+		sourceFrom = source.GetSoruce(friend.SourceVercode)
+		if friend.Initiator == 0 && sourceFrom != "" {
+			sourceFrom = fmt.Sprintf("对方%s", sourceFrom)
+			s.Info("特别注意A82", zap.String("获取用户双方好友关系", "好友关系"))
 		}
+		// }
 
 		s.Info("特别注意A843", zap.String("获取用户双方好友关系", "好友关系"))
 		if toFriend != nil {
