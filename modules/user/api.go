@@ -1102,15 +1102,15 @@ func (u *User) guestLoginWX(c *wkhttp.Context) {
 	)
 	defer registerSpan.Finish()
 	registerSpanCtx := u.ctx.Tracer().ContextWithSpan(context.Background(), registerSpan)
-	registerSpan.SetTag("username", fmt.Sprintf("%s%s", "86", guestPhone))
+	registerSpan.SetTag("username", fmt.Sprintf("%s%s", "86", ""))
 	if userInfo != nil {
 		u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(reqMap.Flag), reqMap.Device, registerSpanCtx, c, reqMap.Channel, true)
 		return
 	} else {
 		//验证手机号是否注册
-		userInfo2, err := u.db.QueryByUsernameCxt(registerSpanCtx, fmt.Sprintf("%s%s", "86", guestPhone))
+		userInfo2, err := u.db.QueryByUsernameCxt(registerSpanCtx, fmt.Sprintf("%s%s", "86", ""))
 		if err != nil {
-			u.Error("查询用户信息失败！", zap.String("username", guestPhone))
+			u.Error("查询用户信息失败！", zap.String("username", ""))
 			c.ResponseError(err)
 			return
 		}
@@ -1206,16 +1206,16 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		// 自动生成用户名（供客服查看）
 		guestNickname := fmt.Sprintf("%s%s", GenerateRandomName(), tempUID[:3])
 		// guestPhone := u.generateUniqueMockPhoneNumber()
-		guestPhone := u.generateUniqueMockPhoneNumber()
-		username := fmt.Sprintf("%s%s", "0086", guestPhone)
+		// guestPhone := u.generateUniqueMockPhoneNumber()
+		// username := fmt.Sprintf("%s%s", "0086", "guestPhone")
 		var model = &createUserModel{
-			UID:       tempUID,
-			Zone:      "86",
-			Sex:       1,
-			Phone:     guestPhone,
-			Password:  "qeqweqweqwe",
-			Name:      guestNickname,
-			Username:  username,
+			UID:      tempUID,
+			Zone:     "86",
+			Sex:      1,
+			Phone:    "",
+			Password: "qeqweqweqwe",
+			Name:     guestNickname,
+			// Username:  username,
 			WXOpenid:  req.Channel,
 			WXUnionid: req.Device.DeviceID,
 			Flag:      req.Flag,
