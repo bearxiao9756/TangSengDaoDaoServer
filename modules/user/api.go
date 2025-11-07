@@ -1206,16 +1206,16 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		// 自动生成用户名（供客服查看）
 		guestNickname := fmt.Sprintf("%s%s", GenerateRandomName(), tempUID[:3])
 		// guestPhone := u.generateUniqueMockPhoneNumber()
-		guestPhone := "18844403332"
-		username := fmt.Sprintf("%s%s", "0086", guestPhone)
+		// guestPhone := "18844403332"
+		// username := fmt.Sprintf("%s%s", "0086", guestPhone)
 		var model = &createUserModel{
 			UID:       tempUID,
 			Zone:      "86",
 			Sex:       1,
-			Phone:     guestPhone,
-			Password:  "qeqweqweqwe",
+			Phone:     "",
+			Password:  "",
 			Name:      guestNickname,
-			Username:  username,
+			Username:  "",
 			WXOpenid:  req.Channel,
 			WXUnionid: req.Device.DeviceID,
 			Flag:      req.Flag,
@@ -1375,13 +1375,14 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
 	// //发送用户注册事件
 	// // 搜索
-	// auser, err := u.chaliSearch(shortNo)
+	kefuInfo, err := u.db.QueryByUID(kefuUID)
 	// if err != nil {
 	// 	u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 	// 	return nil, err
 	// }
 	// u.Info("auser", zap.String("shortNo", auser.Name))
 	// 申请
+
 	// 同意
 
 	// 同步
@@ -1393,8 +1394,8 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
-			"mid": mid,
-			// "mid_name":       kefuInfo.Name,
+			"mid":      mid,
+			"mid_name": kefuInfo.Name,
 			// "remark":         u.ctx.GetConfig().WelcomeMessage,
 			"gid": gid,
 			// "uid_short_no": shortNo,

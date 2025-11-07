@@ -180,6 +180,7 @@ func (g *Group) handleRegisterUserEventChali(data []byte, commit config.EventCom
 	uid := req["uid"].(string)
 	gid := req["gid"].(string)
 	mid := req["mid"].(string)
+	mid_name := req["mid_name"].(string)
 	if uid == "" {
 		g.Error("处理用户注册加入群聊UID不能为空 错误1")
 		commit(errors.New("处理用户注册加入群聊UID不能为空 错误1"))
@@ -231,7 +232,7 @@ func (g *Group) handleRegisterUserEventChali(data []byte, commit config.EventCom
 	//将新注册的用户添加到系统群
 	realMemberUids := make([]string, 0)
 	realMemberUids = append(realMemberUids, uid)
-	err = g.addMembers(realMemberUids, gid, mid, "系统账号")
+	err = g.addMembers(realMemberUids, gid, mid, mid_name)
 	if err != nil {
 		g.Error("添加注册账号到系统群失败！")
 		commit(err)
