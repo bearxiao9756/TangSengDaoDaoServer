@@ -1094,7 +1094,7 @@ func (u *User) guestLoginWX(c *wkhttp.Context) {
 		return
 	}
 	guestNickname := fmt.Sprintf("%s%s", GenerateRandomName(), tempUID[:3])
-	guestPhone := u.generateUniqueMockPhoneNumber()
+	// guestPhone := u.generateUniqueMockPhoneNumber()
 
 	registerSpan := u.ctx.Tracer().StartSpan(
 		"user.register",
@@ -1123,8 +1123,8 @@ func (u *User) guestLoginWX(c *wkhttp.Context) {
 				UID:      uid,
 				Sex:      1,
 				Name:     guestNickname,
-				Zone:     "86",
-				Phone:    guestPhone,
+				Zone:     "",
+				Phone:    "",
 				Password: "122213213123123",
 				Flag:     int(reqMap.Flag),
 				Device:   reqMap.Device,
