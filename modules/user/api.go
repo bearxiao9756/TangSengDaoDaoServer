@@ -490,6 +490,23 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 	if strings.Contains(downloadUrl, subkehu2) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu2, subkehuT)
 	}
+
+
+	subkehua2 := "https://123edu.icu:9000/"
+	subkehu12 := "http://123edu.icu:9000/"
+	subkehu22 := "http://123edu.icu:8090/"
+	subkehuT2 := "https://123edu.icu/img/"
+	
+	if strings.Contains(downloadUrl, subkehua2) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua2, subkehuT2)
+	}
+	if strings.Contains(downloadUrl, subkehu12) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu12, subkehuT2)
+	}
+	if strings.Contains(downloadUrl, subkehu22) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu22, subkehu2)
+	}
+
 	if strings.Contains(downloadUrl, "?") {
 		c.Redirect(http.StatusFound, fmt.Sprintf("%s&v=%s", downloadUrl, v))
 	} else {
