@@ -476,11 +476,11 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	// http://123line.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
-	subkehu := "https://123line.icu:9000/"
-	subkehu1 := "http://123line.icu:9000/"
-	subkehu2 := "http://123line.icu:8090/"
-	subkehuT := "https://123line.icu/img/"
+	// http://abhao.icu:9000/avatar/45/40647119634e45359290fd5a3038f7df.png?response-content-disposition=inline%3B+filename%3D%2240647119634e45359290fd5a3038f7df.png%22&v=1759734479417
+	subkehu := "https://abhao.icu:9000/"
+	subkehu1 := "http://abhao.icu:9000/"
+	subkehu2 := "http://abhao.icu:8090/"
+	subkehuT := "https://abhao.icu/img/"
 	if strings.Contains(downloadUrl, subkehu) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu, subkehuT)
 	}
@@ -491,12 +491,11 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu2, subkehuT)
 	}
 
-
 	subkehua2 := "https://123edu.icu:9000/"
 	subkehu12 := "http://123edu.icu:9000/"
 	subkehu22 := "http://123edu.icu:8090/"
 	subkehuT2 := "https://123edu.icu/img/"
-	
+
 	if strings.Contains(downloadUrl, subkehua2) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua2, subkehuT2)
 	}

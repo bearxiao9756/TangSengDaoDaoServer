@@ -275,10 +275,10 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	subkehu := "https://123line.icu:9000/"
-	subkehu1 := "http://123line.icu:9000/"
-	subkehu2 := "http://123line.icu:8090/"
-	subkehuT := "https://123line.icu/img/"
+	subkehu := "https://abhao.icu:9000/"
+	subkehu1 := "http://abhao.icu:9000/"
+	subkehu2 := "http://abhao.icu:8090/"
+	subkehuT := "https://abhao.icu/img/"
 
 	if strings.Contains(downloadUrl, subkehu) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu, subkehuT)
@@ -290,11 +290,11 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu2, subkehuT)
 	}
 
-    subkehua2 := "https://123edu.icu:9000/"
+	subkehua2 := "https://123edu.icu:9000/"
 	subkehu12 := "http://123edu.icu:9000/"
 	subkehu22 := "http://123edu.icu:8090/"
 	subkehuT2 := "https://123edu.icu/img/"
-	
+
 	if strings.Contains(downloadUrl, subkehua2) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua2, subkehuT2)
 	}
@@ -304,7 +304,6 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 	if strings.Contains(downloadUrl, subkehu22) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu22, subkehu2)
 	}
-
 
 	if strings.Contains(downloadUrl, "?") {
 		c.Redirect(http.StatusFound, fmt.Sprintf("%s&v=%s", downloadUrl, v))
