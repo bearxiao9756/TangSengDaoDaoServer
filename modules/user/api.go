@@ -521,6 +521,7 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 	if strings.Contains(downloadUrl, subkehu220) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu220, subkehuT20)
 	}
+	subkehua21 := "https://bao.aehao.icu:9000/"
 	subkehu121 := "http://bao.aehao.icu:9000/"
 	subkehu221 := "http://bao.aehao.icu:8090/"
 	subkehuT21 := "https://bao.aehao.icu/img/"
