@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  description: "坤元服务 API"
+  description: "广安服务 API"
   version: "1.0.0"
-  title: "坤元服务 API"
+  title: "广安服务 API"
 host: "api.botgate.cn"
 tags:
   - name: "friend"
