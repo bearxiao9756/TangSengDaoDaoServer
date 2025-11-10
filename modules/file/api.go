@@ -273,19 +273,19 @@ func (f *File) getFile(c *wkhttp.Context) {
 	// if strings.Contains(downloadURL, subkehu222) {
 	// 	downloadURL = strings.ReplaceAll(downloadURL, subkehu222, subkehuT22)
 	// }
-	// subkehua23 := "https://hao.aehao.icu:9000/"
-	// subkehu123 := "http://hao.aehao.icu:9000/"
-	// subkehu223 := "http://hao.aehao.icu:8090/"
-	// subkehuT23 := "https://hao.aehao.icu/img/"
-	// if strings.Contains(downloadURL, subkehua23) {
-	// 	downloadURL = strings.ReplaceAll(downloadURL, subkehua23, subkehuT23)
-	// }
-	// if strings.Contains(downloadURL, subkehu123) {
-	// 	downloadURL = strings.ReplaceAll(downloadURL, subkehu123, subkehuT23)
-	// }
-	// if strings.Contains(downloadURL, subkehu223) {
-	// 	downloadURL = strings.ReplaceAll(downloadURL, subkehu223, subkehuT23)
-	// }
+	subkehua23 := "https://hao.aehao.icu:9000/"
+	subkehu123 := "http://hao.aehao.icu:9000/"
+	subkehu223 := "http://hao.aehao.icu:8090/"
+	subkehuT23 := "https://hao.aehao.icu/img/"
+	if strings.Contains(downloadURL, subkehua23) {
+		downloadURL = strings.ReplaceAll(downloadURL, subkehua23, subkehuT23)
+	}
+	if strings.Contains(downloadURL, subkehu123) {
+		downloadURL = strings.ReplaceAll(downloadURL, subkehu123, subkehuT23)
+	}
+	if strings.Contains(downloadURL, subkehu223) {
+		downloadURL = strings.ReplaceAll(downloadURL, subkehu223, subkehuT23)
+	}
 	c.Redirect(http.StatusFound, downloadURL)
 }
 

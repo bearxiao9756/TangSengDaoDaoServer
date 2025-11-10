@@ -546,19 +546,19 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 	// if strings.Contains(downloadUrl, subkehu222) {
 	// 	downloadUrl = strings.ReplaceAll(downloadUrl, subkehu222, subkehuT22)
 	// }
-	// subkehua23 := "https://hao.aehao.icu:9000/"
-	// subkehu123 := "http://hao.aehao.icu:9000/"
-	// subkehu223 := "http://hao.aehao.icu:8090/"
-	// subkehuT23 := "https://hao.aehao.icu/img/"
-	// if strings.Contains(downloadUrl, subkehua23) {
-	// 	downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
-	// }
-	// if strings.Contains(downloadUrl, subkehu123) {
-	// 	downloadUrl = strings.ReplaceAll(downloadUrl, subkehu123, subkehuT23)
-	// }
-	// if strings.Contains(downloadUrl, subkehu223) {
-	// 	downloadUrl = strings.ReplaceAll(downloadUrl, subkehu223, subkehuT23)
-	// }
+	subkehua23 := "https://hao.aehao.icu:9000/"
+	subkehu123 := "http://hao.aehao.icu:9000/"
+	subkehu223 := "http://hao.aehao.icu:8090/"
+	subkehuT23 := "https://hao.aehao.icu/img/"
+	if strings.Contains(downloadUrl, subkehua23) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
+	}
+	if strings.Contains(downloadUrl, subkehu123) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu123, subkehuT23)
+	}
+	if strings.Contains(downloadUrl, subkehu223) {
+		downloadUrl = strings.ReplaceAll(downloadUrl, subkehu223, subkehuT23)
+	}
 	if strings.Contains(downloadUrl, "?") {
 		c.Redirect(http.StatusFound, fmt.Sprintf("%s&v=%s", downloadUrl, v))
 	} else {
