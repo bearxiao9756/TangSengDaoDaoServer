@@ -1456,6 +1456,45 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 	case "c":
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
 		groupOwn = kefuUID
+	case "d": // 11
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "e": // 12
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "f": // 13
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "g": // 21
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "h": // 22
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "i": // 23
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "j": // 31
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "k": // 32
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "m": // 51
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "l": // 52
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "n": // 61
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "o": // 62
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
+	case "p": // 63
+		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = kefuUID
 	default:
 		return "", ""
 	}
