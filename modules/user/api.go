@@ -1171,7 +1171,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	}
 	req.Device.DeviceID = strings.ReplaceAll(req.Device.DeviceID, "-", "")
 	lastChar := req.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
-	if lastChar != "a" && lastChar != "b" && lastChar != "c" && lastChar != "d" && lastChar != "e" && lastChar != "f" && lastChar != "h" && lastChar != "i" && lastChar != "k" && lastChar != "j" && lastChar != "l" && lastChar != "m" && lastChar != "n" && lastChar != "o"{
+	if lastChar != "a" && lastChar != "b" && lastChar != "c" && lastChar != "d" && lastChar != "e" && lastChar != "f" && lastChar != "g" && lastChar != "h" && lastChar != "i" && lastChar != "k" && lastChar != "j" && lastChar != "l" && lastChar != "m" && lastChar != "n" && lastChar != "o"{
 		c.ResponseError(errors.New("渠道信息错误"))
 		return
 	}
