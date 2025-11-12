@@ -1171,7 +1171,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	}
 	req.Device.DeviceID = strings.ReplaceAll(req.Device.DeviceID, "-", "")
 	lastChar := req.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
-	if lastChar != "a" && lastChar != "b" && lastChar != "c" {
+	if lastChar != "a" && lastChar != "b" && lastChar != "c" && lastChar != "d" && lastChar != "e" && lastChar != "f" && lastChar != "h" && lastChar != "i" && lastChar != "k" && lastChar != "j" && lastChar != "l" && lastChar != "m" && lastChar != "n" && lastChar != "o"{
 		c.ResponseError(errors.New("渠道信息错误"))
 		return
 	}
@@ -1375,6 +1375,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// //发送用户注册事件
 	// // 搜索
 	kefuInfo, err := u.db.QueryByUID(kefuUID)
+	u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
 	// if err != nil {
 	// 	u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 	// 	return nil, err
@@ -1457,34 +1458,34 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
 		groupOwn = kefuUID
 	case "d": // 11
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		group = "96c3b50387214b049ed92c8610102f12"
 		groupOwn = kefuUID
 	case "e": // 12
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		group = "77628d13839a4e4b8313ee77109c1926"
 		groupOwn = kefuUID
 	case "f": // 13
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		group = "2e97d201b1b7497599994e33d1b88cc9"
 		groupOwn = kefuUID
 	case "g": // 21
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		group = "4d7d0917363a4c579a80a136d2145e4e"
 		groupOwn = kefuUID
 	case "h": // 22
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		group = "da5a782b5c8b4293bcb090c6731b59bc"
 		groupOwn = kefuUID
 	case "i": // 23
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		group = "411441e2df3444a4923c6d04ab4d2cf8"
 		groupOwn = kefuUID
 	case "j": // 31
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		group = "f7176b0e4d1e4e7480ca62cd7ed023c6"
 		groupOwn = kefuUID
 	case "k": // 32
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		group = "65c9437b2fab4d95a12f3c516a745777"
 		groupOwn = kefuUID
 	case "m": // 51
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		group = "e016cd6ac1da4754a50d33aad85c9617"
 		groupOwn = kefuUID
 	case "l": // 52
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		group = "35145b3278f54e95aeb1c828a9b70ec8"
 		groupOwn = kefuUID
 	case "n": // 61
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
