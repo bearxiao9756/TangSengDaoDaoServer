@@ -1456,15 +1456,15 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 	case "a":
 		group = "0b981e0823bf49aeac62ea3dc2591383"
 		groupOwn = kefuUID
-		// groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "b":
 		group = "840dc274a16c4e5285dd772b2b7b1a4a"
-		groupOwn = kefuUID
-		// groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		// groupOwn = kefuUID
+		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "c":
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		groupOwn = kefuUID
-		// groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		// groupOwn = kefuUID
+		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "d": // 11
 		group = "96c3b50387214b049ed92c8610102f12"
 		// groupOwn = kefuUID
