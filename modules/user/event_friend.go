@@ -310,6 +310,11 @@ func (f *Friend) handleUserRegisterchali(data []byte, commit config.EventCommit)
 		commit(nil)
 		return
 	}
+	hasKefu := req["hasKefu"].(bool)
+	if !hasKefu {
+		commit(nil)
+		return
+	}
 	uid := req["uid"].(string)
 	mid_name := req["mid_name"].(string)
 	remark := req["remark"].(string)

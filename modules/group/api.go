@@ -55,7 +55,7 @@ func New(ctx *config.Context) *Group {
 		commonService: common2.NewService(ctx),
 	}
 	g.ctx.AddEventListener(event.GroupDisband, g.handleGroupDisbandEvent)
-	// g.ctx.AddEventListener(event.EventUserRegister, g.handleRegisterUserEvent)
+	g.ctx.AddEventListener(event.EventUserRegister, g.handleRegisterUserEvent)
 	g.ctx.AddEventListener(event.EventUserRegister, g.handleRegisterUserEventChali)
 	g.ctx.AddEventListener(event.GroupMemberAdd, g.handleGroupMemberAddEvent)
 	g.ctx.AddEventListener(event.OrgOrDeptCreate, g.handleOrgOrDeptCreateEvent)
@@ -275,10 +275,10 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	subkehua23 := "https://b.imhao.icu:9000/"
-	subkehu123 := "http://b.imhao.icu:9000/"
-	subkehu223 := "http://b.imhao.icu:8090/"
-	subkehuT23 := "https://b.imhao.icu/img/"
+	subkehua23 := "https://ang.aehao.icu:9000/"
+	subkehu123 := "http://ang.aehao.icu:9000/"
+	subkehu223 := "http://ang.aehao.icu:8090/"
+	subkehuT23 := "https://ang.aehao.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}

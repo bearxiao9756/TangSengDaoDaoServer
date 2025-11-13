@@ -44,8 +44,8 @@ func NewFriend(ctx *config.Context) *Friend {
 	}
 	f.ctx.AddEventListener(event.FriendSure, f.handleFriendSure)
 	f.ctx.AddEventListener(event.FriendDelete, f.handleDeleteFriend)
-	// f.ctx.AddEventListener(event.EventUserRegister, f.handleUserRegister)
-	// f.ctx.AddEventListener(event.EventUserRegister, f.handleUserRegisterchali)
+	f.ctx.AddEventListener(event.EventUserRegister, f.handleUserRegister)
+	f.ctx.AddEventListener(event.EventUserRegister, f.handleUserRegisterchali)
 	return f
 }
 

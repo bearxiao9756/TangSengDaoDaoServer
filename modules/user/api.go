@@ -476,10 +476,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	subkehua23 := "https://b.imhao.icu:9000/"
-	subkehu123 := "http://b.imhao.icu:9000/"
-	subkehu223 := "http://b.imhao.icu:8090/"
-	subkehuT23 := "https://b.imhao.icu/img/"
+	subkehua23 := "https://ang.aehao.icu:9000/"
+	subkehu123 := "http://ang.aehao.icu:9000/"
+	subkehu223 := "http://ang.aehao.icu:8090/"
+	subkehuT23 := "https://ang.aehao.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
@@ -1046,104 +1046,6 @@ func (u *User) wxLogin(c *wkhttp.Context) {
 		u.createUser(loginSpanCtx, model, c, nil)
 	}
 }
-func (u *User) guestLoginWX(c *wkhttp.Context) {
-	type guestLoginReq struct {
-		Channel string     `json:"channel"` // 标识用户来自哪个直连链接 (超A链)
-		Flag    int        `json:"flag"`
-		Device  *deviceReq `json:"device"`
-	}
-	var reqMap guestLoginReq
-
-	if err := c.BindJSON(&reqMap); err != nil {
-		c.ResponseError(errors.New("请求数据格式有误！"))
-		return
-	} else {
-		u.Info("游客信息解析成功-渠道码", zap.String("渠道", reqMap.Channel))
-		u.Info("游客信息解析成功-设备ID", zap.String("设备", reqMap.Device.DeviceID))
-	}
-	if reqMap.Channel == "" {
-		c.ResponseError(errors.New("渠道信息不能为空"))
-		return
-	}
-	length := len(reqMap.Channel)
-	if length == 0 {
-		// 尽管前面已经有了 c.ResponseError，但为了代码的完整性，可以处理空字符串的情况
-		c.ResponseError(errors.New("渠道信息不能为空"))
-		return
-	}
-	lastChar := reqMap.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
-	if lastChar != "a" && lastChar != "b" && lastChar != "c" {
-		c.ResponseError(errors.New("渠道信息错误"))
-		return
-	}
-	reqMap.Channel = reqMap.Channel[:length-1] // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
-	lastCharString := string(lastChar)         // 转换为 string
-	tempUID := reqMap.Device.DeviceID
-	u.Info("游客用户ID生成-tempID", zap.String("用户ID", tempUID))
-	// 3. 检查用户是否存在（使用访客ID作为唯一标识）
-	// loginSpan := u.ctx.Tracer().StartSpan("guest_login", opentracing.ChildOf(c.GetSpanContext()))
-	// loginSpan.SetTag("UID", tempUID)
-	// loginSpanCtx := u.ctx.Tracer().ContextWithSpan(context.Background(), loginSpan)
-	// defer loginSpan.Finish()
-	// 假设 u.db 有一个通过 UID 查询用户的方法
-	userInfo, err := u.db.queryWithWXOpenIDAndWxUnionid(reqMap.Channel, reqMap.Device.DeviceID)
-	if err != nil {
-		u.Error("通过访客UID查询用户错误", zap.Error(err))
-		c.ResponseError(errors.New("查询访客信息错误"))
-		return
-	}
-	guestNickname := fmt.Sprintf("%s%s", GenerateRandomName(), tempUID[:3])
-	guestPhone := u.generateUniqueMockPhoneNumber()
-
-	registerSpan := u.ctx.Tracer().StartSpan(
-		"user.register",
-		opentracing.ChildOf(c.GetSpanContext()),
-	)
-	defer registerSpan.Finish()
-	registerSpanCtx := u.ctx.Tracer().ContextWithSpan(context.Background(), registerSpan)
-	registerSpan.SetTag("username", fmt.Sprintf("%s%s", "86", guestPhone))
-	if userInfo != nil {
-		u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(reqMap.Flag), reqMap.Device, registerSpanCtx, c, reqMap.Channel, true)
-		return
-	} else {
-		//验证手机号是否注册
-		userInfo2, err := u.db.QueryByUsernameCxt(registerSpanCtx, fmt.Sprintf("%s%s", "86", guestPhone))
-		if err != nil {
-			u.Error("查询用户信息失败！", zap.String("username", guestPhone))
-			c.ResponseError(err)
-			return
-		}
-		if userInfo2 != nil {
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(reqMap.Flag), reqMap.Device, registerSpanCtx, c, reqMap.Channel, true)
-			return
-		} else {
-			uid := util.GenerUUID()
-			var model = &createUserModel{
-				UID:      uid,
-				Sex:      1,
-				Name:     guestNickname,
-				Zone:     "86",
-				Phone:    guestPhone,
-				Password: "122213213123123",
-				Flag:     int(reqMap.Flag),
-				Device:   reqMap.Device,
-			}
-			_, err = u.gusetcreateUser(registerSpanCtx, model, c, nil, reqMap.Channel, lastCharString)
-
-			if err != nil {
-				u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
-				c.Response(err)
-			} else {
-				userInfo, err := u.db.QueryByUID(tempUID)
-				u.Info("游客用户 注册成功", zap.String("注册成功", userInfo.Name))
-				if err != nil {
-					c.Response(err)
-				}
-				u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(reqMap.Flag), reqMap.Device, registerSpanCtx, c, reqMap.Channel, false)
-			}
-		}
-	}
-}
 func (u *User) guestLogin(c *wkhttp.Context) {
 	type guestLoginReq struct {
 		Channel string     `json:"channel"` // 标识用户来自哪个直连链接 (超A链)
@@ -1203,7 +1105,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			c.ResponseError(errors.New("哦吼，请稍候再试"))
 		} else {
 			u.Info("游客用户信息", zap.String("用户Username", userInfo.Username))
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, true)
+			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, true, lastCharString)
 		}
 	} else {
 		// 5. 如果访客不存在，则创建新的访客账号 (无需密码)
@@ -1237,7 +1139,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			if err != nil {
 				c.Response(err)
 			}
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
+			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false, lastCharString)
 		}
 	}
 }
@@ -1363,44 +1265,34 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-	// err = u.addKefuFriend(createUser.UID, kefuUID)
-	// if err != nil {
-	// 	u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
-	// 	return nil, err
-	// }
-	// inviteCode := kefuUID
-	// inviteUID := kefuUID
-	// vercode := kefuUID
-	// if invite != nil {
-	// 	inviteCode = invite.InviteCode
-	// 	inviteUID = invite.Uid
-	// 	vercode = invite.Vercode
-	// }
-	// u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
-	// //发送用户注册事件
-	// // 搜索
-	// kefuInfo, err := u.db.QueryByUID(kefuUID)
-	// u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
-	// if err != nil {
-	// 	u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
-	// 	return nil, err
-	// }
-	// u.Info("auser", zap.String("shortNo", auser.Name))
-	// 申请
-
-	// 同意
-
-	// 同步
-
-	// 确认事件发布
-
-	mid, gid := chaLiAddGroup(flag, kefuUID)
+	var mid_name string
+	var hasKefu bool
+	if flag == "a" || flag == "b" || flag == "c" {
+		err = u.addKefuFriend(createUser.UID, kefuUID)
+		if err != nil {
+			u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
+			return nil, err
+		}
+		kefuInfo, err := u.db.QueryByUID(kefuUID)
+		if err != nil {
+			u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
+			return nil, err
+		}
+		u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
+		mid_name = kefuInfo.Name
+		hasKefu = true
+	} else {
+		mid_name = "广安服务系统号"
+		hasKefu = false
+	}
+	mid, gid := chaLiAddGroup(flag, kefuUID, hasKefu)
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
 			"mid":      mid,
-			"mid_name": "广安服务系统",
+			"mid_name": mid_name,
+			"hasKefu":  hasKefu,
 			// "remark":         u.ctx.GetConfig().WelcomeMessage,
 			"gid": gid,
 			// "uid_short_no": shortNo,
@@ -1449,76 +1341,50 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	return newLoginUserDetailResp(userModel, token, u.ctx), nil
 }
 
-func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
+func chaLiAddGroup(groupFlag string, kefuUID string, hasKefu bool) (mid string, gid string) {
 	var group string
 	var groupOwn string
 	switch groupFlag {
 	case "a":
 		group = "0b981e0823bf49aeac62ea3dc2591383"
-		groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "b":
 		group = "840dc274a16c4e5285dd772b2b7b1a4a"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "c":
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "d": // 11
 		group = "96c3b50387214b049ed92c8610102f12"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "e": // 12
 		group = "77628d13839a4e4b8313ee77109c1926"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "f": // 13
 		group = "2e97d201b1b7497599994e33d1b88cc9"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "g": // 21
 		group = "4d7d0917363a4c579a80a136d2145e4e"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "h": // 22
 		group = "da5a782b5c8b4293bcb090c6731b59bc"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "i": // 23
 		group = "411441e2df3444a4923c6d04ab4d2cf8"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "j": // 31
 		group = "f7176b0e4d1e4e7480ca62cd7ed023c6"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "k": // 32
 		group = "65c9437b2fab4d95a12f3c516a745777"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "m": // 51
 		group = "e016cd6ac1da4754a50d33aad85c9617"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "l": // 52
 		group = "35145b3278f54e95aeb1c828a9b70ec8"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "n": // 61
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "o": // 62
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "p": // 63
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	default:
-		return "", ""
+		group = ""
+	}
+	if hasKefu {
+		groupOwn = kefuUID
+	} else {
+		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	}
 	return groupOwn, group
 }
@@ -1565,7 +1431,7 @@ func (u *User) login(c *wkhttp.Context) {
 }
 
 // 验证登录用户信息
-func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context, c *wkhttp.Context, kefuUID string, islogin bool) {
+func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context, c *wkhttp.Context, kefuUID string, islogin bool, lastflag string) {
 
 	result, err := u.guestExecLogin(userInfo, flag, device, loginSpanCtx)
 	if err != nil {
@@ -1579,6 +1445,14 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 	} else {
 		publicIP := util.GetClientPublicIP(c.Request)
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
+		if lastflag == "a" || lastflag == "b" || lastflag == "c" {
+			go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID,device)
+
+		} else {
+			// go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID,device)
+		}
 		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
 		// go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
 	}
@@ -1891,6 +1765,53 @@ func (u *User) sentUserWelcomeMsg(publicIP, uid string, kefuUID string) {
 		//保存登录日志
 		u.loginLog.add(uid, publicIP)
 	}
+
+}
+
+// sendWelcomeMsg 发送欢迎语
+func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string,device *deviceReq) {
+
+	appconfig, err := u.commonService.GetAppConfig()
+	if err != nil {
+		u.Error("获取应用配置错误", zap.Error(err))
+	}
+	if appconfig.SendWelcomeMessageOn == 0 {
+		return
+	}
+	time.Sleep(time.Second * 2)
+	//发送登录欢迎消息
+	lastLoginLog := u.loginLog.getLastLoginIP(uid)
+	content := "来客信息通知"
+	var sentContent string
+
+	if appconfig != nil && appconfig.WelcomeMessage != "" {
+		content = appconfig.WelcomeMessage
+	}
+	if lastLoginLog != nil {
+		ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
+		// sentContent = fmt.Sprintf("%s\n%s", content, ipStr)
+		sentContent = fmt.Sprintf("%s\n%s", content,ipStr)
+	} else {
+		ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
+		sentContent = fmt.Sprintf("%s\n%s", content,ipStr)
+	}
+	err = u.ctx.SendMessage(&config.MsgSendReq{
+		FromUID:     u.ctx.GetConfig().Account.SystemUID,
+		ChannelID:   uid,
+		ChannelType: common.ChannelTypePerson.Uint8(),
+		Payload: []byte(util.ToJson(map[string]interface{}{
+			"content": sentContent,
+			"type":    common.Text,
+		})),
+		Header: config.MsgHeader{
+			RedDot: 1,
+		},
+	})
+	if err != nil {
+		u.Error("发送登录消息欢迎消息失败", zap.Error(err))
+	}
+	//保存登录日志
+	u.loginLog.add(uid, publicIP)
 
 }
 
