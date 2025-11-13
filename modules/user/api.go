@@ -1358,11 +1358,11 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-	err = u.addKefuFriend(createUser.UID, kefuUID)
-	if err != nil {
-		u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
-		return nil, err
-	}
+	// err = u.addKefuFriend(createUser.UID, kefuUID)
+	// if err != nil {
+	// 	u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
+	// 	return nil, err
+	// }
 	// inviteCode := kefuUID
 	// inviteUID := kefuUID
 	// vercode := kefuUID
@@ -1451,51 +1451,67 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 	case "a":
 		group = "0b981e0823bf49aeac62ea3dc2591383"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "b":
 		group = "840dc274a16c4e5285dd772b2b7b1a4a"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "c":
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "d": // 11
 		group = "96c3b50387214b049ed92c8610102f12"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "e": // 12
 		group = "77628d13839a4e4b8313ee77109c1926"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "f": // 13
 		group = "2e97d201b1b7497599994e33d1b88cc9"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "g": // 21
 		group = "4d7d0917363a4c579a80a136d2145e4e"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "h": // 22
 		group = "da5a782b5c8b4293bcb090c6731b59bc"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "i": // 23
 		group = "411441e2df3444a4923c6d04ab4d2cf8"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "j": // 31
 		group = "f7176b0e4d1e4e7480ca62cd7ed023c6"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "k": // 32
 		group = "65c9437b2fab4d95a12f3c516a745777"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "m": // 51
 		group = "e016cd6ac1da4754a50d33aad85c9617"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "l": // 52
 		group = "35145b3278f54e95aeb1c828a9b70ec8"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "n": // 61
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "o": // 62
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	case "p": // 63
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
 		groupOwn = kefuUID
+		groupOwn = "abc3c8778b5e4a7bb55022a6df3a1cbb"
 	default:
 		return "", ""
 	}
