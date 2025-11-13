@@ -1379,8 +1379,8 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
 	// //发送用户注册事件
 	// // 搜索
-	kefuInfo, err := u.db.QueryByUID(kefuUID)
-	u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
+	// kefuInfo, err := u.db.QueryByUID(kefuUID)
+	// u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
 	// if err != nil {
 	// 	u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 	// 	return nil, err
@@ -1400,7 +1400,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
 			"mid":      mid,
-			"mid_name": kefuInfo.Name,
+			"mid_name": "广安服务系统",
 			// "remark":         u.ctx.GetConfig().WelcomeMessage,
 			"gid": gid,
 			// "uid_short_no": shortNo,

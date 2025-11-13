@@ -55,7 +55,7 @@ func New(ctx *config.Context) *Group {
 		commonService: common2.NewService(ctx),
 	}
 	g.ctx.AddEventListener(event.GroupDisband, g.handleGroupDisbandEvent)
-	g.ctx.AddEventListener(event.EventUserRegister, g.handleRegisterUserEvent)
+	// g.ctx.AddEventListener(event.EventUserRegister, g.handleRegisterUserEvent)
 	g.ctx.AddEventListener(event.EventUserRegister, g.handleRegisterUserEventChali)
 	g.ctx.AddEventListener(event.GroupMemberAdd, g.handleGroupMemberAddEvent)
 	g.ctx.AddEventListener(event.OrgOrDeptCreate, g.handleOrgOrDeptCreateEvent)
