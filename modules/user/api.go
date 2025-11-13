@@ -1100,7 +1100,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			c.ResponseError(errors.New("哦吼，请稍候再试"))
 		} else {
 			u.Info("游客用户信息", zap.String("用户Username", userInfo.Username))
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, true,lastCharString)
+			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, true)
 		}
 	} else {
 		// 5. 如果访客不存在，则创建新的访客账号 (无需密码)
@@ -1134,7 +1134,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			if err != nil {
 				c.Response(err)
 			}
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel,false,lastCharString)
+			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
 		}
 	}
 }
@@ -1462,7 +1462,7 @@ func (u *User) login(c *wkhttp.Context) {
 }
 
 // 验证登录用户信息
-func (u *User)guestExecLoginAndRespose (userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context, c *wkhttp.Context, kefuUID string, islogin bool, lastflag string) {
+func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context, c *wkhttp.Context, kefuUID string, islogin bool, lastflag string) {
 
 	result, err := u.guestExecLogin(userInfo, flag, device, loginSpanCtx)
 	if err != nil {
