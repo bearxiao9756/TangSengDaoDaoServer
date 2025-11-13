@@ -476,10 +476,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	subkehua23 := "https://c.imhao.icu:9000/"
-	subkehu123 := "http://c.imhao.icu:9000/"
-	subkehu223 := "http://c.imhao.icu:8090/"
-	subkehuT23 := "https://c.imhao.icu/img/"
+	subkehua23 := "https://b.imhao.icu:9000/"
+	subkehu123 := "http://b.imhao.icu:9000/"
+	subkehu223 := "http://b.imhao.icu:8090/"
+	subkehuT23 := "https://b.imhao.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
@@ -1171,7 +1171,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 	}
 	req.Device.DeviceID = strings.ReplaceAll(req.Device.DeviceID, "-", "")
 	lastChar := req.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
-	if lastChar != "a" && lastChar != "b" && lastChar != "c" && lastChar != "d" && lastChar != "e" && lastChar != "f" && lastChar != "g" && lastChar != "h" && lastChar != "i" && lastChar != "k" && lastChar != "j" && lastChar != "l" && lastChar != "m" && lastChar != "n" && lastChar != "o"{
+	if lastChar != "a" && lastChar != "b" && lastChar != "c" && lastChar != "d" && lastChar != "e" && lastChar != "f" && lastChar != "g" && lastChar != "h" && lastChar != "i" && lastChar != "k" && lastChar != "j" && lastChar != "l" && lastChar != "m" && lastChar != "n" && lastChar != "o" {
 		c.ResponseError(errors.New("渠道信息错误"))
 		return
 	}
