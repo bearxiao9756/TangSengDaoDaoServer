@@ -1576,11 +1576,13 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 	if islogin {
 		u.Info("游客用户ID", zap.String("登陆成功", userInfo.UID))
 		u.Info("游客用户渠道ID", zap.String("登陆成功", kefuUID))
+		
 	} else {
 		publicIP := util.GetClientPublicIP(c.Request)
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
 		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
 		// go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+		go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID)
 	}
 }
 func (u *User) guestExecLogin(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context) (*loginUserDetailResp, error) {
@@ -1893,7 +1895,54 @@ func (u *User) sentUserWelcomeMsg(publicIP, uid string, kefuUID string) {
 	}
 
 }
+func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string) {
+	appconfig, err := u.commonService.GetAppConfig()
+	if err != nil {
+		u.Error("获取应用配置错误", zap.Error(err))
+	}
+	if appconfig.SendWelcomeMessageOn == 0 {
+		return
+	}
+	time.Sleep(time.Second * 2)
 
+	userInfo, err := u.db.QueryByUID(kefuUID)
+	if userInfo == nil || err != nil {
+		u.Error("发送登录消息欢迎消息失败", zap.Error(err))
+	} else {
+		//发送登录欢迎消息
+		lastLoginLog := u.loginLog.getLastLoginIP(uid)
+		content := u.ctx.GetConfig().WelcomeMessage
+		var sentContent string
+		sentContent = "新注册用户 \n"
+		if lastLoginLog != nil {
+			ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
+			sentContent = fmt.Sprintf("%s\n%s", content,ipStr)
+		} else {
+			ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
+			u.Info("游客用户", zap.String("欢迎消息", userInfo.Name))
+			// sentContent = fmt.Sprintf("%s%s", content, userInfo.Name)
+			sentContent = fmt.Sprintf("%s\n%s", content,ipStr)
+		}
+		err = u.ctx.SendMessage(&config.MsgSendReq{
+			FromUID:     u.ctx.GetConfig().Account.SystemUID,
+			ChannelID:   kefuUID,
+			ChannelType: common.ChannelTypePerson.Uint8(),
+			Payload: []byte(util.ToJson(map[string]interface{}{
+				"content": sentContent,
+				"type":    common.Text,
+			})),
+			Header: config.MsgHeader{
+				RedDot: 1,
+			},
+		})
+		if err != nil {
+			u.Error("发送登录消息欢迎消息失败", zap.Error(err))
+		}
+		//保存登录日志
+		u.loginLog.add(uid, publicIP)
+	}
+
+}
 // sendWelcomeMsg 发送欢迎语
 func (u *User) sentWelcomeMsg(publicIP, uid string) {
 	appconfig, err := u.commonService.GetAppConfig()
