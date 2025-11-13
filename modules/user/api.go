@@ -1346,7 +1346,7 @@ func chaLiAddGroup(groupFlag string, kefuUID string, hasKefu bool) (mid string, 
 	var groupOwn string
 	switch groupFlag {
 	case "a":
-		group = "0b981e0823bf49aeac62ea3dc2591383"
+		group = "96728782953a400ba8c84dbfbbfed051"
 	case "b":
 		group = "840dc274a16c4e5285dd772b2b7b1a4a"
 	case "c":
@@ -1359,7 +1359,8 @@ func chaLiAddGroup(groupFlag string, kefuUID string, hasKefu bool) (mid string, 
 	case "f": // 13
 		group = "2e97d201b1b7497599994e33d1b88cc9"
 	case "g": // 21
-		group = "4d7d0917363a4c579a80a136d2145e4e"
+		// group = "4d7d0917363a4c579a80a136d2145e4e"
+		group = "1d30acc96c674d63a5ae9fba6497ca3d"
 	case "h": // 22
 		group = "da5a782b5c8b4293bcb090c6731b59bc"
 	case "i": // 23
@@ -1384,7 +1385,7 @@ func chaLiAddGroup(groupFlag string, kefuUID string, hasKefu bool) (mid string, 
 	if hasKefu {
 		groupOwn = kefuUID
 	} else {
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn = "e09a1e0a0c3e47e396cebc783e8dc2e6"
 	}
 	return groupOwn, group
 }
@@ -1447,11 +1448,11 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
 		if lastflag == "a" || lastflag == "b" || lastflag == "c" {
 			go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
-			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID,device)
+			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 
 		} else {
 			// go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
-			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID,device)
+			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 		}
 		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
 		// go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
@@ -1769,7 +1770,7 @@ func (u *User) sentUserWelcomeMsg(publicIP, uid string, kefuUID string) {
 }
 
 // sendWelcomeMsg 发送欢迎语
-func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string,device *deviceReq) {
+func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string, device *deviceReq) {
 
 	appconfig, err := u.commonService.GetAppConfig()
 	if err != nil {
@@ -1790,10 +1791,10 @@ func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string,de
 	if lastLoginLog != nil {
 		ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
 		// sentContent = fmt.Sprintf("%s\n%s", content, ipStr)
-		sentContent = fmt.Sprintf("%s\n%s", content,ipStr)
+		sentContent = fmt.Sprintf("%s\n%s", content, ipStr)
 	} else {
 		ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
-		sentContent = fmt.Sprintf("%s\n%s", content,ipStr)
+		sentContent = fmt.Sprintf("%s\n%s", content, ipStr)
 	}
 	err = u.ctx.SendMessage(&config.MsgSendReq{
 		FromUID:     u.ctx.GetConfig().Account.SystemUID,
