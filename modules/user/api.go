@@ -1582,7 +1582,7 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
 		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
 		// go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
-		go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID)
+		go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID,kefuUID,device)
 	}
 }
 func (u *User) guestExecLogin(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context) (*loginUserDetailResp, error) {
@@ -1911,17 +1911,16 @@ func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string,de
 	} else {
 		//发送登录欢迎消息
 		lastLoginLog := u.loginLog.getLastLoginIP(uid)
-		content := u.ctx.GetConfig().WelcomeMessage
+		// content := u.ctx.GetConfig().WelcomeMessage
 		var sentContent string
-		sentContent = "新注册用户 \n"
 		if lastLoginLog != nil {
-			content = "老用户回归"
+			content  := "老用户回归"
 			ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
 			userBaseStr := fmt.Sprintf("基本信息：名称:%s  ID: %s 服务号: %s", userInfo.Name,userInfo.UID,userInfo.ShortNo)
 			deviceStr := fmt.Sprintf("设备信息: 设备ID:%s  设备类型: %s 设备名称: %s", device.DeviceID,device.DeviceModel,device.DeviceName)
  			sentContent = fmt.Sprintf("%s\n%s \n%s \n%s", content,ipStr,userBaseStr,deviceStr)
 		} else {
-			content = "新用户注册"
+			content := "新用户注册"
 			ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
 			u.Info("游客用户", zap.String("欢迎消息", userInfo.Name))
 			userBaseStr := fmt.Sprintf("基本信息：名称:%s  ID: %s 服务号: %s", userInfo.Name,userInfo.UID,userInfo.ShortNo)
