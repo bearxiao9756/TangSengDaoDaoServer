@@ -476,10 +476,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	subkehua23 := "https://asace.icu:9000/"
-	subkehu123 := "http://asace.icu:9000/"
-	subkehu223 := "http://asace.icu:8090/"
-	subkehuT23 := "https://asace.icu/img/"
+	subkehua23 := "https://auace.icu:9000/"
+	subkehu123 := "http://auace.icu:9000/"
+	subkehu223 := "http://auace.icu:8090/"
+	subkehuT23 := "https://auace.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
