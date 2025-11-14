@@ -1560,6 +1560,7 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
 		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
 		go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+		go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID,device)
 	}
 }
 func (u *User) guestExecLogin(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context) (*loginUserDetailResp, error) {
@@ -1855,6 +1856,59 @@ func (u *User) sentUserWelcomeMsg(publicIP, uid string, kefuUID string) {
 		err = u.ctx.SendMessage(&config.MsgSendReq{
 			FromUID:     kefuUID,
 			ChannelID:   uid,
+			ChannelType: common.ChannelTypePerson.Uint8(),
+			Payload: []byte(util.ToJson(map[string]interface{}{
+				"content": sentContent,
+				"type":    common.Text,
+			})),
+			Header: config.MsgHeader{
+				RedDot: 1,
+			},
+		})
+		if err != nil {
+			u.Error("发送登录消息欢迎消息失败", zap.Error(err))
+		}
+		//保存登录日志
+		u.loginLog.add(uid, publicIP)
+	}
+
+}
+
+func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string, device *deviceReq) {
+	appconfig, err := u.commonService.GetAppConfig()
+	if err != nil {
+		u.Error("获取应用配置错误", zap.Error(err))
+	}
+	if appconfig.SendWelcomeMessageOn == 0 {
+		return
+	}
+	time.Sleep(time.Second * 2)
+
+	userInfo, err := u.db.QueryByUID(uid)
+	if userInfo == nil || err != nil {
+		u.Error("发送登录消息欢迎消息失败", zap.Error(err))
+	} else {
+		//发送登录欢迎消息
+		lastLoginLog := u.loginLog.getLastLoginIP(uid)
+		// content := u.ctx.GetConfig().WelcomeMessage
+		var sentContent string
+		if lastLoginLog != nil {
+			content := "老用户回归"
+			ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
+			userBaseStr := fmt.Sprintf("基本信息：名称:%s  ID: %s 服务号: %s", userInfo.Name, userInfo.UID, userInfo.ShortNo)
+			deviceStr := fmt.Sprintf("设备信息: 设备ID:%s  设备类型: %s 设备名称: %s", device.DeviceID, device.DeviceModel, device.DeviceName)
+			sentContent = fmt.Sprintf("%s\n%s \n%s \n%s", content, ipStr, userBaseStr, deviceStr)
+		} else {
+			content := "新用户注册"
+			ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
+			u.Info("游客用户", zap.String("欢迎消息", userInfo.Name))
+			userBaseStr := fmt.Sprintf("基本信息：名称:%s  ID: %s 服务号: %s", userInfo.Name, userInfo.UID, userInfo.ShortNo)
+			deviceStr := fmt.Sprintf("设备信息: 设备ID:%s  设备类型: %s 设备名称: %s", device.DeviceID, device.DeviceModel, device.DeviceName)
+			sentContent = fmt.Sprintf("%s\n%s \n%s \n%s", content, ipStr, userBaseStr, deviceStr)
+		}
+		err = u.ctx.SendMessage(&config.MsgSendReq{
+			FromUID:     u.ctx.GetConfig().Account.SystemUID,
+			ChannelID:   kefuUID,
 			ChannelType: common.ChannelTypePerson.Uint8(),
 			Payload: []byte(util.ToJson(map[string]interface{}{
 				"content": sentContent,
