@@ -476,10 +476,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	subkehua23 := "https://aeace.icu:9000/"
-	subkehu123 := "http://aeace.icu:9000/"
-	subkehu223 := "http://aeace.icu:8090/"
-	subkehuT23 := "https://aeace.icu/img/"
+	subkehua23 := "https://aface.icu:9000/"
+	subkehu123 := "http://aface.icu:9000/"
+	subkehu223 := "http://aface.icu:8090/"
+	subkehuT23 := "https://aface.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
@@ -1560,7 +1560,7 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
 		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
 		go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
-		go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID,device)
+		go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 	}
 }
 func (u *User) guestExecLogin(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context) (*loginUserDetailResp, error) {
