@@ -476,10 +476,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	subkehua23 := "https://b.imhao.icu:9000/"
-	subkehu123 := "http://b.imhao.icu:9000/"
-	subkehu223 := "http://b.imhao.icu:8090/"
-	subkehuT23 := "https://b.imhao.icu/img/"
+	subkehua23 := "https://asace.icu:9000/"
+	subkehu123 := "http://asace.icu:9000/"
+	subkehu223 := "http://asace.icu:8090/"
+	subkehuT23 := "https://asace.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
@@ -1576,13 +1576,13 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 	if islogin {
 		u.Info("游客用户ID", zap.String("登陆成功", userInfo.UID))
 		u.Info("游客用户渠道ID", zap.String("登陆成功", kefuUID))
-		
+
 	} else {
 		publicIP := util.GetClientPublicIP(c.Request)
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
 		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
 		// go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
-		go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID,kefuUID,device)
+		go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 	}
 }
 func (u *User) guestExecLogin(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context) (*loginUserDetailResp, error) {
@@ -1895,7 +1895,7 @@ func (u *User) sentUserWelcomeMsg(publicIP, uid string, kefuUID string) {
 	}
 
 }
-func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string,device *deviceReq) {
+func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string, device *deviceReq) {
 	appconfig, err := u.commonService.GetAppConfig()
 	if err != nil {
 		u.Error("获取应用配置错误", zap.Error(err))
@@ -1914,18 +1914,18 @@ func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string,de
 		// content := u.ctx.GetConfig().WelcomeMessage
 		var sentContent string
 		if lastLoginLog != nil {
-			content  := "老用户回归"
+			content := "老用户回归"
 			ipStr := fmt.Sprintf("上次的登录信息：%s %s\n本次登录的信息：%s %s", lastLoginLog.LoginIP, lastLoginLog.CreateAt, publicIP, util.ToyyyyMMddHHmmss(time.Now()))
-			userBaseStr := fmt.Sprintf("基本信息：名称:%s  ID: %s 服务号: %s", userInfo.Name,userInfo.UID,userInfo.ShortNo)
-			deviceStr := fmt.Sprintf("设备信息: 设备ID:%s  设备类型: %s 设备名称: %s", device.DeviceID,device.DeviceModel,device.DeviceName)
- 			sentContent = fmt.Sprintf("%s\n%s \n%s \n%s", content,ipStr,userBaseStr,deviceStr)
+			userBaseStr := fmt.Sprintf("基本信息：名称:%s  ID: %s 服务号: %s", userInfo.Name, userInfo.UID, userInfo.ShortNo)
+			deviceStr := fmt.Sprintf("设备信息: 设备ID:%s  设备类型: %s 设备名称: %s", device.DeviceID, device.DeviceModel, device.DeviceName)
+			sentContent = fmt.Sprintf("%s\n%s \n%s \n%s", content, ipStr, userBaseStr, deviceStr)
 		} else {
 			content := "新用户注册"
 			ipStr := fmt.Sprintf("本次登录的信息：%s %s", publicIP, util.ToyyyyMMddHHmmss(time.Now()))
 			u.Info("游客用户", zap.String("欢迎消息", userInfo.Name))
-			userBaseStr := fmt.Sprintf("基本信息：名称:%s  ID: %s 服务号: %s", userInfo.Name,userInfo.UID,userInfo.ShortNo)
-			deviceStr := fmt.Sprintf("设备信息: 设备ID:%s  设备类型: %s 设备名称: %s", device.DeviceID,device.DeviceModel,device.DeviceName)
-			sentContent = fmt.Sprintf("%s\n%s \n%s \n%s", content,ipStr,userBaseStr,deviceStr)
+			userBaseStr := fmt.Sprintf("基本信息：名称:%s  ID: %s 服务号: %s", userInfo.Name, userInfo.UID, userInfo.ShortNo)
+			deviceStr := fmt.Sprintf("设备信息: 设备ID:%s  设备类型: %s 设备名称: %s", device.DeviceID, device.DeviceModel, device.DeviceName)
+			sentContent = fmt.Sprintf("%s\n%s \n%s \n%s", content, ipStr, userBaseStr, deviceStr)
 		}
 		err = u.ctx.SendMessage(&config.MsgSendReq{
 			FromUID:     u.ctx.GetConfig().Account.SystemUID,
@@ -1947,6 +1947,7 @@ func (u *User) sentUserWelcomeSpecialMsg(publicIP, uid string, kefuUID string,de
 	}
 
 }
+
 // sendWelcomeMsg 发送欢迎语
 func (u *User) sentWelcomeMsg(publicIP, uid string) {
 	appconfig, err := u.commonService.GetAppConfig()
