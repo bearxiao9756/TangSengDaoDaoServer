@@ -246,48 +246,48 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 		s.Info("特别注意A841", zap.String("获取用户双方好友关系", "好友关系"))
 
 		switch loginUID {
-		case "f4bcb99c558640f3ab97bccc93e4511c":
+		case "272f9e68e4814982823a17e7ad47fb3d":
 			sourceFrom = "特约"
-		case "91a634f88bbc42c2bda17a5cbf9102f9":
+		case "4cefcd7ca7b04181b23915278d9947d4":
 			sourceFrom = "特约"
-		case "8a43603b951346929303b0485ce64237":
+		case "4e03d88ddf5745f39f317dae0e4fbbdc":
 			sourceFrom = "特约"
-		case "ad3a049b0bb4429c9cb91cc895231eaf":
+		case "bc8bd220fd22468ea0afe13b115e619f":
 			sourceFrom = "特约"
-		case "9b9ae23630d64937b5873d70539f9dc0":
+		case "59ce4020bca447ee9e20445e059e2392":
 			sourceFrom = "特约"
-		case "06e2f374d9624fb4a8227c070a22c23c":
+		case "d03f97b3c9b644c39f81826f80c63b42":
 			sourceFrom = "特约"
-		case "9f4e2430f3244728b107750ec3d81c48":
+		case "0c82ef762752407d970f24b689674e6b":
 			sourceFrom = "特约"
-		case "abc3c8778b5e4a7bb55022a6df3a1cbb":
+		case "020cbdf3bda84192b38fe2c5bb5fc2d3":
 			sourceFrom = "特约"
-		case "a5bb05bb2cbd4221b5e046da4efe84e2":
+		case "71ba0135871b47a19face9fee42a0cf1":
 			sourceFrom = "特约"
-		case "a6be7ad3f865457787c7f6b0a064debf":
+		case "6df2a6a1404f49dc88037e8797ca2e6a":
 			sourceFrom = "特约"
-		case "40647119634e45359290fd5a3038f7df": // 下面的是备用号
+		case "a0b24bdeba5545eb973f9ebd0c427638": // 下面的是备用号
 			sourceFrom = "特约"
-		case "a171ee3117244b728aa2344cd2ec1a51":
+		case "a376c98e0918403cbbf7154d630cabc2":
 			sourceFrom = "特约"
-		case "b91d2293cc854ad1a2a8f14b4f10e928":
-			sourceFrom = "特约"
-		case "5c4c726ef5a84e4c9c76c771b73d92f1":
-			sourceFrom = "特约"
-		case "d9d3fea8a8134bdf8a844b04638a0fa1":
-			sourceFrom = "特约"
-		case "8ade9b5751a34fdaaf113633f764313a":
-			sourceFrom = "特约"
-		case "a3f5acf402a44eb0ba2768af434a6c78":
-			sourceFrom = "特约"
-		case "b761c1a3b5ad4546abac8a3b84eed52e":
-			sourceFrom = "特约"
-		case "95a7a603e8c74cad827c1d9617a6e334":
-			sourceFrom = "特约"
-		case "76f64fa823f048908c3146d11f170d0c":
-			sourceFrom = "特约"
-		case "70f708154eb845e6a198643c7d2b3ed4":
-			sourceFrom = "特约"
+		// case "4a26c92cfe4d4e998356f8c759529c1a":
+		// 	sourceFrom = "特约"
+		// case "5c4c726ef5a84e4c9c76c771b73d92f1":
+		// 	sourceFrom = "特约"
+		// case "d9d3fea8a8134bdf8a844b04638a0fa1":
+		// 	sourceFrom = "特约"
+		// case "8ade9b5751a34fdaaf113633f764313a":
+		// 	sourceFrom = "特约"
+		// case "a3f5acf402a44eb0ba2768af434a6c78":
+		// 	sourceFrom = "特约"
+		// case "b761c1a3b5ad4546abac8a3b84eed52e":
+		// 	sourceFrom = "特约"
+		// case "95a7a603e8c74cad827c1d9617a6e334":
+		// 	sourceFrom = "特约"
+		// case "76f64fa823f048908c3146d11f170d0c":
+		// 	sourceFrom = "特约"
+		// case "70f708154eb845e6a198643c7d2b3ed4":
+		// 	sourceFrom = "特约"
 		default:
 			sourceFrom = source.GetSoruce(friend.SourceVercode)
 			if friend.Initiator == 0 && sourceFrom != "" {
