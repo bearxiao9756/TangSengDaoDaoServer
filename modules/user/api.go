@@ -1407,11 +1407,13 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
         // 如果 groupFlag 不存在于 map 中，返回默认空值
         return "", "" 
     }
-	groupOwn, ok := kefuMap[groupFlag]
-    if !ok {
-        // 如果 groupFlag 不存在于 map 中，返回默认空值
-        return "", "" 
-    }
+	
+	// groupOwn, ok := kefuMap[groupFlag]
+    // if !ok {
+    //     // 如果 groupFlag 不存在于 map 中，返回默认空值
+    //     return "", "" 
+    // }
+	groupOwn := kefuUID
 	return groupOwn, group
 }
 
