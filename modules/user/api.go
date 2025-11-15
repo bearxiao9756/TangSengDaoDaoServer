@@ -1129,14 +1129,14 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
 			c.Response(err)
 		} else {
-			// userInfo, err := u.db.QueryByUID(tempUID)
-			// u.Info("游客用户 注册成功", zap.String("注册成功", resp.Name))
+			userInfo, err := u.db.QueryByUID(tempUID)
+			u.Info("游客用户 注册成功", zap.String("注册成功", resp.Name))
 			// u.Error("游客用户 注册成功", zap.String("注册成功", resp.Name))
-			// if err != nil {
-			// 	c.Response(err)
-			// }
-			c.Response(resp)
-			// u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
+			if err != nil {
+				c.Response(err)
+			}
+			// c.Response(resp)
+			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
 		}
 	}
 }
@@ -1347,62 +1347,71 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 
 	return newLoginUserDetailResp(userModel, token, u.ctx), nil
 }
-
+var groupMap = map[string]string{
+    "a": "2a2b9943ee4e46f79013969811bbc552",
+    "b": "2a2b9943ee4e46f79013969811bbc552",
+    "c": "2a2b9943ee4e46f79013969811bbc552",
+    "d": "2a2b9943ee4e46f79013969811bbc552", // 11
+    "e": "2a2b9943ee4e46f79013969811bbc552", // 12
+    "f": "2a2b9943ee4e46f79013969811bbc552", // 13
+    "g": "2a2b9943ee4e46f79013969811bbc552", // 21
+    "h": "2a2b9943ee4e46f79013969811bbc552", // 22
+    "i": "2a2b9943ee4e46f79013969811bbc552", // 23
+    "j": "2a2b9943ee4e46f79013969811bbc552", // 31
+    "k": "2a2b9943ee4e46f79013969811bbc552", // 32
+    "m": "2a2b9943ee4e46f79013969811bbc552", // 51
+    "l": "2a2b9943ee4e46f79013969811bbc552", // 52
+    "n": "2a2b9943ee4e46f79013969811bbc552", // 61
+    "o": "2a2b9943ee4e46f79013969811bbc552", // 62
+    "p": "2a2b9943ee4e46f79013969811bbc552", // 63
+}
+var kefuMap = map[string]string{
+    "a": "272f9e68e4814982823a17e7ad47fb3d",
+    "b": "9d5c22fff3b2460ba7363de7f4689058",
+    "c": "4cefcd7ca7b04181b23915278d9947d4",
+    "d": "2c76be6ccc384308844dacf37f0e65f7", // 11
+    "e": "4e03d88ddf5745f39f317dae0e4fbbdc", // 12
+    "f": "bc8bd220fd22468ea0afe13b115e619f", // 13
+    "g": "59ce4020bca447ee9e20445e059e2392", // 21
+    "h": "d03f97b3c9b644c39f81826f80c63b42", // 22
+    "i": "0c82ef762752407d970f24b689674e6b", // 23
+    "j": "020cbdf3bda84192b38fe2c5bb5fc2d3", // 31
+    "k": "71ba0135871b47a19face9fee42a0cf1", // 32
+    "m": "6df2a6a1404f49dc88037e8797ca2e6a", // 51
+    "l": "a0b24bdeba5545eb973f9ebd0c427638", // 52
+    "n": "a376c98e0918403cbbf7154d630cabc2", // 61
+    "o": "4a26c92cfe4d4e998356f8c759529c1a", // 62
+    "p": "dd3b06cbe9474e6d895c948b9cd6b4ab", // 63
+}
+var shortMap = map[string]string{
+    "a": "fvLZGrij",
+    "b": "fvLoSyrSD",
+    "c": "fvLshaqfJ",
+    "d": "fvLAUHem", // 11
+    "e": "fvLHGhmgp", // 12
+    "f": "fvLNuZdQ", // 13
+    "g": "fvLSPCV", // 21
+    "h": "fvMdeReSU", // 22
+    "i": "fvMgBTdqW", // 23
+    "j": "fvMk9Hhi", // 31
+    "k": "fvMpfSGCr", // 32
+    "m": "fvMshLwKD", // 51
+    "l": "fvMvWqga", // 52
+    "n": "fvMzOspVS", // 61
+    "o": "fvMFCdfg", // 62
+    "p": "dd3b06cbe9474e6d895c948b9cd6b4ab", // 63
+}
 func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
-	var group string
-	var groupOwn string
-	switch groupFlag {
-	case "a":
-		group = "0b981e0823bf49aeac62ea3dc2591383"
-		groupOwn = kefuUID
-	case "b":
-		group = "840dc274a16c4e5285dd772b2b7b1a4a"
-		groupOwn = kefuUID
-	case "c":
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		groupOwn = kefuUID
-	case "d": // 11
-		group = "96c3b50387214b049ed92c8610102f12"
-		groupOwn = kefuUID
-	case "e": // 12
-		group = "77628d13839a4e4b8313ee77109c1926"
-		groupOwn = kefuUID
-	case "f": // 13
-		group = "2e97d201b1b7497599994e33d1b88cc9"
-		groupOwn = kefuUID
-	case "g": // 21
-		group = "4d7d0917363a4c579a80a136d2145e4e"
-		groupOwn = kefuUID
-	case "h": // 22
-		group = "da5a782b5c8b4293bcb090c6731b59bc"
-		groupOwn = kefuUID
-	case "i": // 23
-		group = "411441e2df3444a4923c6d04ab4d2cf8"
-		groupOwn = kefuUID
-	case "j": // 31
-		group = "f7176b0e4d1e4e7480ca62cd7ed023c6"
-		groupOwn = kefuUID
-	case "k": // 32
-		group = "65c9437b2fab4d95a12f3c516a745777"
-		groupOwn = kefuUID
-	case "m": // 51
-		group = "e016cd6ac1da4754a50d33aad85c9617"
-		groupOwn = kefuUID
-	case "l": // 52
-		group = "35145b3278f54e95aeb1c828a9b70ec8"
-		groupOwn = kefuUID
-	case "n": // 61
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		groupOwn = kefuUID
-	case "o": // 62
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		groupOwn = kefuUID
-	case "p": // 63
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
-		groupOwn = kefuUID
-	default:
-		return "", ""
-	}
+    group, ok := groupMap[groupFlag]
+    if !ok {
+        // 如果 groupFlag 不存在于 map 中，返回默认空值
+        return "", "" 
+    }
+	groupOwn, ok := kefuMap[groupFlag]
+    if !ok {
+        // 如果 groupFlag 不存在于 map 中，返回默认空值
+        return "", "" 
+    }
 	return groupOwn, group
 }
 
