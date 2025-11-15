@@ -217,66 +217,67 @@ func GenerateRandomName() string {
 
 	return Nicknames[randomIndex]
 }
-func generateMockPhoneNumber() string {
-	// 确保每次运行生成不同的序列
-	source := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(source)
 
-	// 1. 选择一个有效的号段前缀（3位）
-	// 常见的手机号前缀（例如：13x, 15x, 18x, 17x, 19x等）
-	prefixes := []string{
-		"130", "131", "132", "133", "134", "135", "136", "137", "138", "139",
-		"150", "151", "152", "153", "155", "156", "157", "158", "159",
-		"170", "176", "177", "178",
-		"180", "181", "182", "183", "184", "185", "186", "187", "188", "189",
-		"198", "199",
-	}
-	// 随机选择一个前缀
-	prefixIndex := r.Intn(len(prefixes))
-	number := prefixes[prefixIndex]
+// func generateMockPhoneNumber() string {
+// 	// 确保每次运行生成不同的序列
+// 	source := rand.NewSource(time.Now().UnixNano())
+// 	r := rand.New(source)
 
-	// 2. 生成中间四位 (4位)
-	// 范围 [1000, 9999]
-	middle := 1000 + r.Intn(9000)
-	number += fmt.Sprintf("%d", middle)
+// 	// 1. 选择一个有效的号段前缀（3位）
+// 	// 常见的手机号前缀（例如：13x, 15x, 18x, 17x, 19x等）
+// 	prefixes := []string{
+// 		"130", "131", "132", "133", "134", "135", "136", "137", "138", "139",
+// 		"150", "151", "152", "153", "155", "156", "157", "158", "159",
+// 		"170", "176", "177", "178",
+// 		"180", "181", "182", "183", "184", "185", "186", "187", "188", "189",
+// 		"198", "199",
+// 	}
+// 	// 随机选择一个前缀
+// 	prefixIndex := r.Intn(len(prefixes))
+// 	number := prefixes[prefixIndex]
 
-	// 3. 生成最后四位 (4位)
-	// 范围 [1000, 9999]
-	suffix := 1000 + r.Intn(9000)
-	number += fmt.Sprintf("%d", suffix)
+// 	// 2. 生成中间四位 (4位)
+// 	// 范围 [1000, 9999]
+// 	middle := 1000 + r.Intn(9000)
+// 	number += fmt.Sprintf("%d", middle)
 
-	// 总长度为 3 + 4 + 4 = 11 位
-	return number
-}
-func (u *User) isPhoneNumberInDB(phone string) bool {
-	user, err := u.db.QueryByPhone("86", phone)
-	if err != nil {
-		return true
-	}
-	if len(user.Phone) > 0 {
-		return true
-	}
-	return false // 仅为占位符，实际需连接DB
-}
+// 	// 3. 生成最后四位 (4位)
+// 	// 范围 [1000, 9999]
+// 	suffix := 1000 + r.Intn(9000)
+// 	number += fmt.Sprintf("%d", suffix)
 
-func (u *User) generateUniqueMockPhoneNumber() string {
+// 	// 总长度为 3 + 4 + 4 = 11 位
+// 	return number
+// }
+// func (u *User) isPhoneNumberInDB(phone string) bool {
+// 	user, err := u.db.QueryByPhone("86", phone)
+// 	if err != nil {
+// 		return true
+// 	}
+// 	if len(user.Phone) > 0 {
+// 		return true
+// 	}
+// 	return false // 仅为占位符，实际需连接DB
+// }
 
-	const maxAttempts = 1000 // 设置最大尝试次数，防止无限循环
-	attempts := 0
+// func (u *User) generateUniqueMockPhoneNumber() string {
 
-	for attempts < maxAttempts {
-		// 1. 生成一个模拟号码
-		newNumber := generateMockPhoneNumber()
+// 	const maxAttempts = 1000 // 设置最大尝试次数，防止无限循环
+// 	attempts := 0
 
-		// 2. 检查数据库：确保新号码在表中不存在
-		if !u.isPhoneNumberInDB(newNumber) {
-			return newNumber // 找到唯一号码，返回
-		}
+// 	for attempts < maxAttempts {
+// 		// 1. 生成一个模拟号码
+// 		newNumber := generateMockPhoneNumber()
 
-		attempts++
-	}
-	return ""
-}
+// 		// 2. 检查数据库：确保新号码在表中不存在
+// 		if !u.isPhoneNumberInDB(newNumber) {
+// 			return newNumber // 找到唯一号码，返回
+// 		}
+
+// 		attempts++
+// 	}
+// 	return ""
+// }
 
 // app退出登录
 func (u *User) quit(c *wkhttp.Context) {
@@ -476,10 +477,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	subkehua23 := "https://anace.icu:9000/"
-	subkehu123 := "http://anace.icu:9000/"
-	subkehu223 := "http://anace.icu:8090/"
-	subkehuT23 := "https://anace.icu/img/"
+	subkehua23 := "https://asedu.icu:9000/"
+	subkehu123 := "http://asedu.icu:9000/"
+	subkehu223 := "http://asedu.icu:8090/"
+	subkehuT23 := "https://asedu.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
@@ -1046,104 +1047,6 @@ func (u *User) wxLogin(c *wkhttp.Context) {
 		u.createUser(loginSpanCtx, model, c, nil)
 	}
 }
-func (u *User) guestLoginWX(c *wkhttp.Context) {
-	type guestLoginReq struct {
-		Channel string     `json:"channel"` // 标识用户来自哪个直连链接 (超A链)
-		Flag    int        `json:"flag"`
-		Device  *deviceReq `json:"device"`
-	}
-	var reqMap guestLoginReq
-
-	if err := c.BindJSON(&reqMap); err != nil {
-		c.ResponseError(errors.New("请求数据格式有误！"))
-		return
-	} else {
-		u.Info("游客信息解析成功-渠道码", zap.String("渠道", reqMap.Channel))
-		u.Info("游客信息解析成功-设备ID", zap.String("设备", reqMap.Device.DeviceID))
-	}
-	if reqMap.Channel == "" {
-		c.ResponseError(errors.New("渠道信息不能为空"))
-		return
-	}
-	length := len(reqMap.Channel)
-	if length == 0 {
-		// 尽管前面已经有了 c.ResponseError，但为了代码的完整性，可以处理空字符串的情况
-		c.ResponseError(errors.New("渠道信息不能为空"))
-		return
-	}
-	lastChar := reqMap.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
-	if lastChar != "a" && lastChar != "b" && lastChar != "c" {
-		c.ResponseError(errors.New("渠道信息错误"))
-		return
-	}
-	reqMap.Channel = reqMap.Channel[:length-1] // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
-	lastCharString := string(lastChar)         // 转换为 string
-	tempUID := reqMap.Device.DeviceID
-	u.Info("游客用户ID生成-tempID", zap.String("用户ID", tempUID))
-	// 3. 检查用户是否存在（使用访客ID作为唯一标识）
-	// loginSpan := u.ctx.Tracer().StartSpan("guest_login", opentracing.ChildOf(c.GetSpanContext()))
-	// loginSpan.SetTag("UID", tempUID)
-	// loginSpanCtx := u.ctx.Tracer().ContextWithSpan(context.Background(), loginSpan)
-	// defer loginSpan.Finish()
-	// 假设 u.db 有一个通过 UID 查询用户的方法
-	userInfo, err := u.db.queryWithWXOpenIDAndWxUnionid(reqMap.Channel, reqMap.Device.DeviceID)
-	if err != nil {
-		u.Error("通过访客UID查询用户错误", zap.Error(err))
-		c.ResponseError(errors.New("查询访客信息错误"))
-		return
-	}
-	guestNickname := fmt.Sprintf("%s%s", GenerateRandomName(), tempUID[:3])
-	guestPhone := u.generateUniqueMockPhoneNumber()
-
-	registerSpan := u.ctx.Tracer().StartSpan(
-		"user.register",
-		opentracing.ChildOf(c.GetSpanContext()),
-	)
-	defer registerSpan.Finish()
-	registerSpanCtx := u.ctx.Tracer().ContextWithSpan(context.Background(), registerSpan)
-	registerSpan.SetTag("username", fmt.Sprintf("%s%s", "86", guestPhone))
-	if userInfo != nil {
-		u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(reqMap.Flag), reqMap.Device, registerSpanCtx, c, reqMap.Channel, true)
-		return
-	} else {
-		//验证手机号是否注册
-		userInfo2, err := u.db.QueryByUsernameCxt(registerSpanCtx, fmt.Sprintf("%s%s", "86", guestPhone))
-		if err != nil {
-			u.Error("查询用户信息失败！", zap.String("username", guestPhone))
-			c.ResponseError(err)
-			return
-		}
-		if userInfo2 != nil {
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(reqMap.Flag), reqMap.Device, registerSpanCtx, c, reqMap.Channel, true)
-			return
-		} else {
-			uid := util.GenerUUID()
-			var model = &createUserModel{
-				UID:      uid,
-				Sex:      1,
-				Name:     guestNickname,
-				Zone:     "86",
-				Phone:    guestPhone,
-				Password: "122213213123123",
-				Flag:     int(reqMap.Flag),
-				Device:   reqMap.Device,
-			}
-			_, err = u.gusetcreateUser(registerSpanCtx, model, c, nil, reqMap.Channel, lastCharString)
-
-			if err != nil {
-				u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
-				c.Response(err)
-			} else {
-				userInfo, err := u.db.QueryByUID(tempUID)
-				u.Info("游客用户 注册成功", zap.String("注册成功", userInfo.Name))
-				if err != nil {
-					c.Response(err)
-				}
-				u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(reqMap.Flag), reqMap.Device, registerSpanCtx, c, reqMap.Channel, false)
-			}
-		}
-	}
-}
 func (u *User) guestLogin(c *wkhttp.Context) {
 	type guestLoginReq struct {
 		Channel string     `json:"channel"` // 标识用户来自哪个直连链接 (超A链)
@@ -1170,13 +1073,13 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 		return
 	}
 	req.Device.DeviceID = strings.ReplaceAll(req.Device.DeviceID, "-", "")
-	lastChar := req.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
-	if lastChar != "a" && lastChar != "b" && lastChar != "c" && lastChar != "d" && lastChar != "e" && lastChar != "f" && lastChar != "g" && lastChar != "h" && lastChar != "i" && lastChar != "k" && lastChar != "j" && lastChar != "l" && lastChar != "m" && lastChar != "n" && lastChar != "o" {
+	validChars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	lastCharByte := req.Channel[length-1] // lastChar = "a" (索引 32 到末尾)
+	if !strings.ContainsRune(validChars, rune(lastCharByte)) {
 		c.ResponseError(errors.New("渠道信息错误"))
-		return
 	}
-	req.Channel = req.Channel[:length-1] // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
-	lastCharString := string(lastChar)   // 转换为 string
+	req.Channel = req.Channel[:length-1]   // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
+	lastCharString := string(lastCharByte) // 转换为 string
 
 	// 2. 身份生成和查询
 	tempUID := req.Device.DeviceID
@@ -1221,18 +1124,19 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			Device:    req.Device,
 		}
 		u.Info("游客用户 不存在", zap.String("游客信息构建-WXUnionid", model.WXUnionid))
-		_, err := u.gusetcreateUser(loginSpanCtx, model, c, nil, req.Channel, lastCharString)
+		resp, err := u.gusetcreateUser(loginSpanCtx, model, c, nil, req.Channel, lastCharString)
 		if err != nil {
 			u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
 			c.Response(err)
 		} else {
-			userInfo, err := u.db.QueryByUID(tempUID)
-			u.Info("游客用户 注册成功", zap.String("注册成功", userInfo.Name))
-			u.Error("游客用户 注册成功", zap.String("注册成功", userInfo.Name))
-			if err != nil {
-				c.Response(err)
-			}
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
+			// userInfo, err := u.db.QueryByUID(tempUID)
+			// u.Info("游客用户 注册成功", zap.String("注册成功", resp.Name))
+			// u.Error("游客用户 注册成功", zap.String("注册成功", resp.Name))
+			// if err != nil {
+			// 	c.Response(err)
+			// }
+			c.Response(resp)
+			// u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
 		}
 	}
 }
