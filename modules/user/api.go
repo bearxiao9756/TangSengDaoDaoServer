@@ -1046,104 +1046,6 @@ func (u *User) wxLogin(c *wkhttp.Context) {
 		u.createUser(loginSpanCtx, model, c, nil)
 	}
 }
-func (u *User) guestLoginWX(c *wkhttp.Context) {
-	type guestLoginReq struct {
-		Channel string     `json:"channel"` // 标识用户来自哪个直连链接 (超A链)
-		Flag    int        `json:"flag"`
-		Device  *deviceReq `json:"device"`
-	}
-	var reqMap guestLoginReq
-
-	if err := c.BindJSON(&reqMap); err != nil {
-		c.ResponseError(errors.New("请求数据格式有误！"))
-		return
-	} else {
-		u.Info("游客信息解析成功-渠道码", zap.String("渠道", reqMap.Channel))
-		u.Info("游客信息解析成功-设备ID", zap.String("设备", reqMap.Device.DeviceID))
-	}
-	if reqMap.Channel == "" {
-		c.ResponseError(errors.New("渠道信息不能为空"))
-		return
-	}
-	length := len(reqMap.Channel)
-	if length == 0 {
-		// 尽管前面已经有了 c.ResponseError，但为了代码的完整性，可以处理空字符串的情况
-		c.ResponseError(errors.New("渠道信息不能为空"))
-		return
-	}
-	lastChar := reqMap.Channel[length-1:] // lastChar = "a" (索引 32 到末尾)
-	if lastChar != "a" && lastChar != "b" && lastChar != "c" {
-		c.ResponseError(errors.New("渠道信息错误"))
-		return
-	}
-	reqMap.Channel = reqMap.Channel[:length-1] // req.Channel 变为 "a6be7ad3f865457787c7f6b0a064debf"
-	lastCharString := string(lastChar)         // 转换为 string
-	tempUID := reqMap.Device.DeviceID
-	u.Info("游客用户ID生成-tempID", zap.String("用户ID", tempUID))
-	// 3. 检查用户是否存在（使用访客ID作为唯一标识）
-	// loginSpan := u.ctx.Tracer().StartSpan("guest_login", opentracing.ChildOf(c.GetSpanContext()))
-	// loginSpan.SetTag("UID", tempUID)
-	// loginSpanCtx := u.ctx.Tracer().ContextWithSpan(context.Background(), loginSpan)
-	// defer loginSpan.Finish()
-	// 假设 u.db 有一个通过 UID 查询用户的方法
-	userInfo, err := u.db.queryWithWXOpenIDAndWxUnionid(reqMap.Channel, reqMap.Device.DeviceID)
-	if err != nil {
-		u.Error("通过访客UID查询用户错误", zap.Error(err))
-		c.ResponseError(errors.New("查询访客信息错误"))
-		return
-	}
-	guestNickname := fmt.Sprintf("%s%s", GenerateRandomName(), tempUID[:3])
-	guestPhone := u.generateUniqueMockPhoneNumber()
-
-	registerSpan := u.ctx.Tracer().StartSpan(
-		"user.register",
-		opentracing.ChildOf(c.GetSpanContext()),
-	)
-	defer registerSpan.Finish()
-	registerSpanCtx := u.ctx.Tracer().ContextWithSpan(context.Background(), registerSpan)
-	registerSpan.SetTag("username", fmt.Sprintf("%s%s", "86", guestPhone))
-	if userInfo != nil {
-		u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(reqMap.Flag), reqMap.Device, registerSpanCtx, c, reqMap.Channel, true)
-		return
-	} else {
-		//验证手机号是否注册
-		userInfo2, err := u.db.QueryByUsernameCxt(registerSpanCtx, fmt.Sprintf("%s%s", "86", guestPhone))
-		if err != nil {
-			u.Error("查询用户信息失败！", zap.String("username", guestPhone))
-			c.ResponseError(err)
-			return
-		}
-		if userInfo2 != nil {
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(reqMap.Flag), reqMap.Device, registerSpanCtx, c, reqMap.Channel, true)
-			return
-		} else {
-			uid := util.GenerUUID()
-			var model = &createUserModel{
-				UID:      uid,
-				Sex:      1,
-				Name:     guestNickname,
-				Zone:     "86",
-				Phone:    guestPhone,
-				Password: "122213213123123",
-				Flag:     int(reqMap.Flag),
-				Device:   reqMap.Device,
-			}
-			_, err = u.gusetcreateUser(registerSpanCtx, model, c, nil, reqMap.Channel, lastCharString)
-
-			if err != nil {
-				u.Info("游客用户 注册失败", zap.String("错误信息", err.Error()))
-				c.Response(err)
-			} else {
-				userInfo, err := u.db.QueryByUID(tempUID)
-				u.Info("游客用户 注册成功", zap.String("注册成功", userInfo.Name))
-				if err != nil {
-					c.Response(err)
-				}
-				u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(reqMap.Flag), reqMap.Device, registerSpanCtx, c, reqMap.Channel, false)
-			}
-		}
-	}
-}
 func (u *User) guestLogin(c *wkhttp.Context) {
 	type guestLoginReq struct {
 		Channel string     `json:"channel"` // 标识用户来自哪个直连链接 (超A链)
@@ -1379,12 +1281,12 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
 	// //发送用户注册事件
 	// // 搜索
-	// kefuInfo, err := u.db.QueryByUID(kefuUID)
-	// u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
-	// if err != nil {
-	// 	u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
-	// 	return nil, err
-	// }
+	kefuInfo, err := u.db.QueryByUID(kefuUID)
+	u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
+	if err != nil {
+		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
+		return nil, err
+	}
 	// u.Info("auser", zap.String("shortNo", auser.Name))
 	// 申请
 
@@ -1400,7 +1302,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
 			"mid":      mid,
-			"mid_name": "广安服务系统",
+			"mid_name": kefuInfo.Name,
 			// "remark":         u.ctx.GetConfig().WelcomeMessage,
 			"gid": gid,
 			// "uid_short_no": shortNo,
@@ -1456,70 +1358,71 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 	case "a": //01
 		group = "c53056dea79c4abbb1fbec44e9ab2ce5"
 		// groupOwn = kefuUID
-		groupOwn = "369d3495e8d54c3ca8fab254714d604c"
+		// groupOwn = "369d3495e8d54c3ca8fab254714d604c"
 	case "b": //02
 		group = "ebf3c2bee12c4ed4af6e0cc81251fc21"
 		// groupOwn = kefuUID
-		groupOwn = "671fb3fa412241048f28915a1be70c32"
+		// groupOwn = "671fb3fa412241048f28915a1be70c32"
 	case "c": //03
 		group = "cc60a69724734c158a7c2a1e6397c9d1"
 		// groupOwn = kefuUID
-		groupOwn = "e9a5b452de2a4a04bcef5e642dbfe91b"
+		// groupOwn = "e9a5b452de2a4a04bcef5e642dbfe91b"
 	case "d": // 11
 		group = "85ad2b93648f481fa3508b8eff071e75"
 		// groupOwn = kefuUID
-		groupOwn = "0ddf8e84672847419e4a84d331d819c6"
+		// groupOwn = "0ddf8e84672847419e4a84d331d819c6"
 	case "e": // 12
 		group = "84d431694cf54f338a758da5960bc67e"
 		// groupOwn = kefuUID
-		groupOwn = "1444ea305a2b4436af1b1dcaa9790d7f"
+		// groupOwn = "1444ea305a2b4436af1b1dcaa9790d7f"
 	case "f": // 13
 		group = "818b414f95f74b0ca42f4544b8f72a74"
 		// groupOwn = kefuUID
-		groupOwn = "cba98c0ca3f74febb0301b222fc153d6"
+		// groupOwn = "cba98c0ca3f74febb0301b222fc153d6"
 	case "g": // 21
 		group = "ceee72f6289a4e7c883883c36b70ca73"
 		// groupOwn = kefuUID
-		groupOwn = "691961c757a940529a47d562e86e1afd"
+		// groupOwn = "691961c757a940529a47d562e86e1afd"
 	case "h": // 22
 		group = "c026c2ef537e4091bd34a0b7164fbdb3"
 		// groupOwn = kefuUID
-		groupOwn = "016e40ff73b8455eae2d242b65ff7180"
+		// groupOwn = "016e40ff73b8455eae2d242b65ff7180"
 	case "i": // 31
 		group = "36c4136562a7424aa37a8238a6f8b7d2"
 		// groupOwn = kefuUID
-		groupOwn = "c1751cb285b64527a82621cfcdb8d609"
+		// groupOwn = "c1751cb285b64527a82621cfcdb8d609"
 	case "j": // 32
 		group = "5f9bba36afed44d7a1888ee37b4a45e9"
 		// groupOwn = kefuUID
-		groupOwn = "8cce66b3976d42a283feb386309f7793"
-	case "k": 
+		// groupOwn = "8cce66b3976d42a283feb386309f7793"
+	case "k":
 		group = "65c9437b2fab4d95a12f3c516a745777"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		// groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "m": // 51
 		group = "e016cd6ac1da4754a50d33aad85c9617"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		// groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "l": // 52
 		group = "35145b3278f54e95aeb1c828a9b70ec8"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		// groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "n": // 61
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		// groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "o": // 62
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		// groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	case "p": // 63
 		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		// groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
 	default:
 		return "", ""
 	}
+	groupOwn = kefuUID
 	return groupOwn, group
 }
 
