@@ -246,27 +246,27 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 		s.Info("特别注意A841", zap.String("获取用户双方好友关系", "好友关系"))
 
 		switch loginUID {
-		case "f4bcb99c558640f3ab97bccc93e4511c":
+		case "bfc253b0daf24a1f9d337d7fb14f8643":
 			sourceFrom = "特约"
-		case "91a634f88bbc42c2bda17a5cbf9102f9":
+		case "369d3495e8d54c3ca8fab254714d604c":
 			sourceFrom = "特约"
-		case "8a43603b951346929303b0485ce64237":
+		case "671fb3fa412241048f28915a1be70c32":
 			sourceFrom = "特约"
-		case "ad3a049b0bb4429c9cb91cc895231eaf":
+		case "cc60a69724734c158a7c2a1e6397c9d1":
 			sourceFrom = "特约"
-		case "9b9ae23630d64937b5873d70539f9dc0":
+		case "0ddf8e84672847419e4a84d331d819c6":
 			sourceFrom = "特约"
-		case "06e2f374d9624fb4a8227c070a22c23c":
+		case "1444ea305a2b4436af1b1dcaa9790d7f":
 			sourceFrom = "特约"
-		case "9f4e2430f3244728b107750ec3d81c48":
+		case "cba98c0ca3f74febb0301b222fc153d6":
 			sourceFrom = "特约"
-		case "abc3c8778b5e4a7bb55022a6df3a1cbb":
+		case "691961c757a940529a47d562e86e1afd":
 			sourceFrom = "特约"
-		case "a5bb05bb2cbd4221b5e046da4efe84e2":
+		case "016e40ff73b8455eae2d242b65ff7180":
 			sourceFrom = "特约"
-		case "a6be7ad3f865457787c7f6b0a064debf":
+		case "36c4136562a7424aa37a8238a6f8b7d2":
 			sourceFrom = "特约"
-		case "40647119634e45359290fd5a3038f7df": // 下面的是备用号
+		case "8cce66b3976d42a283feb386309f7793": // 下面的是备用号
 			sourceFrom = "特约"
 		case "a171ee3117244b728aa2344cd2ec1a51":
 			sourceFrom = "特约"

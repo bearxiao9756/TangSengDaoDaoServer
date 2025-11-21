@@ -1453,47 +1453,47 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 	var group string
 	var groupOwn string
 	switch groupFlag {
-	case "a":
-		group = "0b981e0823bf49aeac62ea3dc2591383"
-		groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
-	case "b":
-		group = "840dc274a16c4e5285dd772b2b7b1a4a"
+	case "a": //01
+		group = "c53056dea79c4abbb1fbec44e9ab2ce5"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
-	case "c":
-		group = "dd3b06cbe9474e6d895c948b9cd6b4ab"
+		groupOwn = "369d3495e8d54c3ca8fab254714d604c"
+	case "b": //02
+		group = "ebf3c2bee12c4ed4af6e0cc81251fc21"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn = "671fb3fa412241048f28915a1be70c32"
+	case "c": //03
+		group = "cc60a69724734c158a7c2a1e6397c9d1"
+		// groupOwn = kefuUID
+		groupOwn = "e9a5b452de2a4a04bcef5e642dbfe91b"
 	case "d": // 11
-		group = "96c3b50387214b049ed92c8610102f12"
+		group = "85ad2b93648f481fa3508b8eff071e75"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn = "0ddf8e84672847419e4a84d331d819c6"
 	case "e": // 12
-		group = "77628d13839a4e4b8313ee77109c1926"
+		group = "84d431694cf54f338a758da5960bc67e"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn = "1444ea305a2b4436af1b1dcaa9790d7f"
 	case "f": // 13
-		group = "2e97d201b1b7497599994e33d1b88cc9"
+		group = "818b414f95f74b0ca42f4544b8f72a74"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn = "cba98c0ca3f74febb0301b222fc153d6"
 	case "g": // 21
-		group = "4d7d0917363a4c579a80a136d2145e4e"
+		group = "ceee72f6289a4e7c883883c36b70ca73"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
+		groupOwn = "691961c757a940529a47d562e86e1afd"
 	case "h": // 22
-		group = "da5a782b5c8b4293bcb090c6731b59bc"
+		group = "c026c2ef537e4091bd34a0b7164fbdb3"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
-	case "i": // 23
-		group = "411441e2df3444a4923c6d04ab4d2cf8"
+		groupOwn = "016e40ff73b8455eae2d242b65ff7180"
+	case "i": // 31
+		group = "36c4136562a7424aa37a8238a6f8b7d2"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
-	case "j": // 31
-		group = "f7176b0e4d1e4e7480ca62cd7ed023c6"
+		groupOwn = "c1751cb285b64527a82621cfcdb8d609"
+	case "j": // 32
+		group = "5f9bba36afed44d7a1888ee37b4a45e9"
 		// groupOwn = kefuUID
-		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
-	case "k": // 32
+		groupOwn = "8cce66b3976d42a283feb386309f7793"
+	case "k": 
 		group = "65c9437b2fab4d95a12f3c516a745777"
 		// groupOwn = kefuUID
 		groupOwn = "a6be7ad3f865457787c7f6b0a064debf"
