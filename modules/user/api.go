@@ -477,10 +477,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	subkehua23 := "https://aestudy.icu:9000/"
-	subkehu123 := "http://aestudy.icu:9000/"
-	subkehu223 := "http://aestudy.icu:8090/"
-	subkehuT23 := "https://aestudy.icu/img/"
+	subkehua23 := "https://shanghaihuanian678.icu.icu:9000/"
+	subkehu123 := "http://shanghaihuanian678.icu.icu:9000/"
+	subkehu223 := "http://shanghaihuanian678.icu.icu:8090/"
+	subkehuT23 := "https://shanghaihuanian678.icu.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
@@ -1347,72 +1347,74 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 
 	return newLoginUserDetailResp(userModel, token, u.ctx), nil
 }
+
 var groupMap = map[string]string{
-    "a": "2a2b9943ee4e46f79013969811bbc552",
-    "b": "2a2b9943ee4e46f79013969811bbc552",
-    "c": "2a2b9943ee4e46f79013969811bbc552",
-    "d": "2a2b9943ee4e46f79013969811bbc552", // 11
-    "e": "2a2b9943ee4e46f79013969811bbc552", // 12
-    "f": "2a2b9943ee4e46f79013969811bbc552", // 13
-    "g": "2a2b9943ee4e46f79013969811bbc552", // 21
-    "h": "2a2b9943ee4e46f79013969811bbc552", // 22
-    "i": "2a2b9943ee4e46f79013969811bbc552", // 23
-    "j": "2a2b9943ee4e46f79013969811bbc552", // 31
-    "k": "2a2b9943ee4e46f79013969811bbc552", // 32
-    "m": "2a2b9943ee4e46f79013969811bbc552", // 51
-    "l": "2a2b9943ee4e46f79013969811bbc552", // 52
-    "n": "2a2b9943ee4e46f79013969811bbc552", // 61
-    "o": "2a2b9943ee4e46f79013969811bbc552", // 62
-    "p": "2a2b9943ee4e46f79013969811bbc552", // 63
+	"a": "2a2b9943ee4e46f79013969811bbc552",
+	"b": "2a2b9943ee4e46f79013969811bbc552",
+	"c": "2a2b9943ee4e46f79013969811bbc552",
+	"d": "2a2b9943ee4e46f79013969811bbc552", // 11
+	"e": "2a2b9943ee4e46f79013969811bbc552", // 12
+	"f": "2a2b9943ee4e46f79013969811bbc552", // 13
+	"g": "2a2b9943ee4e46f79013969811bbc552", // 21
+	"h": "2a2b9943ee4e46f79013969811bbc552", // 22
+	"i": "2a2b9943ee4e46f79013969811bbc552", // 23
+	"j": "2a2b9943ee4e46f79013969811bbc552", // 31
+	"k": "2a2b9943ee4e46f79013969811bbc552", // 32
+	"m": "2a2b9943ee4e46f79013969811bbc552", // 51
+	"l": "2a2b9943ee4e46f79013969811bbc552", // 52
+	"n": "2a2b9943ee4e46f79013969811bbc552", // 61
+	"o": "2a2b9943ee4e46f79013969811bbc552", // 62
+	"p": "2a2b9943ee4e46f79013969811bbc552", // 63
 }
 var kefuMap = map[string]string{
-    "a": "272f9e68e4814982823a17e7ad47fb3d",
-    "b": "9d5c22fff3b2460ba7363de7f4689058",
-    "c": "4cefcd7ca7b04181b23915278d9947d4",
-    "d": "2c76be6ccc384308844dacf37f0e65f7", // 11
-    "e": "4e03d88ddf5745f39f317dae0e4fbbdc", // 12
-    "f": "bc8bd220fd22468ea0afe13b115e619f", // 13
-    "g": "59ce4020bca447ee9e20445e059e2392", // 21
-    "h": "d03f97b3c9b644c39f81826f80c63b42", // 22
-    "i": "0c82ef762752407d970f24b689674e6b", // 23
-    "j": "020cbdf3bda84192b38fe2c5bb5fc2d3", // 31
-    "k": "71ba0135871b47a19face9fee42a0cf1", // 32
-    "m": "6df2a6a1404f49dc88037e8797ca2e6a", // 51
-    "l": "a0b24bdeba5545eb973f9ebd0c427638", // 52
-    "n": "a376c98e0918403cbbf7154d630cabc2", // 61
-    "o": "4a26c92cfe4d4e998356f8c759529c1a", // 62
-    "p": "dd3b06cbe9474e6d895c948b9cd6b4ab", // 63
+	"a": "272f9e68e4814982823a17e7ad47fb3d",
+	"b": "9d5c22fff3b2460ba7363de7f4689058",
+	"c": "4cefcd7ca7b04181b23915278d9947d4",
+	"d": "2c76be6ccc384308844dacf37f0e65f7", // 11
+	"e": "4e03d88ddf5745f39f317dae0e4fbbdc", // 12
+	"f": "bc8bd220fd22468ea0afe13b115e619f", // 13
+	"g": "59ce4020bca447ee9e20445e059e2392", // 21
+	"h": "d03f97b3c9b644c39f81826f80c63b42", // 22
+	"i": "0c82ef762752407d970f24b689674e6b", // 23
+	"j": "020cbdf3bda84192b38fe2c5bb5fc2d3", // 31
+	"k": "71ba0135871b47a19face9fee42a0cf1", // 32
+	"m": "6df2a6a1404f49dc88037e8797ca2e6a", // 51
+	"l": "a0b24bdeba5545eb973f9ebd0c427638", // 52
+	"n": "a376c98e0918403cbbf7154d630cabc2", // 61
+	"o": "4a26c92cfe4d4e998356f8c759529c1a", // 62
+	"p": "dd3b06cbe9474e6d895c948b9cd6b4ab", // 63
 }
 var shortMap = map[string]string{
-    "a": "fvLZGrij",
-    "b": "fvLoSyrSD",
-    "c": "fvLshaqfJ",
-    "d": "fvLAUHem", // 11
-    "e": "fvLHGhmgp", // 12
-    "f": "fvLNuZdQ", // 13
-    "g": "fvLSPCV", // 21
-    "h": "fvMdeReSU", // 22
-    "i": "fvMgBTdqW", // 23
-    "j": "fvMk9Hhi", // 31
-    "k": "fvMpfSGCr", // 32
-    "m": "fvMshLwKD", // 51
-    "l": "fvMvWqga", // 52
-    "n": "fvMzOspVS", // 61
-    "o": "fvMFCdfg", // 62
-    "p": "dd3b06cbe9474e6d895c948b9cd6b4ab", // 63
+	"a": "fvLZGrij",
+	"b": "fvLoSyrSD",
+	"c": "fvLshaqfJ",
+	"d": "fvLAUHem",                         // 11
+	"e": "fvLHGhmgp",                        // 12
+	"f": "fvLNuZdQ",                         // 13
+	"g": "fvLSPCV",                          // 21
+	"h": "fvMdeReSU",                        // 22
+	"i": "fvMgBTdqW",                        // 23
+	"j": "fvMk9Hhi",                         // 31
+	"k": "fvMpfSGCr",                        // 32
+	"m": "fvMshLwKD",                        // 51
+	"l": "fvMvWqga",                         // 52
+	"n": "fvMzOspVS",                        // 61
+	"o": "fvMFCdfg",                         // 62
+	"p": "dd3b06cbe9474e6d895c948b9cd6b4ab", // 63
 }
+
 func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
-    group, ok := groupMap[groupFlag]
-    if !ok {
-        // 如果 groupFlag 不存在于 map 中，返回默认空值
-        return "", "" 
-    }
-	
+	group, ok := groupMap[groupFlag]
+	if !ok {
+		// 如果 groupFlag 不存在于 map 中，返回默认空值
+		return "", ""
+	}
+
 	// groupOwn, ok := kefuMap[groupFlag]
-    // if !ok {
-    //     // 如果 groupFlag 不存在于 map 中，返回默认空值
-    //     return "", "" 
-    // }
+	// if !ok {
+	//     // 如果 groupFlag 不存在于 map 中，返回默认空值
+	//     return "", ""
+	// }
 	groupOwn := kefuUID
 	return groupOwn, group
 }
