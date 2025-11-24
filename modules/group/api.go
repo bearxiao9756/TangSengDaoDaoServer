@@ -278,7 +278,7 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 	subkehua23 := "https://shanghaihuanian678.icu.icu:9000/"
 	subkehu123 := "http://shanghaihuanian678.icu.icu:9000/"
 	subkehu223 := "http://shanghaihuanian678.icu.icu:8090/"
-	subkehuT23 := "https://asedu.icu/img/"
+	subkehuT23 := "https://shanghaihuanian678.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
