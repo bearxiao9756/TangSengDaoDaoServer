@@ -477,10 +477,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	subkehua23 := "https://shanghaihuanian123.icu:9000/"
-	subkehu123 := "http://shanghaihuanian123.icu:9000/"
-	subkehu223 := "http://shanghaihuanian123.icu:8090/"
-	subkehuT23 := "https://shanghaihuanian123.icu/img/"
+	subkehua23 := "https://shanghaihuanian360.icu.icu:9000/"
+	subkehu123 := "http://shanghaihuanian360.icu.icu:9000/"
+	subkehu223 := "http://shanghaihuanian360.icu.icu:8090/"
+	subkehuT23 := "https://shanghaihuanian360.icu.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
@@ -1298,8 +1298,8 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
-			"mid":     kefuUID,// mid,
-			"mid_name": "",//kefuInfo.Name,
+			"mid":      kefuUID, // mid,
+			"mid_name": "",      //kefuInfo.Name,
 			// "remark":         u.ctx.GetConfig().WelcomeMessage,
 			"gid": "",
 			// "uid_short_no": shortNo,
