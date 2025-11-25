@@ -477,10 +477,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	subkehua23 := "https://shanghaihuanian360.icu.icu:9000/"
-	subkehu123 := "http://shanghaihuanian360.icu.icu:9000/"
-	subkehu223 := "http://shanghaihuanian360.icu.icu:8090/"
-	subkehuT23 := "https://shanghaihuanian360.icu.icu/img/"
+	subkehua23 := "https://shanghaihuanian360.icu:9000/"
+	subkehu123 := "http://shanghaihuanian360.icu:9000/"
+	subkehu223 := "http://shanghaihuanian360.icu:8090/"
+	subkehuT23 := "https://shanghaihuanian360.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
