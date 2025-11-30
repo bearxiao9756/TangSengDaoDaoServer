@@ -128,6 +128,13 @@ func (f *Friend) handleUserRegister(data []byte, commit config.EventCommit) {
 		commit(errors.New("好友处理用户注册邀请者uid不能为空"))
 		return
 	}
+	gid := req["gid"].(string)
+	mid := req["mid"].(string)
+	if gid != "" && mid == ""{
+		f.Error("查询是否是好友失败！单群不加好友")
+		commit(errors.New("查询是否是好友失败！"))
+		return
+	}
 	// 是否是好友
 	applyFriendModel, err := f.db.queryWithUID(uid, inviteUid)
 	if err != nil {

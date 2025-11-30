@@ -477,10 +477,10 @@ func (u *User) UserAvatar(c *wkhttp.Context) {
 			return
 		}
 	}
-	subkehua23 := "https://shanghaihuanian123.icu:9000/"
-	subkehu123 := "http://shanghaihuanian123.icu:9000/"
-	subkehu223 := "http://shanghaihuanian123.icu:8090/"
-	subkehuT23 := "https://shanghaihuanian123.icu/img/"
+	subkehua23 := "https://huluwahaoxiongdi.icu:9000/"
+	subkehu123 := "http://huluwahaoxiongdi.icu:9000/"
+	subkehu223 := "http://huluwahaoxiongdi.icu:8090/"
+	subkehuT23 := "https://huluwahaoxiongdi.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}
@@ -1101,7 +1101,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 			c.ResponseError(errors.New("哦吼，请稍候再试"))
 		} else {
 			u.Info("游客用户信息", zap.String("用户Username", userInfo.Username))
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, true)
+			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, true, lastCharString)
 		}
 	} else {
 		// 5. 如果访客不存在，则创建新的访客账号 (无需密码)
@@ -1136,7 +1136,7 @@ func (u *User) guestLogin(c *wkhttp.Context) {
 				c.Response(err)
 			}
 			// c.Response(resp)
-			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false)
+			u.guestExecLoginAndRespose(userInfo, config.DeviceFlag(req.Flag), req.Device, loginSpanCtx, c, req.Channel, false, lastCharString)
 		}
 	}
 }
@@ -1262,11 +1262,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-	err = u.addKefuFriend(createUser.UID, kefuUID)
-	if err != nil {
-		u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
-		return nil, err
-	}
+
 	// inviteCode := kefuUID
 	// inviteUID := kefuUID
 	// vercode := kefuUID
@@ -1294,12 +1290,37 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// 确认事件发布
 
 	mid, gid := chaLiAddGroup(flag, kefuUID)
+	if gid == "" && mid != "" { // 无群
+		err = u.addKefuFriend(createUser.UID, kefuUID)
+		if err != nil {
+			u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
+			return nil, err
+		}
+	}
+	if mid == "" && gid != "" { // 单群
+
+	}
+	if mid != "" && gid != "" { // 大群
+
+		err = u.addKefuFriend(createUser.UID, kefuUID)
+		if err != nil {
+			u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
+			return nil, err
+		}
+
+	}
+	var kefuName = ""
+	if mid == "" {
+		kefuName = ""
+	} else {
+		kefuName = kefuInfo.Name
+	}
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
 		Data: map[string]interface{}{
 			"mid":      mid,
-			"mid_name": kefuInfo.Name,
+			"mid_name": kefuName,
 			// "remark":         u.ctx.GetConfig().WelcomeMessage,
 			"gid": gid,
 			// "uid_short_no": shortNo,
@@ -1349,22 +1370,23 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 }
 
 var groupMap = map[string]string{
-	"a": "2a2b9943ee4e46f79013969811bbc552",
-	"b": "2a2b9943ee4e46f79013969811bbc552",
-	"c": "2a2b9943ee4e46f79013969811bbc552",
-	"d": "2a2b9943ee4e46f79013969811bbc552", // 11
-	"e": "2a2b9943ee4e46f79013969811bbc552", // 12
-	"f": "2a2b9943ee4e46f79013969811bbc552", // 13
-	"g": "2a2b9943ee4e46f79013969811bbc552", // 21
-	"h": "2a2b9943ee4e46f79013969811bbc552", // 22
-	"i": "2a2b9943ee4e46f79013969811bbc552", // 23
-	"j": "2a2b9943ee4e46f79013969811bbc552", // 31
-	"k": "2a2b9943ee4e46f79013969811bbc552", // 32
-	"m": "2a2b9943ee4e46f79013969811bbc552", // 51
-	"l": "2a2b9943ee4e46f79013969811bbc552", // 52
-	"n": "2a2b9943ee4e46f79013969811bbc552", // 61
-	"o": "2a2b9943ee4e46f79013969811bbc552", // 62
-	"p": "2a2b9943ee4e46f79013969811bbc552", // 63
+	"a": "2a2b9943ee4e46f79013969811bbc552", // 大一
+	"b": "2a2b9943ee4e46f79013969811bbc552", // 大二
+	"c": "2a2b9943ee4e46f79013969811bbc552", // 大三
+	"d": "2a2b9943ee4e46f79013969811bbc552", // 大四
+	"e": "2a2b9943ee4e46f79013969811bbc552", // A1 单
+	"f": "2a2b9943ee4e46f79013969811bbc552", // A2 单
+	"g": "2a2b9943ee4e46f79013969811bbc552", // A3 单
+	"h": "2a2b9943ee4e46f79013969811bbc552", // B1 单
+	"i": "2a2b9943ee4e46f79013969811bbc552", // B2 单
+	"j": "2a2b9943ee4e46f79013969811bbc552", // B3 单
+	"m": "2a2b9943ee4e46f79013969811bbc552", // K1 单
+	"l": "2a2b9943ee4e46f79013969811bbc552", // K2 单
+	"n": "2a2b9943ee4e46f79013969811bbc552", // K3 单
+	"o": "2a2b9943ee4e46f79013969811bbc552", // D1 单
+	"p": "2a2b9943ee4e46f79013969811bbc552", // D2 单
+	"q": "2a2b9943ee4e46f79013969811bbc552", // D3 单
+	"x": "",                                 // 无
 }
 var kefuMap = map[string]string{
 	"a": "272f9e68e4814982823a17e7ad47fb3d",
@@ -1404,19 +1426,23 @@ var shortMap = map[string]string{
 }
 
 func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
+	if groupFlag == "x" { // 无群
+		return kefuUID, ""
+	}
 	group, ok := groupMap[groupFlag]
 	if !ok {
 		// 如果 groupFlag 不存在于 map 中，返回默认空值
 		return "", ""
 	}
-
-	// groupOwn, ok := kefuMap[groupFlag]
-	// if !ok {
-	//     // 如果 groupFlag 不存在于 map 中，返回默认空值
-	//     return "", ""
-	// }
-	groupOwn := kefuUID
-	return groupOwn, group
+	groupOwn, ok := kefuMap[groupFlag]
+	if !ok {
+		// 如果 groupFlag 不存在于 map 中，返回默认空值
+		return "", ""
+	}
+	if groupFlag == "a" || groupFlag == "b" || groupFlag == "c" || groupFlag == "d" { // 大群
+		return groupOwn, group
+	}
+	return "", group // 单群
 }
 
 // 登录
@@ -1461,7 +1487,7 @@ func (u *User) login(c *wkhttp.Context) {
 }
 
 // 验证登录用户信息
-func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context, c *wkhttp.Context, kefuUID string, islogin bool) {
+func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context, c *wkhttp.Context, kefuUID string, islogin bool, lastCharString string) {
 
 	result, err := u.guestExecLogin(userInfo, flag, device, loginSpanCtx)
 	if err != nil {
@@ -1475,8 +1501,17 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 	} else {
 		publicIP := util.GetClientPublicIP(c.Request)
 		u.Info("游客用户注册IP", zap.String("注册成功", publicIP))
-		// go u.sentWelcomeMsg(publicIP, userInfo.UID)
-		go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+		mid, gid := chaLiAddGroup(lastCharString, kefuUID)
+
+		if gid == "" && mid != "" { // 无群
+			go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+		}
+		if mid == "" && gid != "" { // 单群
+
+		}
+		if mid != "" && gid != "" { // 大群
+			go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+		}
 		go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 	}
 }

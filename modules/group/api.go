@@ -275,10 +275,10 @@ func (g *Group) avatarGet(c *wkhttp.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	subkehua23 := "https://shanghaihuanian123.icu:9000/"
-	subkehu123 := "http://shanghaihuanian123.icu:9000/"
-	subkehu223 := "http://shanghaihuanian123.icu:8090/"
-	subkehuT23 := "https://shanghaihuanian123.icu/img/"
+	subkehua23 := "https://huluwahaoxiongdi.icu:9000/"
+	subkehu123 := "http://huluwahaoxiongdi.icu:9000/"
+	subkehu223 := "http://huluwahaoxiongdi.icu:8090/"
+	subkehuT23 := "https://huluwahaoxiongdi.icu/img/"
 	if strings.Contains(downloadUrl, subkehua23) {
 		downloadUrl = strings.ReplaceAll(downloadUrl, subkehua23, subkehuT23)
 	}

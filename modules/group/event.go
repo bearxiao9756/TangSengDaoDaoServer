@@ -192,9 +192,7 @@ func (g *Group) handleRegisterUserEventChali(data []byte, commit config.EventCom
 		return
 	}
 	if mid == "" {
-		g.Error("处理用户注册加入群聊UID不能为空 错误3")
-		commit(errors.New("处理用户注册加入群聊UID不能为空 错误3"))
-		return
+	    mid = g.ctx.GetConfig().Account.SystemUID
 	}
 	//查询群聊是否存在
 	groupModel, err := g.db.QueryWithGroupNo(gid)
