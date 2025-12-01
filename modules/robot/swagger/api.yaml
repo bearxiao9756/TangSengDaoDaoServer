@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  description: "上海华年 API"
+  description: "华安定增 API"
   version: "1.0.0"
-  title: "上海华年 API"
+  title: "华安定增 API"
 host: "api.botgate.cn"
 tags:
   - name: "robot"

@@ -1,4 +1,4 @@
-## 上海华年
+## 华安定增
 
 <p align="center">
 <img align="center" width="150px" src="./docs/logo.svg">
@@ -52,7 +52,7 @@
 演示地址
 ------------
 
-| Android扫描体验 | iOS扫描体验(商店版本 apple store 搜“上海华年”) |
+| Android扫描体验 | iOS扫描体验(商店版本 apple store 搜“华安定增”) |
 |:---:|:---:|
 |![](docs/download/android.png)|![](docs/download/iOS.png)|
 
@@ -100,15 +100,15 @@
 ------------
 
 
-### 上海华年（负责业务）
+### 华安定增（负责业务）
 
 | 项目名 | Github地址 | Gitee地址 | 文档 | 说明 |
 | ---- | ---------- | --------- | ---- | ---- |
-|   TangSengDaoDaoServer   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoServer)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoServer)  |  [文档](https://tsdaodao.com/dev/backend/deploy-compose.html)|    上海华年的业务端，负责一些业务逻辑，比如：好友关系，群组，朋友圈等 （通讯端使用的是 WuKongIM）  |
-|   TangSengDaoDaoAndroid   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoAndroid)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoAndroid) | [文档](https://tsdaodao.com/dev/android/intro.html)    |    上海华年的Android端   |
-|   TangSengDaoDaoiOS   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoiOS)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoiOS) | [文档](https://tsdaodao.com/dev/ios/intro.html)       |    上海华年的iOS端   |
-|   TangSengDaoDaoWeb   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoWeb)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoWeb) | [文档](https://tsdaodao.com/dev/web/intro.html)       |    上海华年的Web/PC端   |
-|   TangSengDaoDaoManager   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoManager)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoManager) | 无      |    上海华年的后台管理系统  |
+|   TangSengDaoDaoServer   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoServer)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoServer)  |  [文档](https://tsdaodao.com/dev/backend/deploy-compose.html)|    华安定增的业务端，负责一些业务逻辑，比如：好友关系，群组，朋友圈等 （通讯端使用的是 WuKongIM）  |
+|   TangSengDaoDaoAndroid   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoAndroid)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoAndroid) | [文档](https://tsdaodao.com/dev/android/intro.html)    |    华安定增的Android端   |
+|   TangSengDaoDaoiOS   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoiOS)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoiOS) | [文档](https://tsdaodao.com/dev/ios/intro.html)       |    华安定增的iOS端   |
+|   TangSengDaoDaoWeb   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoWeb)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoWeb) | [文档](https://tsdaodao.com/dev/web/intro.html)       |    华安定增的Web/PC端   |
+|   TangSengDaoDaoManager   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoManager)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoManager) | 无      |    华安定增的后台管理系统  |
 
 
 ### 悟空IM（负责通讯）
@@ -127,7 +127,7 @@
 技术文档
 ------------
 
-上海华年：
+华安定增：
 
 https://tsdaodao.com
 
@@ -214,7 +214,7 @@ Star
 加入群聊
 ------------
 
-微信：加群请备注“上海华年”
+微信：加群请备注“华安定增”
 
 <img src="docs/tsddwx.png" width="200px" height="200px">
 
