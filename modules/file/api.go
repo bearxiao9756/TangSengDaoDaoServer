@@ -206,10 +206,10 @@ func (f *File) getFile(c *wkhttp.Context) {
 		c.ResponseError(err)
 		return
 	}
-	subkehua23 := "https://chuqingqing.icu:9000/"
-	subkehu123 := "http://chuqingqing.icu:9000/"
-	subkehu223 := "http://chuqingqing.icu:8090/"
-	subkehuT23 := "https://chuqingqing.icu/img/"
+	subkehua23 := "https://huluwahaoxiongdi.icu:9000/"
+	subkehu123 := "http://huluwahaoxiongdi.icu:9000/"
+	subkehu223 := "http://huluwahaoxiongdi.icu:8090/"
+	subkehuT23 := "https://huluwahaoxiongdi.icu/img/"
 	if strings.Contains(downloadURL, subkehua23) {
 		downloadURL = strings.ReplaceAll(downloadURL, subkehua23, subkehuT23)
 	}
