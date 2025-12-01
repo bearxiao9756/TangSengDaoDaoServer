@@ -1370,16 +1370,16 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 }
 
 var groupMap = map[string]string{
-	"a": "2a2b9943ee4e46f79013969811bbc552", // 大一
-	"b": "2a2b9943ee4e46f79013969811bbc552", // 大二
-	"c": "2a2b9943ee4e46f79013969811bbc552", // 大三
-	"d": "2a2b9943ee4e46f79013969811bbc552", // 大四
-	"e": "2a2b9943ee4e46f79013969811bbc552", // A1 单
-	"f": "2a2b9943ee4e46f79013969811bbc552", // A2 单
-	"g": "2a2b9943ee4e46f79013969811bbc552", // A3 单
-	"h": "2a2b9943ee4e46f79013969811bbc552", // B1 单
-	"i": "2a2b9943ee4e46f79013969811bbc552", // B2 单
-	"j": "2a2b9943ee4e46f79013969811bbc552", // B3 单
+	"a": "aa9c6e09b1964921b85d2e642bcc8be5", // 大一
+	"b": "75273c072c5d4ff581366535f4238afa", // 大二
+	"c": "ea900cfdaf1145f6b02d3e6d213da52c", // 大三
+	"d": "4f6b131c4c8f42fb9263829e531b6d9b", // 大四
+	"e": "e6c3ae08e0a4480f9b0f21016c8e4dcf", // A1 单
+	"f": "d48ed7d5bf5c4bd392a944187ccaa2e6", // A2 单
+	"g": "22abc666ed724269b7078e826099d0e4", // A3 单
+	"h": "5f9990b726e14b26b7febc80c3aca7dd", // B1 单
+	"i": "f653c494d9a142f5bbf5d5d0e92dd32a", // B2 单
+	"j": "e9be652cb49a448c986b545db8340e17", // B3 单
 	"m": "2a2b9943ee4e46f79013969811bbc552", // K1 单
 	"l": "2a2b9943ee4e46f79013969811bbc552", // K2 单
 	"n": "2a2b9943ee4e46f79013969811bbc552", // K3 单
@@ -1387,42 +1387,6 @@ var groupMap = map[string]string{
 	"p": "2a2b9943ee4e46f79013969811bbc552", // D2 单
 	"q": "2a2b9943ee4e46f79013969811bbc552", // D3 单
 	"x": "",                                 // 无
-}
-var kefuMap = map[string]string{
-	"a": "272f9e68e4814982823a17e7ad47fb3d",
-	"b": "9d5c22fff3b2460ba7363de7f4689058",
-	"c": "4cefcd7ca7b04181b23915278d9947d4",
-	"d": "2c76be6ccc384308844dacf37f0e65f7", // 11
-	"e": "4e03d88ddf5745f39f317dae0e4fbbdc", // 12
-	"f": "bc8bd220fd22468ea0afe13b115e619f", // 13
-	"g": "59ce4020bca447ee9e20445e059e2392", // 21
-	"h": "d03f97b3c9b644c39f81826f80c63b42", // 22
-	"i": "0c82ef762752407d970f24b689674e6b", // 23
-	"j": "020cbdf3bda84192b38fe2c5bb5fc2d3", // 31
-	"k": "71ba0135871b47a19face9fee42a0cf1", // 32
-	"m": "6df2a6a1404f49dc88037e8797ca2e6a", // 51
-	"l": "a0b24bdeba5545eb973f9ebd0c427638", // 52
-	"n": "a376c98e0918403cbbf7154d630cabc2", // 61
-	"o": "4a26c92cfe4d4e998356f8c759529c1a", // 62
-	"p": "dd3b06cbe9474e6d895c948b9cd6b4ab", // 63
-}
-var shortMap = map[string]string{
-	"a": "fvLZGrij",
-	"b": "fvLoSyrSD",
-	"c": "fvLshaqfJ",
-	"d": "fvLAUHem",                         // 11
-	"e": "fvLHGhmgp",                        // 12
-	"f": "fvLNuZdQ",                         // 13
-	"g": "fvLSPCV",                          // 21
-	"h": "fvMdeReSU",                        // 22
-	"i": "fvMgBTdqW",                        // 23
-	"j": "fvMk9Hhi",                         // 31
-	"k": "fvMpfSGCr",                        // 32
-	"m": "fvMshLwKD",                        // 51
-	"l": "fvMvWqga",                         // 52
-	"n": "fvMzOspVS",                        // 61
-	"o": "fvMFCdfg",                         // 62
-	"p": "dd3b06cbe9474e6d895c948b9cd6b4ab", // 63
 }
 
 func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
@@ -1434,13 +1398,8 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 		// 如果 groupFlag 不存在于 map 中，返回默认空值
 		return "", ""
 	}
-	groupOwn, ok := kefuMap[groupFlag]
-	if !ok {
-		// 如果 groupFlag 不存在于 map 中，返回默认空值
-		return "", ""
-	}
 	if groupFlag == "a" || groupFlag == "b" || groupFlag == "c" || groupFlag == "d" { // 大群
-		return groupOwn, group
+		return kefuUID, group
 	}
 	return "", group // 单群
 }

@@ -246,38 +246,38 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 		s.Info("特别注意A841", zap.String("获取用户双方好友关系", "好友关系"))
 
 		switch loginUID {
-		case "272f9e68e4814982823a17e7ad47fb3d":
+		case "e219dc035a624e7094d32b4dc6408a3d": // A1
 			sourceFrom = "特约"
-		case "4cefcd7ca7b04181b23915278d9947d4":
+		case "1c72ab1528474a2aa023f2bd6a1d0ef0": // A2
 			sourceFrom = "特约"
-		case "4e03d88ddf5745f39f317dae0e4fbbdc":
+		case "5c4231e11b384ee1bc8b5309caf3126f": // A3
 			sourceFrom = "特约"
-		case "bc8bd220fd22468ea0afe13b115e619f":
+		case "8f0224a88ae14d61a1af7e61dda36ec2": // B1
 			sourceFrom = "特约"
-		case "59ce4020bca447ee9e20445e059e2392":
+		case "466025a150a14c529e0af8c1a7845481": // B2
 			sourceFrom = "特约"
-		case "d03f97b3c9b644c39f81826f80c63b42":
+		case "698857ae26f945da935edf3a6d7530e4": // B3
 			sourceFrom = "特约"
-		case "0c82ef762752407d970f24b689674e6b":
+		case "a372ac086ee5457b9ee42447afacfe8b": // K1
 			sourceFrom = "特约"
-		case "020cbdf3bda84192b38fe2c5bb5fc2d3":
+		case "d8357925b9a4433cb43a64bc901b3257": // K2
 			sourceFrom = "特约"
-		case "71ba0135871b47a19face9fee42a0cf1":
+		case "05dfd535a80e40069eccb9fa6a311cfc": // K3
 			sourceFrom = "特约"
-		case "6df2a6a1404f49dc88037e8797ca2e6a":
+		case "dc8e476ed2e54aaa8e7ff3ebe081d660": // D1
 			sourceFrom = "特约"
-		case "a0b24bdeba5545eb973f9ebd0c427638": // 下面的是备用号
+		case "a3ea016607014505b13e4f41f05d042c": // D2
 			sourceFrom = "特约"
-		case "a376c98e0918403cbbf7154d630cabc2":
+		case "9243e3a844d34adba2271677fc09c59b": // D3
 			sourceFrom = "特约"
-		// case "4a26c92cfe4d4e998356f8c759529c1a":
-		// 	sourceFrom = "特约"
-		// case "5c4c726ef5a84e4c9c76c771b73d92f1":
-		// 	sourceFrom = "特约"
-		// case "d9d3fea8a8134bdf8a844b04638a0fa1":
-		// 	sourceFrom = "特约"
-		// case "8ade9b5751a34fdaaf113633f764313a":
-		// 	sourceFrom = "特约"
+		case "0163a7903b374403b4029e2fe3449ad1":  //  下面的是备用号
+			sourceFrom = "特约"
+		case "096c327c9afa43c9bfc55e15ecb3f2b0":  // 下面的是备用号
+			sourceFrom = "特约"
+		case "cda562b28feb4772bc623e544edc6d6e":
+			sourceFrom = "特约"
+		case "cd2ca805100241a5855850b76f5f7b98":
+			sourceFrom = "特约"
 		// case "a3f5acf402a44eb0ba2768af434a6c78":
 		// 	sourceFrom = "特约"
 		// case "b761c1a3b5ad4546abac8a3b84eed52e":
