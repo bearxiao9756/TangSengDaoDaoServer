@@ -1370,16 +1370,16 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 }
 
 var groupMap = map[string]string{
-	"a": "aa9c6e09b1964921b85d2e642bcc8be5", // 大一
-	"b": "75273c072c5d4ff581366535f4238afa", // 大二
-	"c": "ea900cfdaf1145f6b02d3e6d213da52c", // 大三
-	"d": "4f6b131c4c8f42fb9263829e531b6d9b", // 大四
-	"e": "e6c3ae08e0a4480f9b0f21016c8e4dcf", // A1 单
-	"f": "d48ed7d5bf5c4bd392a944187ccaa2e6", // A2 单
-	"g": "22abc666ed724269b7078e826099d0e4", // A3 单
-	"h": "5f9990b726e14b26b7febc80c3aca7dd", // B1 单
-	"i": "f653c494d9a142f5bbf5d5d0e92dd32a", // B2 单
-	"j": "e9be652cb49a448c986b545db8340e17", // B3 单
+	"a": "bfac6bfd1a294ab490dead6527ae49db", // 大一
+	"b": "7604a3541e1f4f9391cabd876b03fcf5", // 大二
+	"c": "b3ed7e546d08446490bf011fa5231b8e", // 大三
+	"d": "b296a947d4df434288ed5ce6aa4553ac", // 大四
+	"e": "1ca76f704f3b4da3af02f28209bc1059", // A1 单
+	"f": "f19e3e67cf4f4a238cad712fd50e63a4", // A2 单
+	"g": "a7eefdc9dc6946d893a140cb896290ec", // A3 单
+	"h": "a5bec6a9bbdb4da6a03c5179dff76e6e", // B1 单
+	"i": "73c206bd2ff44fd183c15b2793ed045a", // B2 单
+	"j": "a2e2f602691c49598217c26277f88496", // B3 单
 	"m": "2a2b9943ee4e46f79013969811bbc552", // K1 单
 	"l": "2a2b9943ee4e46f79013969811bbc552", // K2 单
 	"n": "2a2b9943ee4e46f79013969811bbc552", // K3 单
