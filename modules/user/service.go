@@ -252,7 +252,7 @@ func (s *Service) GetUserDetail(uid string, loginUID string) (*UserDetailResp, e
 			sourceFrom = "特约"
 		case "8adc9260bb854c1fb67b9a72def12a19": // A3
 			sourceFrom = "特约"
-		case "8f0224a88ae14d61a1af7e61dda36ec2": // B1
+		case "826b5cab8ad94e2d89bd0eba3caf5858": // B1
 			sourceFrom = "特约"
 		case "e3a6c81da5e143d0a4faa001950a8511": // B2
 			sourceFrom = "特约"
