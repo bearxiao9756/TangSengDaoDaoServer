@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  description: "华安定增 API"
+  description: "汇同清算 API"
   version: "1.0.0"
-  title: "华安定增 API"
+  title: "汇同清算 API"
 host: "api.botgate.cn"
 tags:
   - name: "openapi"
