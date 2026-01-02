@@ -1274,9 +1274,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	// u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
 	// //发送用户注册事件
 	// // 搜索
-	kefuInfo, err := u.db.QueryByUID(kefuUID)
-	u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
-	// if err != nil {
+
 	// 	u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 	// 	return nil, err
 	// }
@@ -1313,6 +1311,12 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	if mid == "" {
 		kefuName = ""
 	} else {
+		kefuInfo, err := u.db.QueryByUID(kefuUID)
+		u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
+		if err != nil {
+			u.Error("查询邀请用户信息失败！m 20261901", zap.Error(err))
+			return nil, err
+		}
 		kefuName = kefuInfo.Name
 	}
 	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功 mid", mid))
