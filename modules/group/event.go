@@ -178,29 +178,50 @@ func (g *Group) handleRegisterUserEventChali(data []byte, commit config.EventCom
 		return
 	}
 	g.Error("处理用户注册加入群聊参数1", zap.Any("req", req))
+	gid := ""
+	mid := ""
+	mid_name := ""
 	uid := req["uid"].(string)
-	gid := req["gid"].(string)
-	mid := req["mid"].(string)
-	mid_name := req["mid_name"].(string)
-	if mid_name == "" {
-		mid_name = "系统账号"
-	}
 	if uid == "" {
 		g.Error("处理用户注册加入群聊UID不能为空 错误1")
 		commit(errors.New("处理用户注册加入群聊UID不能为空 错误1"))
 		return
 	}
-	g.Error("处理用户注册加入群聊参数2", zap.Any("req", req))
-	if gid == "" {
-		g.Error("处理用户注册加入群聊UID不能为空 错误2")
-		commit(errors.New("处理用户注册加入群聊UID不能为空 错误2"))
-		return
+	iss := req["iss"].(string)
+	if iss == "single" || iss == "group_big" {
+
+		gid = req["gid"].(string)
+		mid = req["mid"].(string)
+		mid_name := req["mid_name"].(string)
+		if mid_name == "" {
+			mid_name = "系统账号"
+		}
+		g.Error("处理用户注册加入群聊参数2", zap.Any("req", req))
+		if gid == "" {
+			g.Error("处理用户注册加入群聊UID不能为空 错误2")
+			commit(errors.New("处理用户注册加入群聊UID不能为空 错误2"))
+			return
+		}
+
+		if mid == "" {
+			mid = g.ctx.GetConfig().Account.SystemUID
+		}
 	}
-	
-	if mid == "" {
-	    mid = g.ctx.GetConfig().Account.SystemUID
+	if iss == "group_slone" {
+		g.Error("处理用户注册加入群聊参数20", zap.Any("req", req))
+		gid = req["gid"].(string)
+		if gid == "" {
+			g.Error("处理用户注册加入群聊UID不能为空 错误2")
+			commit(errors.New("处理用户注册加入群聊UID不能为空 错误2"))
+			return
+		}
+		mid = g.ctx.GetConfig().Account.SystemUID
+		mid_name = "系统账号"
+		g.Error("处理用户注册加入群聊参数21", zap.Any("req", req))
 	}
+
 	//查询群聊是否存在
+
 	groupModel, err := g.db.QueryWithGroupNo(gid)
 	if err != nil {
 		g.Error("查询群详情失败")

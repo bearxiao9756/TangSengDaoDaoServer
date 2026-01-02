@@ -1264,7 +1264,9 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	}
 	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功3", shortNo))
 	mid, gid := chaLiAddGroup(flag, kefuUID)
+	var iss = ""
 	if gid == "" && mid != "" { // 无群
+        iss = "single"
 		err = u.addKefuFriend(createUser.UID, kefuUID)
 		if err != nil {
 			u.Error("添加注册用户和客服为好友关系失败a", zap.Error(err))
@@ -1273,10 +1275,10 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	}
 	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功4", shortNo))
 	if mid == "" && gid != "" { // 单群
-		mid = u.ctx.GetConfig().Account.SystemUID
+		iss = "group_single"
 	}
 	if mid != "" && gid != "" { // 大群
-
+        iss = "group_big"
 		err = u.addKefuFriend(createUser.UID, kefuUID)
 		if err != nil {
 			u.Error("添加注册用户和客服为好友关系失败b", zap.Error(err))
@@ -1305,6 +1307,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		Data: map[string]interface{}{
 			"mid":      mid,
 			"mid_name": kefuName,
+			"iss":iss,
 			// "remark":         u.ctx.GetConfig().WelcomeMessage,
 			"gid": gid,
 			// "uid_short_no": shortNo,
