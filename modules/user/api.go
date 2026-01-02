@@ -1271,6 +1271,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 			return nil, err
 		}
 	}
+	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功4", shortNo))
 	if mid == "" && gid != "" { // 单群
 		mid = u.ctx.GetConfig().Account.SystemUID
 	}
@@ -1283,6 +1284,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		}
 
 	}
+	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功5", shortNo))
 	var kefuName = ""
 	if mid == "" {
 		kefuName = ""
@@ -1295,6 +1297,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		}
 		kefuName = kefuInfo.Name
 	}
+	
 	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功 mid", mid))
 	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功 gid", gid))
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
