@@ -1262,7 +1262,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-
+	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功3", shortNo))
 	mid, gid := chaLiAddGroup(flag, kefuUID)
 	if gid == "" && mid != "" { // 无群
 		err = u.addKefuFriend(createUser.UID, kefuUID)
@@ -1272,7 +1272,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		}
 	}
 	if mid == "" && gid != "" { // 单群
-        mid = u.ctx.GetConfig().Account.SystemUID
+		mid = u.ctx.GetConfig().Account.SystemUID
 	}
 	if mid != "" && gid != "" { // 大群
 
@@ -1452,13 +1452,13 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 		}
 		if mid == "" && gid != "" { // 单群
-        //    go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, "4c550a50ee27488fbbfca12bab1a67f9", device)
+			//    go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, "4c550a50ee27488fbbfca12bab1a67f9", device)
 		}
 		if mid != "" && gid != "" { // 大群
 			go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
 			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 		}
-		
+
 	}
 }
 func (u *User) guestExecLogin(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context) (*loginUserDetailResp, error) {
