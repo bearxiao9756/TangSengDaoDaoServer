@@ -1375,9 +1375,9 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 	if groupFlag == "x" { // 无群
 		return kefuUID, ""
 	}
-	if groupFlag == "m" {
-		return "",kefuUID
-	}
+	// if groupFlag == "m" {
+	// 	return "",kefuUID
+	// }
 	group, ok := groupMap[groupFlag]
 	if !ok {
 		// 如果 groupFlag 不存在于 map 中，返回默认空值
@@ -1452,7 +1452,7 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 		}
 		if mid == "" && gid != "" { // 单群
-           go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, "4c550a50ee27488fbbfca12bab1a67f9", device)
+        //    go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, "4c550a50ee27488fbbfca12bab1a67f9", device)
 		}
 		if mid != "" && gid != "" { // 大群
 			go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
