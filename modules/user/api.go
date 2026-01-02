@@ -1288,6 +1288,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	var kefuName = ""
 	if mid == "" {
 		kefuName = ""
+		u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功 mid", mid))
 	} else {
 		kefuInfo, err := u.db.QueryByUID(kefuUID)
 		u.Info("游客注册 ", zap.String("查询邀请这用户信息", kefuInfo.Name))
@@ -1297,8 +1298,6 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		}
 		kefuName = kefuInfo.Name
 	}
-	
-	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功 mid", mid))
 	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功 gid", gid))
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
 		Event: event.EventUserRegister,
