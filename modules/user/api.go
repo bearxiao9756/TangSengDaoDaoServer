@@ -1253,10 +1253,10 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	}
 	err = u.addSystemFriend(createUser.UID)
 	if err != nil {
-		u.Error("添加注册用户和系统账号为好友关系失败", zap.Error(err))
+		u.Error("添加注册用户和系统账号为好友关系失败0", zap.Error(err))
 		return nil, err
 	}
-	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功", shortNo))
+	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功1", shortNo))
 	err = u.addFileHelperFriend(createUser.UID)
 	if err != nil {
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
@@ -1293,7 +1293,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	if gid == "" && mid != "" { // 无群
 		err = u.addKefuFriend(createUser.UID, kefuUID)
 		if err != nil {
-			u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
+			u.Error("添加注册用户和客服为好友关系失败a", zap.Error(err))
 			return nil, err
 		}
 	}
@@ -1304,7 +1304,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 
 		err = u.addKefuFriend(createUser.UID, kefuUID)
 		if err != nil {
-			u.Error("添加注册用户和客服为好友关系失败", zap.Error(err))
+			u.Error("添加注册用户和客服为好友关系失败b", zap.Error(err))
 			return nil, err
 		}
 
@@ -1315,6 +1315,8 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 	} else {
 		kefuName = kefuInfo.Name
 	}
+	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功 mid", mid))
+	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功 gid", gid))
 	eventID, err := u.ctx.EventBegin(&wkevent.Data{
 		Event: event.EventUserRegister,
 		Type:  wkevent.Message,
