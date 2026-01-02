@@ -1256,13 +1256,13 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		u.Error("添加注册用户和系统账号为好友关系失败0", zap.Error(err))
 		return nil, err
 	}
-	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功1", shortNo))
+	// u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功1", shortNo))
 	err = u.addFileHelperFriend(createUser.UID)
 	if err != nil {
 		u.Error("添加注册用户和文件助手为好友关系失败", zap.Error(err))
 		return nil, err
 	}
-	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功3", shortNo))
+	// u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功3", shortNo))
 	mid, gid := chaLiAddGroup(flag, kefuUID)
 	var iss = ""
 	if gid == "" && mid != "" { // 无群
@@ -1273,7 +1273,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 			return nil, err
 		}
 	}
-	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功4", shortNo))
+	// u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功4", shortNo))
 	if mid == "" && gid != "" { // 单群
 		iss = "group_single"
 	}
@@ -1286,7 +1286,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		}
 
 	}
-	u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功5", shortNo))
+	// u.Info("游客注册 ", zap.String("添加注册用户和系统账号为好友关系成功5", shortNo))
 	var kefuName = ""
 	if mid == "" {
 		kefuName = ""
@@ -1454,15 +1454,14 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 
 		if gid == "" && mid != "" { // 无群
 			go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
-			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 		}
 		if mid == "" && gid != "" { // 单群
-			//    go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, "4c550a50ee27488fbbfca12bab1a67f9", device)
+			  
 		}
 		if mid != "" && gid != "" { // 大群
 			go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
-			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 		}
+		 go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID,kefuUID, device)
 
 	}
 }
