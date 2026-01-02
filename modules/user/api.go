@@ -1296,7 +1296,7 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 		}
 	}
 	if mid == "" && gid != "" { // 单群
-
+        mid = u.ctx.GetConfig().Account.SystemUID
 	}
 	if mid != "" && gid != "" { // 大群
 
@@ -1399,6 +1399,9 @@ func chaLiAddGroup(groupFlag string, kefuUID string) (mid string, gid string) {
 	if groupFlag == "x" { // 无群
 		return kefuUID, ""
 	}
+	if groupFlag == "m" {
+		return "",kefuUID
+	}
 	group, ok := groupMap[groupFlag]
 	if !ok {
 		// 如果 groupFlag 不存在于 map 中，返回默认空值
@@ -1470,14 +1473,16 @@ func (u *User) guestExecLoginAndRespose(userInfo *Model, flag config.DeviceFlag,
 
 		if gid == "" && mid != "" { // 无群
 			go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 		}
 		if mid == "" && gid != "" { // 单群
-
+        //    go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 		}
 		if mid != "" && gid != "" { // 大群
 			go u.sentUserWelcomeMsg(publicIP, userInfo.UID, kefuUID)
+			go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
 		}
-		go u.sentUserWelcomeSpecialMsg(publicIP, userInfo.UID, kefuUID, device)
+		
 	}
 }
 func (u *User) guestExecLogin(userInfo *Model, flag config.DeviceFlag, device *deviceReq, loginSpanCtx context.Context) (*loginUserDetailResp, error) {

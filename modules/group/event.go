@@ -177,20 +177,26 @@ func (g *Group) handleRegisterUserEventChali(data []byte, commit config.EventCom
 		commit(err)
 		return
 	}
+	g.Error("处理用户注册加入群聊参数1", zap.Any("req", req))
 	uid := req["uid"].(string)
 	gid := req["gid"].(string)
 	mid := req["mid"].(string)
 	mid_name := req["mid_name"].(string)
+	if mid_name == "" {
+		mid_name = "系统账号"
+	}
 	if uid == "" {
 		g.Error("处理用户注册加入群聊UID不能为空 错误1")
 		commit(errors.New("处理用户注册加入群聊UID不能为空 错误1"))
 		return
 	}
+	g.Error("处理用户注册加入群聊参数2", zap.Any("req", req))
 	if gid == "" {
 		g.Error("处理用户注册加入群聊UID不能为空 错误2")
 		commit(errors.New("处理用户注册加入群聊UID不能为空 错误2"))
 		return
 	}
+	
 	if mid == "" {
 	    mid = g.ctx.GetConfig().Account.SystemUID
 	}
@@ -201,6 +207,7 @@ func (g *Group) handleRegisterUserEventChali(data []byte, commit config.EventCom
 		commit(err)
 		return
 	}
+	g.Error("处理用户注册加入群聊参数3", zap.Any("req", req))
 	tx, err := g.db.session.Begin()
 	if err != nil {
 		g.Error("开启事物失败")
@@ -214,6 +221,7 @@ func (g *Group) handleRegisterUserEventChali(data []byte, commit config.EventCom
 			panic(err)
 		}
 	}()
+	g.Error("处理用户注册加入群聊参数4", zap.Any("req", req))
 	if groupModel == nil {
 		g.Error("群组已经不存在了")
 		commit(errors.New("群组已经不存在了"))
@@ -231,6 +239,7 @@ func (g *Group) handleRegisterUserEventChali(data []byte, commit config.EventCom
 	realMemberUids := make([]string, 0)
 	realMemberUids = append(realMemberUids, uid)
 	err = g.addMembers(realMemberUids, gid, mid, mid_name)
+	g.Error("处理用户注册加入群聊参数5", zap.Any("req", req))
 	if err != nil {
 		g.Error("添加注册账号到系统群失败！")
 		commit(err)
