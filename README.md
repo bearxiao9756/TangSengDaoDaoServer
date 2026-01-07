@@ -1,4 +1,4 @@
-## 汇同清算
+## 九威清算
 
 <p align="center">
 <img align="center" width="150px" src="./docs/logo.svg">
@@ -52,7 +52,7 @@
 演示地址
 ------------
 
-| Android扫描体验 | iOS扫描体验(商店版本 apple store 搜“汇同清算”) |
+| Android扫描体验 | iOS扫描体验(商店版本 apple store 搜“九威清算”) |
 |:---:|:---:|
 |![](docs/download/android.png)|![](docs/download/iOS.png)|
 
@@ -100,15 +100,15 @@
 ------------
 
 
-### 汇同清算（负责业务）
+### 九威清算（负责业务）
 
 | 项目名 | Github地址 | Gitee地址 | 文档 | 说明 |
 | ---- | ---------- | --------- | ---- | ---- |
-|   TangSengDaoDaoServer   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoServer)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoServer)  |  [文档](https://tsdaodao.com/dev/backend/deploy-compose.html)|    汇同清算的业务端，负责一些业务逻辑，比如：好友关系，群组，朋友圈等 （通讯端使用的是 WuKongIM）  |
-|   TangSengDaoDaoAndroid   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoAndroid)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoAndroid) | [文档](https://tsdaodao.com/dev/android/intro.html)    |    汇同清算的Android端   |
-|   TangSengDaoDaoiOS   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoiOS)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoiOS) | [文档](https://tsdaodao.com/dev/ios/intro.html)       |    汇同清算的iOS端   |
-|   TangSengDaoDaoWeb   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoWeb)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoWeb) | [文档](https://tsdaodao.com/dev/web/intro.html)       |    汇同清算的Web/PC端   |
-|   TangSengDaoDaoManager   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoManager)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoManager) | 无      |    汇同清算的后台管理系统  |
+|   TangSengDaoDaoServer   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoServer)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoServer)  |  [文档](https://tsdaodao.com/dev/backend/deploy-compose.html)|    九威清算的业务端，负责一些业务逻辑，比如：好友关系，群组，朋友圈等 （通讯端使用的是 WuKongIM）  |
+|   TangSengDaoDaoAndroid   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoAndroid)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoAndroid) | [文档](https://tsdaodao.com/dev/android/intro.html)    |    九威清算的Android端   |
+|   TangSengDaoDaoiOS   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoiOS)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoiOS) | [文档](https://tsdaodao.com/dev/ios/intro.html)       |    九威清算的iOS端   |
+|   TangSengDaoDaoWeb   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoWeb)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoWeb) | [文档](https://tsdaodao.com/dev/web/intro.html)       |    九威清算的Web/PC端   |
+|   TangSengDaoDaoManager   |   [Github](https://github.com/TangSengDaoDao/TangSengDaoDaoManager)         |     [Gitee](https://gitee.com/TangSengDaoDao/TangSengDaoDaoManager) | 无      |    九威清算的后台管理系统  |
 
 
 ### 悟空IM（负责通讯）
@@ -127,7 +127,7 @@
 技术文档
 ------------
 
-汇同清算：
+九威清算：
 
 https://tsdaodao.com
 
@@ -214,7 +214,7 @@ Star
 加入群聊
 ------------
 
-微信：加群请备注“汇同清算”
+微信：加群请备注“九威清算”
 
 <img src="docs/tsddwx.png" width="200px" height="200px">
 

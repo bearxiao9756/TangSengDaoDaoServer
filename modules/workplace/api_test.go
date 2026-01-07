@@ -35,8 +35,8 @@ func TestBannerList(t *testing.T) {
 	err = wm.db.insertBanner(&bannerModel{
 		BannerNo:    "123a",
 		Cover:       "cover2",
-		Title:       "汇同清算官网",
-		Description: "汇同清算让企业轻松拥有自己的即时通讯",
+		Title:       "九威清算官网",
+		Description: "九威清算让企业轻松拥有自己的即时通讯",
 		JumpType:    0,
 		Route:       "https://tangsengdaodao.com",
 	})
@@ -102,8 +102,8 @@ func TestUserGetApp(t *testing.T) {
 	err = wm.db.insertAPP(&appModel{
 		AppID:       appId2,
 		Icon:        "xxxxx",
-		Name:        "汇同清算",
-		Description: "汇同清算让企业轻松拥有自己的即时通讯",
+		Name:        "九威清算",
+		Description: "九威清算让企业轻松拥有自己的即时通讯",
 		JumpType:    0,
 		AppRoute:    "http://www.githubim.com",
 		WebRoute:    "http://www.githubim.com",
@@ -249,8 +249,8 @@ func TestGetAppWithCategory(t *testing.T) {
 	err = wm.db.insertAPP(&appModel{
 		AppID:       "tsdd",
 		Icon:        "xxxxx",
-		Name:        "汇同清算",
-		Description: "汇同清算让企业轻松拥有自己的即时通讯",
+		Name:        "九威清算",
+		Description: "九威清算让企业轻松拥有自己的即时通讯",
 		JumpType:    0,
 		AppRoute:    "http://www.githubim.com",
 		WebRoute:    "http://www.githubim.com",
@@ -273,7 +273,7 @@ func TestAddRecord(t *testing.T) {
 	appID := "tsdd"
 	err = wm.db.insertAPP(&appModel{
 		AppID:  appID,
-		Name:   "汇同清算",
+		Name:   "九威清算",
 		Icon:   "xxx",
 		Status: 1,
 	})
@@ -298,7 +298,7 @@ func TestGetRecord(t *testing.T) {
 	appID2 := "tsdd"
 	err = wm.db.insertAPP(&appModel{
 		AppID:  appID2,
-		Name:   "汇同清算",
+		Name:   "九威清算",
 		Icon:   "xxx",
 		Status: 1,
 	})
@@ -326,7 +326,7 @@ func TestGetRecord(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/v1/workplace/app/record", nil)
 	req.Header.Set("token", token)
 	s.GetRoute().ServeHTTP(w, req)
-	assert.Equal(t, true, strings.Contains(w.Body.String(), `"name":"汇同清算"`))
+	assert.Equal(t, true, strings.Contains(w.Body.String(), `"name":"九威清算"`))
 }
 
 func TestDeleteRecord(t *testing.T) {

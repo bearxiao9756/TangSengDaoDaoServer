@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  description: "汇同清算 API"
+  description: "九威清算 API"
   version: "1.0.0"
-  title: "汇同清算 API"
+  title: "九威清算 API"
 host: "api.botgate.cn"
 tags:
   - name: "report"

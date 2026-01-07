@@ -20,8 +20,8 @@ const (
 var systemRobotMap = []*systemRobotMenu{
 	{
 		CMD:          "/基本信息",
-		Remark:       "汇同清算基本信息",
-		ReplyContent: "汇同清算是一款轻量级，高性能，重安全专注于私有化部署的开源即时通讯系统。汇同清算官网：https://www.tsdaodao.com 各端演示地址：https://tsdaodao.com/guide/demo.html 悟空官网：https://githubim.com 在APP我的-设置-模块管理中关闭所有模块即是开源版本所有功能。",
+		Remark:       "九威清算基本信息",
+		ReplyContent: "九威清算是一款轻量级，高性能，重安全专注于私有化部署的开源即时通讯系统。九威清算官网：https://www.tsdaodao.com 各端演示地址：https://tsdaodao.com/guide/demo.html 悟空官网：https://githubim.com 在APP我的-设置-模块管理中关闭所有模块即是开源版本所有功能。",
 		Type:         string(None),
 	},
 	{
@@ -50,8 +50,8 @@ var systemRobotMap = []*systemRobotMenu{
 	},
 	{
 		CMD:          "/Android包下载",
-		Remark:       "如何下载汇同清算 Android包",
-		ReplyContent: "您好，汇同清算 Android应用下载地址 https://www.pgyer.com/tsdd",
+		Remark:       "如何下载九威清算 Android包",
+		ReplyContent: "您好，九威清算 Android应用下载地址 https://www.pgyer.com/tsdd",
 		Type:         string(None),
 	},
 	// {
