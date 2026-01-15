@@ -486,16 +486,17 @@ func (g *Group) groupCreate(c *wkhttp.Context) {
 		return
 	}
 
-	count, err := g.db.querySameDayCreateCountWitUID(creator, util.Toyyyy_MM_dd(time.Now()))
-	if err != nil {
-		g.Error("查询用户当天建群数量失败！", zap.Error(err))
-		c.ResponseError(errors.New("查询用户当天建群数量失败！"))
-		return
-	}
+	// count, err := g.db.querySameDayCreateCountWitUID(creator, util.Toyyyy_MM_dd(time.Now()))
+	// if err != nil {
+	// 	g.Error("查询用户当天建群数量失败！", zap.Error(err))
+	// 	c.ResponseError(errors.New("查询用户当天建群数量失败！"))
+	// 	return
+	// }
 	// if g.ctx.GetConfig().Group.SameDayCreateMaxCount <= count {
 	// 	c.ResponseError(errors.New("当天建群数量已达上限"))
 	// 	return
 	// }
+	var err error
 	realUids := make([]string, 0)
 	if g.ctx.GetConfig().Group.CreateGroupVerifyFriendOn {
 		friends := make([]*model.FriendResp, 0)
