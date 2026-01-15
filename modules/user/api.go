@@ -1357,22 +1357,25 @@ func (u *User) guestcreateUserWithRespAndTx(registerSpanCtx context.Context, cre
 }
 
 var groupMap = map[string]string{
-	"a": "bfac6bfd1a294ab490dead6527ae49db", // 大一
-	"b": "7604a3541e1f4f9391cabd876b03fcf5", // 大二
-	"c": "b3ed7e546d08446490bf011fa5231b8e", // 大三
-	"d": "b296a947d4df434288ed5ce6aa4553ac", // 大四
-	"e": "1ca76f704f3b4da3af02f28209bc1059", // A1 单
-	"f": "f19e3e67cf4f4a238cad712fd50e63a4", // A2 单
-	"g": "a7eefdc9dc6946d893a140cb896290ec", // A3 单
-	"h": "a5bec6a9bbdb4da6a03c5179dff76e6e", // B1 单
-	"i": "73c206bd2ff44fd183c15b2793ed045a", // B2 单
-	"j": "a2e2f602691c49598217c26277f88496", // B3 单
-	"m": "2a2b9943ee4e46f79013969811bbc552", // K1 单
-	"l": "2a2b9943ee4e46f79013969811bbc552", // K2 单
-	"n": "2a2b9943ee4e46f79013969811bbc552", // K3 单
-	"o": "2a2b9943ee4e46f79013969811bbc552", // D1 单
-	"p": "2a2b9943ee4e46f79013969811bbc552", // D2 单
-	"q": "2a2b9943ee4e46f79013969811bbc552", // D3 单
+	"a": "0fb7912123394510bccdc053b069c730", // 大一
+	"b": "a0dc326f958841f3870a13433c2d2feb", // 大二
+	"c": "93ae814ea25b442180d45393beb0a96d", // 大三
+	"d": "7a4c4164c86149089e85c835cbae25a3", // 大四
+	"e": "5ef47f789f5d45f48513f2693b514980", // A1 单
+	"f": "0493153a3f0a4f1eaedc82bc374eef93", // A2 单
+	"g": "f608b08306c342d59dccd93910da9353", // A3 单
+	"h": "2d5fb5f53f8749939452a67745fab00b", // B1 单
+	"i": "b0883351416b4b10bea3e836a86281d3", // B2 单
+	"j": "8a654bc9ba89438b92afa275dda439fa", // B3 单
+	"m": "70318857279c4ad791d4aa3e0585c778", // K1 单
+	"l": "be43ca2d40294c0588da3ec267311b9f", // K2 单
+	"n": "77b127f714f84e2f95013677ec11f751", // K3 单
+	"o": "f5b49bc82b5b40e592004a639724e08e", // D1 单
+	"p": "0bd147da5f1e47a59c81d33d558bddb9", // D2 单
+	"q": "87f1b0f45e9f4c6f89be4b5adc4c4d20", // D3 单
+	"r": "82feb29b90bf487fb5f5c85e7f5435ec", // E1 单
+	"s": "6b952f3006d449c889f1a525d166d428", // E2 单
+	"t": "b1a45fb93c63436084c6c41f0a06df43", // E3 单
 	"x": "",                                 // 无
 }
 
