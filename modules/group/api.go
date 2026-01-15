@@ -492,10 +492,10 @@ func (g *Group) groupCreate(c *wkhttp.Context) {
 		c.ResponseError(errors.New("查询用户当天建群数量失败！"))
 		return
 	}
-	if g.ctx.GetConfig().Group.SameDayCreateMaxCount <= count {
-		c.ResponseError(errors.New("当天建群数量已达上限"))
-		return
-	}
+	// if g.ctx.GetConfig().Group.SameDayCreateMaxCount <= count {
+	// 	c.ResponseError(errors.New("当天建群数量已达上限"))
+	// 	return
+	// }
 	realUids := make([]string, 0)
 	if g.ctx.GetConfig().Group.CreateGroupVerifyFriendOn {
 		friends := make([]*model.FriendResp, 0)
